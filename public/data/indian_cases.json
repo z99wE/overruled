@@ -1,0 +1,358 @@
+{
+  "cases": [
+    {
+      "id": "orissa-mining",
+      "citation": "(2013) 6 SCC 476",
+      "caseName": "Orissa Mining Corporation Ltd. v. Ministry of Environment & Forest & Ors.",
+      "year": 2013,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "A mining lease on Scheduled Areas cannot be granted without the free, prior and informed consent of the gram sabha under Section 4(1) of the FRA 2006, triggered by Articles 244 and 344(1) protective framework.",
+      "statutoryProvisions": ["FRA 2006 §4(1)", "FRA 2006 §4(2)", "Art. 244", "Art. 25(2)"],
+      "keyTags": ["tribal rights", "gram sabha consent", "mining", "FRA", "scheduled areas"],
+      "domain": "Environmental",
+      "aliases": ["orissa mining", "orissa mining corporation", "niyamgiri", "gram sabha", "forest rights act"]
+    },
+    {
+      "id": "puttaswamy-privacy",
+      "citation": "(2017) 10 SCC 1",
+      "caseName": "Justice K.S. Puttaswamy (Retd.) v. Union of India (Privacy-9J)",
+      "year": 2017,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "The right to privacy is a fundamental right flowing from Article 21, subject to a three-part proportionality test: legality, legitimate aim, and necessity/proportionality of state action.",
+      "statutoryProvisions": ["Art. 21", "Art. 14", "Art. 19"],
+      "keyTags": ["privacy", "proportionality", "fundamental rights", "data protection"],
+      "domain": "Digital_Rights",
+      "aliases": ["puttaswamy", "privacy judgment", "right to privacy", "pottaswamy"]
+    },
+    {
+      "id": "puttaswamy-aadhaar",
+      "citation": "(2019) 1 SCC 1",
+      "caseName": "K.S. Puttaswamy (Aadhaar-5J) v. Union of India",
+      "year": 2018,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Aadhaar upheld as constitutional but only as a targeted, proportionality-checked identification system; it cannot be extended through indefinite or disproportionate state surveillance.",
+      "statutoryProvisions": ["Art. 21", "Art. 19", "Aadhaar Act 2016"],
+      "keyTags": ["aadhaar", "proportionality", "privacy", "surveillance"],
+      "domain": "Digital_Rights",
+      "aliases": ["aadhaar", "puttaswamy aadhaar", "aadhar"]
+    },
+    {
+      "id": "anuradha-bhasin",
+      "citation": "(2020) 3 SCC 637",
+      "caseName": "Anuradha Bhasin v. Union of India",
+      "year": 2020,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Internet shutdown orders under the IT Act 2000 are not above judicial review; they must satisfy necessity and proportionality and be published without delay, else they violate Articles 19(1)(a) and 19(1)(g).",
+      "statutoryProvisions": ["IT Act 2000 §69", "Telecom Suspension Rules 2017 R.2(4)", "Art. 19(1)(a)", "Art. 19(1)(g)", "Art. 21"],
+      "keyTags": ["internet shutdown", "speech", "proportionality", "suspension rules", "jammu kashmir"],
+      "domain": "Digital_Rights",
+      "aliases": ["anuradha bhasin", "bhasin", "internet shutdown", "telecom suspension", "section 69"]
+    },
+    {
+      "id": "shreya-singhal",
+      "citation": "(2015) 5 SCC 1",
+      "caseName": "Shreya Singhal v. Union of India",
+      "year": 2015,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Section 66A of the IT Act 2000 struck down as void under Article 19(2) for vagueness; only speech within clearly defined restrictions may be restricted, preserving the right to criticise government.",
+      "statutoryProvisions": ["IT Act 2000 §66A", "Art. 19(1)(a)", "Art. 19(2)"],
+      "keyTags": ["section 66a", "free speech", "vagueness", "intermediary"],
+      "domain": "Digital_Rights",
+      "aliases": ["shreya singhal", "66a", "section 66a", "free speech"]
+    },
+    {
+      "id": "kesavananda-bharati",
+      "citation": "(1973) 4 SCC 225",
+      "caseName": "Kesavananda Bharati v. State of Kerala (Basic Structure-13J)",
+      "year": 1973,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Parliament cannot amend the Constitution so as to destroy or damage its basic structure, including the rule of law, judicial review, and dignity-based rights.",
+      "statutoryProvisions": ["Art. 368", "Art. 21"],
+      "keyTags": ["basic structure", "constitutional amendment", "rule of law"],
+      "domain": "Constitutional",
+      "aliases": ["kesavananda", "basic structure"]
+    },
+    {
+      "id": "maneka-gandhi",
+      "citation": "(1978) 1 SCC 248",
+      "caseName": "Maneka Gandhi v. Union of India",
+      "year": 1978,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Article 21 procedure must be 'fair, just and reasonable', merging the rights to life, freedom and equality; arbitrary executive procedure cannot deprive a person of liberty.",
+      "statutoryProvisions": ["Art. 21", "Art. 14", "Art. 19(1)(a)"],
+      "keyTags": ["due process", "fairness", "natural justice", "liberty"],
+      "domain": "Constitutional",
+      "aliases": ["maneka gandhi", "passport", "due process"]
+    },
+    {
+      "id": "olga-tellis",
+      "citation": "(1985) 3 SCC 545",
+      "caseName": "Olga Tellis v. Bombay Municipal Corporation (Pavement Dwellers)",
+      "year": 1985,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Eviction of slum/pavement dwellers deprives them of their livelihood and violates Article 21; they may be moved only with notice, opportunity of hearing, and humane consideration for alternative accommodation.",
+      "statutoryProvisions": ["Art. 21", "Art. 19(1)(e)", "Art. 14"],
+      "keyTags": ["eviction", "livelihood", "slum dwellers", "hearing", "rehabilitation"],
+      "domain": "Tenancy",
+      "aliases": ["olga tellis", "pavement dwellers", "right to livelihood", "slum eviction"]
+    },
+    {
+      "id": "sudama-singh",
+      "citation": "(2010) 168 DLT 195",
+      "caseName": "Sudama Singh v. Government of Delhi & Ors.",
+      "year": 2010,
+      "court": "High Court",
+      "ratioDecidendi": "Jhuggi-jhopri dwellers are entitled to resettlement before demolition; relocation must be preceded by transparent survey, identification and notice, consistent with Article 21 that they not be rendered homeless.",
+      "statutoryProvisions": ["Art. 21", "Art. 14", "Delhi Slum and JJ Rehabilitation Policies"],
+      "keyTags": ["resettlement", "slum dwellers", "relocation", "survey", "jj clusters"],
+      "domain": "Tenancy",
+      "aliases": ["sudama singh", "jj cluster", "resettlement", "delhi slum"]
+    },
+    {
+      "id": "ahmedabad-municipal",
+      "citation": "(1996) 11 SCC 212",
+      "caseName": "Ahmedabad Municipal Corporation v. Nawab Khan Gulab Khan",
+      "year": 1996,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Municipalities cannot evict citizens from hutments without following due process; slum dwellers holding municipal 'passes' or settled long-term user acquires a protectable right against summary displacement.",
+      "statutoryProvisions": ["Art. 21", "Art. 14", "Bombay Provincial Municipal Corporations Act 1949 §448"],
+      "keyTags": ["eviction", "hutments", "due process", "municipal authority"],
+      "domain": "Tenancy",
+      "aliases": ["ahmedabad municipal", "nawab khan", "hutment eviction"]
+    },
+    {
+      "id": "pg-gupta",
+      "citation": "1995 Supp (2) SCC 182",
+      "caseName": "P.G. Gupta v. State of Gujarat (Oustees)",
+      "year": 1995,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Displaced oustees of development projects are entitled to rehabilitation and compensation packages; forced eviction absent a scheme of resettlement violates Article 21.",
+      "statutoryProvisions": ["Art. 21", "Art. 14", "RFCTLARR Act 2013 (successor to LA 1894)"],
+      "keyTags": ["oustees", "rehabilitation", "compensation", "displacement"],
+      "domain": "Tenancy",
+      "aliases": ["pg gupta", "oustees", "rehabilitation package", "displaced persons"]
+    },
+    {
+      "id": "vellore-citizens",
+      "citation": "(1996) 5 SCC 647",
+      "caseName": "Vellore Citizens' Welfare Forum v. Union of India",
+      "year": 1996,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Environmental law rests on sustainable development, the precautionary principle and the polluter-pays principle; they are part of Article 21's right to a clean environment.",
+      "statutoryProvisions": ["Art. 21", "Environment (Protection) Act 1986 §3", "Water Act 1974 §24"],
+      "keyTags": ["precautionary principle", "polluter pays", "tanneries", "effluent"],
+      "domain": "Environmental",
+      "aliases": ["vellore", "polluter pays", "precautionary principle", "tannery"]
+    },
+    {
+      "id": "enviro-legal-action",
+      "citation": "(1996) 5 SCC 281",
+      "caseName": "Indian Council for Enviro-Legal Action v. Union of India (Bichhri)",
+      "year": 1996,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Industries generating hazardous pollution must pay remediation costs (polluter-pays), and the legal-aid doctrine supports the State's duty to ensure clean environment under Article 21.",
+      "statutoryProvisions": ["Art. 21", "Environment (Protection) Act 1986 §5", "Water Act 1974 §24"],
+      "keyTags": ["hazardous waste", "remediation", "polluter pays", "bichhri"],
+      "domain": "Environmental",
+      "aliases": ["bichhri", "enviro legal action", "hazardous waste", "remediation costs"]
+    },
+    {
+      "id": "mc-mehta-ganga",
+      "citation": "(1988) 1 SCC 471",
+      "caseName": "M.C. Mehta v. Union of India (Ganga Pollution Matter)",
+      "year": 1988,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "The right to life under Article 21 includes the right to a pollution-free environment; courts can direct closure of offending units and award exemplary damages for environmental harm.",
+      "statutoryProvisions": ["Art. 21", "Art. 32", "Water Act 1974 §24"],
+      "keyTags": ["river pollution", "ganga", "right to clean environment", "closure"],
+      "domain": "Environmental",
+      "aliases": ["mc mehta", "ganga pollution", "exemplary damages"]
+    },
+    {
+      "id": "godavarman",
+      "citation": "(1997) 2 SCC 267",
+      "caseName": "T.N. Godavarman Thirumulpad v. Union of India (Forest Case)",
+      "year": 1997,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "The term 'forest' must be given its widest dictionary meaning; all forest lands require prior central approval for non-forest use under the Forest (Conservation) Act 1980, and timber extraction needs prior permission.",
+      "statutoryProvisions": ["Forest (Conservation) Act 1980 §2", "Art. 21", "Art. 14"],
+      "keyTags": ["forest", "fca 1980", "non-forest use", "mining"],
+      "domain": "Environmental",
+      "aliases": ["godavarman", "forest conservation act", "fca", "non forest use"]
+    },
+    {
+      "id": "sterlite",
+      "citation": "(2013) 4 SCC 575",
+      "caseName": "Sterlite Industries (India) Ltd. v. Union of India",
+      "year": 2013,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Environmental clearances and factory siting must respect ecologically sensitive areas; the precautionary approach requires a demonstrated balance between industrial need and environmental harm.",
+      "statutoryProvisions": ["Environment (Protection) Act 1986 §3(2)(v)", "Art. 21"],
+      "keyTags": ["pollution", "ecologically sensitive", "precautionary", "tuticorin"],
+      "domain": "Environmental",
+      "aliases": ["sterlite", "tuticorin", "vedanta"]
+    },
+    {
+      "id": "subhash-kumar",
+      "citation": "(1991) 1 SCC 598",
+      "caseName": "Subhash Kumar v. State of Bihar",
+      "year": 1991,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "The right to live in a healthy environment and be free from hazardous pollution is part of Article 21; public-spirited citizens may approach courts for its vindication.",
+      "statutoryProvisions": ["Art. 21", "Art. 32"],
+      "keyTags": ["healthy environment", "public interest litigation", "art 21"],
+      "domain": "Environmental",
+      "aliases": ["subhash kumar", "healthy environment"]
+    },
+    {
+      "id": "bandhua-mukti-morcha",
+      "citation": "(1984) 3 SCC 161",
+      "caseName": "Bandhua Mukti Morcha v. Union of India",
+      "year": 1984,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "The State must take positive measures to protect labour from bondage and exploitation; Article 21 obligates decent working conditions and the rehabilitation of bonded workers.",
+      "statutoryProvisions": ["Art. 21", "Art. 23", "Art. 32"],
+      "keyTags": ["bonded labour", "exploitation", "working conditions", "rehabilitation"],
+      "domain": "Labor",
+      "aliases": ["bandhua mukti morcha", "bonded labour", "forced labour"]
+    },
+    {
+      "id": "pudr-asiad",
+      "citation": "(1982) 3 SCC 235",
+      "caseName": "People's Union for Democratic Rights v. Union of India (Asiad Workers)",
+      "year": 1982,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Non-payment of minimum wages to construction workers violates Articles 21 and 23; the State must enforce labour welfare statutes and cannot ignore systematic violations by contractors.",
+      "statutoryProvisions": ["Art. 21", "Art. 23", "Minimum Wages Act 1948"],
+      "keyTags": ["minimum wages", "construction workers", "exploitation", "labour laws"],
+      "domain": "Labor",
+      "aliases": ["asiad", "minimum wages", "construction workers", "pudr"]
+    },
+    {
+      "id": "cerc-asbestos",
+      "citation": "(1995) 3 SCC 42",
+      "caseName": "Consumer Education & Research Centre v. Union of India",
+      "year": 1995,
+      "court": "Supreme Court of India",
+      "ratioDecidendi": "Article 21 guarantees the right to health of workers; every occupier/employer must ensure safe working conditions and health safeguards, and workers are entitled to compensation for occupational disease.",
+      "statutoryProvisions": ["Art. 21", "Contract Labour Act 1970", "Factories Act 1948"],
+      "keyTags": ["workers health", "occupational disease", "safety", "asbestos"],
+      "domain": "Labor",
+      "aliases": ["cerc", "asbestos", "workers health", "occupational disease"]
+    }
+  ],
+  "statutes": [
+    {
+      "id": "fra-2006",
+      "citation": "Scheduled Tribes and Other Traditional Forest Dwellers (Recognition of Forest Rights) Act, 2006",
+      "name": "FRA 2006",
+      "year": 2006,
+      "keyTags": ["forest rights", "gram sabha", "tribal", "section 4(1)"],
+      "domain": "Environmental",
+      "sections": [
+        { "section": "§4(1)", "title": "Gram Sabha consent", "principle": "No diversion of forest rights over Scheduled Areas is valid without resolution of the concerned gram sabha, by a majority of the members present, which shall be the authority to initiate the process for determining the nature and extent of individual or community forest rights." },
+        { "section": "§4(2)", "title": "Limitation of rights", "principle": "The gram sabha resolution shall be made in conformity with ensuring customary rights, and must not in any way be in contravention of the spirit of the Act." },
+        { "section": "§5", "title": "Duties", "principle": "Holders of forest rights are duty-bound to protect forests, wildlife and habitat alongside the exercise of their rights." }
+      ]
+    },
+    {
+      "id": "fca-1980",
+      "citation": "Forest (Conservation) Act, 1980",
+      "name": "FCA 1980",
+      "year": 1980,
+      "keyTags": ["forest", "de-reservation", "non-forest use", "section 2"],
+      "domain": "Environmental",
+      "sections": [
+        { "section": "§2", "title": "Restriction on de-reservation/use", "principle": "No State Government or authority may de-reserve a forest or permit any forest land for non-forest purpose, without the prior approval of the Central Government." }
+      ]
+    },
+    {
+      "id": "epa-1986",
+      "citation": "Environment (Protection) Act, 1986",
+      "name": "EPA 1986",
+      "year": 1986,
+      "keyTags": ["environment", "pollution", "clearance", "section 3", "section 5"],
+      "domain": "Environmental",
+      "sections": [
+        { "section": "§3(2)(v)", "title": "Power to restrict industrial activity", "principle": "The Central Government may take measures to protect and improve the environment, including restricting areas for industries and operations in ecologically sensitive locations." },
+        { "section": "§5", "title": "Directions", "principle": "The Central Government may issue directions for closure or regulation of an industry operating in violation of the Act, including in emergencies." }
+      ]
+    },
+    {
+      "id": "water-act",
+      "citation": "Water (Prevention and Control of Pollution) Act, 1974",
+      "name": "Water Act 1974",
+      "year": 1974,
+      "keyTags": ["water pollution", "effluent", "consent", "section 24"],
+      "domain": "Environmental",
+      "sections": [
+        { "section": "§24", "title": "Prohibition on pollution", "principle": "No person shall knowingly permit any poisonous, noxious or polluting matter to enter any stream or well, otherwise than in compliance with standards and consent conditions." }
+      ]
+    },
+    {
+      "id": "it-act-2000",
+      "citation": "Information Technology Act, 2000",
+      "name": "IT Act 2000",
+      "year": 2000,
+      "keyTags": ["internet", "shutdown", "intermediary", "section 69", "section 69a"],
+      "domain": "Digital_Rights",
+      "sections": [
+        { "section": "§69", "title": "Direction for interception or blocking", "principle": "The Government may direct interception, monitoring or blocking of any information for reasons of sovereignty, security, public order or incitement, subject to procedure and record of reasons." },
+        { "section": "§69A", "title": "Blocking of public access", "principle": "Public access may be blocked in the interest of sovereignty, integrity, defence, security, foreign relations or public order, by following the statutory procedure under the 2009 Rules." },
+        { "section": "§79", "title": "Intermediary safe harbour", "principle": "An intermediary is not liable for third-party information if it acts only as a conduit and complies with due diligence and takedown duties." }
+      ]
+    },
+    {
+      "id": "telecom-suspension-rules",
+      "citation": "Telecom Suspension and Revocation Rules, 2017 (as amended 2022)",
+      "name": "Telecom Suspension Rules 2017",
+      "year": 2017,
+      "keyTags": ["internet shutdown", "suspension", "review", "rule 2(4)", "rule 16"],
+      "domain": "Digital_Rights",
+      "sections": [
+        { "section": "R.2(4)", "title": "Suspension orders", "principle": "Orders suspending telecom services must be issued on limited grounds and remain effective only for as long as the emergency or threat to public order subsists." },
+        { "section": "R.16", "title": "Review", "principle": "A review committee shall examine every suspension order and directions shall continue only upon approval; indefinite suspensions are impermissible." },
+        { "section": "R.8", "title": "Publication", "principle": "Suspension orders must be communicated and published to ensure citizens can challenge them." }
+      ]
+    },
+    {
+      "id": "rfctlarr-2013",
+      "citation": "Right to Fair Compensation and Transparency in Land Acquisition, Rehabilitation and Resettlement Act, 2013",
+      "name": "RFCTLARR Act 2013",
+      "year": 2013,
+      "keyTags": ["land acquisition", "compensation", "rehabilitation", "section 24", "section 26"],
+      "domain": "Tenancy",
+      "sections": [
+        { "section": "§24", "title": "Lapse of old acquisitions", "principle": "Land acquisition proceedings under the 1894 Act that remained uncompleted with possession not taken and compensation unpaid lapse, and fresh proceedings must be undertaken under the 2013 Act." },
+        { "section": "§26", "title": "Notice to interested persons", "principle": "Duly-notified public hearings on objections and social impact are mandatory before an area is declared a 'public purpose' acquisition." },
+        { "section": "§3(zd)", "title": "Affected family", "principle": "Defines affected families broadly to include those whose lands are acquired and those primarily dependent on the land including informal dwellers." }
+      ]
+    },
+    {
+      "id": "code-social-security-2020",
+      "citation": "Code on Social Security, 2020",
+      "name": "Code on Social Security 2020",
+      "year": 2020,
+      "keyTags": ["gig workers", "platform workers", "social security", "unorganized workers"],
+      "domain": "Labor",
+      "sections": [
+        { "section": "§2(35)", "title": "Gig worker", "principle": "Defines gig worker as a worker who performs work or participates in a work arrangement outside of a traditional employer-employee relationship." },
+        { "section": "§2(36)", "title": "Platform worker", "principle": "Defines platform worker as a gig worker whose work is enabled by an online platform that offers goods or services to the public, including delivery and mobility apps." },
+        { "section": "§142", "title": "SSP benefits for gig workers", "principle": "Provides for registration and social security (health, old age, accident) for gig and platform workers through aggregator contributions and a central Social Security Fund." },
+        { "section": "§2(6)", "title": "Aggregator", "principle": "An aggregator is a digital intermediary that enables a consumer to connect with a driver or delivery partner, covering delivery and ride-hailing apps." }
+      ]
+    },
+    {
+      "id": "mv-aggregator-guidelines",
+      "citation": "Motor Vehicle Aggregator Guidelines, 2020 (MoRTH)",
+      "name": "MV Aggregator Guidelines 2020",
+      "year": 2020,
+      "keyTags": ["aggregator", "driver partner", "deactivation", "morth"],
+      "domain": "Labor",
+      "sections": [
+        { "section": "1.1", "title": "Application", "principle": "Guidelines apply to all aggregators operating ride-hailing and delivery through digitally-enabled transport networks." },
+        { "section": "5.1", "title": "Driver treatment", "principle": "Aggregators shall not terminate or deactivate driver-partner accounts without a fair and documented hearing process." }
+      ]
+    }
+  ]
+}
