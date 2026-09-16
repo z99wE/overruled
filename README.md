@@ -2,7 +2,7 @@
 
 > Roll for precedent. Object to hearsay. Win with the law.
 
-Overrool is an adversarial legal strategy courtroom RPG built with React 19, TypeScript, Tailwind CSS v4, and a zero-cost BYOK (bring-your-own-key) LLM orchestrator. Players pick a side, spend strategy tokens, deploy precedent cards, cite statutes, and push the Judge's Favor Meter to 0 (dismissal) or 100 (victory). It ships an embedded Indian legal corpus, client-side factual citation verification, a single-pass multi-agent JSON resolution loop, and an in-app Advocate Consultation Docket export (markdown / print / share).
+Overrool is an adversarial legal strategy courtroom RPG built with React 19, TypeScript, Tailwind CSS v4, and a zero-cost BYOK (bring-your-own-key) LLM orchestrator. Players pick a side, spend strategy tokens, deploy precedent cards, cite statutes, and push the Judge's Favor Meter to 0 (dismissal) or 100 (victory). It ships an embedded Indian legal corpus, client-side factual citation verification, a single-pass **multi-role** LLM resolution loop (Presiding Judge, Opposing Senior Advocate, and Co-Counsel voices resolved in one structured JSON turn), and an in-app Advocate Consultation Docket export (markdown / print / share).
 
 ---
 
@@ -66,6 +66,92 @@ overrool/
 ```
 
 > The authoritative Tauri configuration lives in `src-tauri/tauri.conf.json`. There is intentionally no root-level `tauri.conf.json`.
+
+### Architecture diagram
+
+```mermaid
+flowchart TD
+    subgraph shell["Shell — Web PWA / iOS+Android (Capacitor 8) / Desktop (Tauri v2)"]
+        App["App.tsx — screen shell<br/>loading → home → trial + Key Vault"]
+        CaseSelect["CaseSelect — scenario gallery"]
+        Chamber["CourtroomChamber — deck, motions, transcript, verdict flash"]
+        DocketUI["DocketExportModal — .md / HTML / print / share"]
+        KeyUI["KeySettings — BYOK provider + model + persist"]
+    end
+
+    subgraph data["Static data (served from /data/, cache-first via sw.js)"]
+        Corpus[("indian_cases.json<br/>20 cases + 9 statutes")]
+        Scenarios[("scenarios.json<br/>4 procedural fact patterns")]
+    end
+
+    subgraph core["Core logic (no UI)"]
+        Loader["dataLoader — fetch + hydrate + cache"]
+        Index["searchIndex — CitationIndex<br/>SCC/alias/section matchers + MiniSearch"]
+        Store["storage — KeyManager (SecureStorage / localStorage / sessionStorage)"]
+        Trial["useTrial — reducer state machine<br/>opening/awaiting/resolving/verdict/docket"]
+        Orchestrator["llmOrchestrator — buildUserPrompt → parseResolution"]
+        Provider["providerCall — origin allowlist, 90s timeout, per-provider request shapes"]
+        Docket["docket — buildSessionSummary + consultation questions + serialisers"]
+    end
+
+    Providers["BYOK providers<br/>Gemini / OpenAI / Anthropic / Groq"]
+
+    App --> CaseSelect
+    App --> Chamber
+    App --> DocketUI
+    App --> KeyUI
+    CaseSelect --> Loader
+    Loader --> Corpus
+    Loader --> Scenarios
+    Loader --> Index
+    Chamber --> Trial
+    Trial --> Store
+    Store --> KeyUI
+    Chamber --> Index
+    Index -->|ValidationResult| Trial
+    Trial -->|submitAction| Orchestrator
+    Orchestrator --> Provider
+    Provider -. HTTPS .-> Providers
+    Trial -->|TurnRecord| Docket
+    Docket --> DocketUI
+```
+
+### Turn-resolution sequence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant P as Player
+    participant UI as CourtroomChamber
+    participant T as useTrial (reducer)
+    participant VI as CitationIndex
+    participant LO as llmOrchestrator
+    participant PC as providerCall
+    participant M as Provider model
+
+    P->>UI: play precedent card / submit motion
+    UI->>T: submitAction(action)
+    T->>T: RESOLVING (phase)
+    T->>VI: card-by-id or validateCitation(text)
+    VI-->>T: ValidationResult (verified / unverified + suggestion)
+    T->>T: load BYOK config (KeyManager)
+    T->>LO: resolveTurn(config, posture, history, action, validation)
+    LO->>LO: buildUserPrompt (grounding block incl. verified law)
+    LO->>PC: requestChat(jsonSchema=RESOLUTION_SCHEMA)
+    PC->>M: HTTPS (origin allowlist enforced)
+    M-->>PC: single JSON object (three voices in one pass)
+    PC-->>LO: text
+    LO->>LO: parseResolution (required keys, verdict map, delta clamp ±25)
+    LO-->>T: { resolution, raw }
+    T->>T: VERDICT (favor clamped 0–100, TurnRecord appended)
+    T-->>UI: verdict → haptics → auto-advance (2.6s)
+    alt trial_terminated || turn>=max || favor<=0 || favor>=100
+        T->>T: NEXT_TURN → docket (buildSessionSummary)
+        UI->>DocketUI: open docket (download / print / share)
+    else
+        T->>T: NEXT_TURN → awaiting (turn+1)
+    end
+```
 
 ---
 
@@ -208,6 +294,20 @@ Duplicate an existing entry, change the id/facts/persona, add any new precedents
 - **Commit messages** — imperative mood, lowercase, ≤ 72 chars, no trailing periods, scoped prefix when relevant: `fix(searchIndex):`, `feat(corpus):`, `chore(deps):`.
 
 ---
+
+## Test coverage & known gaps
+
+What is automated today (`npm run test`, v8 coverage thresholds in `vitest.config.ts`):
+
+- **Core engine**: `dataLoader`, `searchIndex` (citation/statute verification incl. fabricated-authority rejection), `llmOrchestrator` (prompt, malformed-JSON handling, delta clamp), `providerCall` (origin allowlist / SSRF guard, HTTP-error handling, all four provider request shapes), `docket` (summary, exposure flags, consultation questions), `storage` (persist/session split, contamination regression), `useTrial` (full reducer state machine), `haptics` (web + native).
+- **Pure UI helpers**: `escapeHtml`/`buildPrintHtml` (XSS neutralisation in exports), `favorColor`/`lerpColor`.
+
+Known gaps — declared honestly:
+
+- **No UI component tests.** `App`, `CourtroomChamber`, `KeySettings`, `CaseSelect`, `PrecedentCard` are covered only indirectly; interactions are not automated.
+- **No live-provider E2E test.** The network layer is mock-tested; a real key is required to exercise a genuine Gemini/OpenAI/Anthropic/Groq round-trip, so that path is not in CI.
+- **Mobile/desktop shells are unbuilt scaffolds.** Capacitor `ios/`/`android/` and Tauri icons are not generated (icons: `npx tauri icon <png>`); Rust toolchain needed for Tauri.
+- The PWA service worker caches only `/assets/` and `/data/`; offline behaviour for first-time navigations is not verified automatically.
 
 ## Deployment
 

@@ -3,7 +3,7 @@
   "private": true,
   "version": "2.0.0",
   "type": "module",
-  "description": "Adversarial legal strategy engine disguised as a courtroom RPG — Indian landmark disputes, multi-agent bench, zero-cost BYOK.",
+  "description": "Adversarial legal strategy engine disguised as a courtroom RPG — Indian landmark disputes, single-pass multi-role LLM bench, zero-cost BYOK.",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
