@@ -2,7 +2,7 @@
 
 > Roll for precedent. Object to hearsay. Win with the law.
 
-Overrool is an adversarial legal strategy courtroom RPG built with React 19, TypeScript, Tailwind CSS v4, and a zero-cost BYOK (bring-your-own-key) LLM orchestrator. Players pick a side, spend strategy tokens, deploy precedent cards, cite statutes, and push the Judge's Favor Meter to 0 (dismissal) or 100 (victory). It ships an embedded Indian legal corpus, client-side factual citation verification, a single-pass **multi-role** LLM resolution loop (Presiding Judge, Opposing Senior Advocate, and Co-Counsel voices resolved in one structured JSON turn), and an in-app Advocate Consultation Docket export (markdown / print / share).
+Overrool is an adversarial legal strategy courtroom card game built with React 19, TypeScript, Tailwind CSS v4, and a zero-cost BYOK (bring-your-own-key) LLM orchestrator. Players pick a side, spend strategy tokens, deploy precedent cards, cite statutes, and push the Judge's Favor Meter to 0 (dismissal) or 100 (victory). It ships an embedded global corpus of real, published landmark judgments from seven legal systems (United States, United Kingdom, European Union, Canada, Australia, South Africa, India), client-side factual citation verification, a single-pass **multi-role** LLM resolution loop (Presiding Judge, Opposing Senior Advocate, and Co-Counsel voices resolved in one structured JSON turn), and an in-app Advocate Consultation Docket export (markdown / print / share).
 
 ---
 
@@ -13,7 +13,7 @@ Practising courtroom strategy — framing motions, anticipating a bench's reason
 Overrool addresses three concrete gaps:
 
 1. **Zero-cost practice.** No ecosystem token budget, no server-side API keys, no third-party proxy. Every LLM call runs directly from the player's browser to the player's own provider account using the key they supply under their own quota (Gemini, OpenAI, Anthropic, or Groq).
-2. **Factual grounding.** The engine refuses to reward fabricated law. Writer-side citations are checked against an embedded 20-case / 9-statute Indian corpus; unverifiable authority is flagged as exposure in the docket and the bench responds accordingly.
+2. **Factual grounding.** The engine refuses to reward fabricated law. Writer-side citations are checked against an embedded 43-case / 10-statute global corpus; unverifiable authority is flagged as exposure in the docket and the bench responds accordingly.
 3. **Accountable, exportable outcomes.** Each turn is resolved in a single structured LLM pass and captured as a typed `TurnRecord`, and the session is rendered into an Advocate Consultation Docket — admitted precedents, identified exposure points, and actionable consultation questions — that is downloadable, printable, and shareable.
 
 **Constraint.** Overrool is an educational legal-literacy and strategic-simulation tool under the Information Technology Act, 2000. It does not provide legal advice and cannot replace a certified advocate registered under the Advocates Act, 1961. Users must verify all citations against certified law reports.
@@ -26,7 +26,7 @@ Overrool addresses three concrete gaps:
 overrool/
 ├── public/
 │   ├── data/
-│   │   ├── indian_cases.json          ← embedded corpus: 20 SC/HC/tribunal cases + 9 statutes
+│   │   ├── global_cases.json             ← embedded corpus: 43 landmark cases (US/UK/EU/CA/AU/ZA/IN) + 10 statutes
 │   │   └── scenarios.json             ← 4 hand-crafted procedural fact patterns
 │   ├── manifest.webmanifest           ← PWA manifest (Legal Noir palette)
 │   └── sw.js                          ← cache-first service worker (hashed /assets/ + /data/)
@@ -48,7 +48,7 @@ overrool/
 │   │   ├── searchIndex.ts             ← MiniSearch citation index + validateCitation (precedent/statute)
 │   │   ├── storage.ts                 ← KeyManager (BYOK): Capacitor SecureStorage (native) or localStorage/sessionStorage (web)
 │   │   └── useTrial.ts                ← reducer-based trial state machine (favor, phase, turn, log)
-│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (11 files, 94 tests)
+│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (17 files, 150 tests)
 │   ├── types/
 │   │   └── legal.ts                   ← all shared TS interfaces + constants (STATUTORY_NOTICE, VERDICT_TAGS, MODEL_DEFAULTS usage)
 │   ├── App.tsx                        ← screen shell (loading / home / trial) + key-vault modal + error fallbacks
@@ -80,7 +80,7 @@ flowchart TD
     end
 
     subgraph data["Static data (served from /data/, cache-first via sw.js)"]
-        Corpus[("indian_cases.json<br/>20 cases + 9 statutes")]
+        Corpus[("global_cases.json<br/>43 cases across 7 jurisdictions + 10 statutes")]
         Scenarios[("scenarios.json<br/>4 procedural fact patterns")]
     end
 
@@ -181,7 +181,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 | `npm run build` | `tsc --noEmit` + Vite production build → `dist/` |
 | `npm run preview` | Serve production build locally |
 | `npm run typecheck` | Type-check only (no emit) |
-| `npm run test` | Vitest run (all `src/**/*.test.ts`, 94 tests) |
+| `npm run test` | Vitest run (all `src/**/*.test.ts`, 150 tests) |
 | `npm run test:coverage` | Vitest with v8 coverage report + thresholds |
 | `npm run cap:sync` | Sync web assets to iOS/Android (requires Capacitor CLI + Xcode/Android Studio) |
 | `npm run tauri` | Tauri desktop dev/build (requires Rust toolchain + Tauri CLI) |
@@ -190,7 +190,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 
 ## BYOK storage security
 
-- **Keys never leave the device.** All LLM calls are made client-side by `providerCall.ts`. There is no server, proxy, analytics, or error-reporting endpoint.
+- **Keys never leave the device.** All LLM calls are made client-side by `providerCall.ts`. There is no server, proxy, or analytics endpoint. Error reporting is opt-in: `@sentry/react` is wired but stays dormant unless `VITE_SENTRY_DSN` is set (see `src/core/telemetry.ts`).
 - **Origin allowlist.** `providerCall.ts` enforces a `PROVIDER_ORIGINS` allowlist (Gemini, OpenAI, Anthropic, Groq) before any network call — an SSRF-style guard against malformed or hostile URLs. A 90-second `AbortSignal` timeout applies to every request.
 - **Gemini keys** are transmitted in the `x-goog-api-key` header, never in the URL query string.
 - **Storage.** On Capacitor (iOS/Android) keys live in the native Keychain via `@aparajita/capacitor-secure-storage`. On web they are kept under the `overrool.byok.*` namespace in `localStorage` when persistence is on, otherwise `sessionStorage` (single copy, alternate store is cleaned). No player data is hosted server-side.
@@ -211,11 +211,11 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 
 ## Embedded corpus
 
-`public/data/indian_cases.json` ships **20 case entries** (Supreme Court, High Courts) and **9 statutory references** (FRA 2006, IT Act 2000, EPA 1986, Telecom Suspension Rules 2017, RFCTLARR 2013, Code on Social Security 2020, MV Aggregator Guidelines 2020, etc.), each with aliases, key tags, statutory provisions, and a ratio-decidendi excerpt. Domains covered: Environmental, Digital_Rights, Constitutional, Tenancy, Labor. This is a fixed snapshot; modify the JSON to update the corpus. The corpus is served as a static asset, so subsequent loads are cache-first via `sw.js`.
+`public/data/global_cases.json` ships **43 case entries** spanning the Supreme Court of the United States, the UK House of Lords and Court of Appeal, the Court of Justice of the European Union, the Supreme Court of Canada, the High Court of Australia, the Constitutional Court of South Africa, and the Supreme Court of India — plus **10 statutory references** (GDPR, the U.S. First and Fourth Amendments, the Canadian Charter, the Human Rights Act 1998, the Native Title Act 1993, the South African Constitution, the Constitution of India, FRA 2006, UCC Article 2). Every entry uses its real case name, citation, court, and ratio decidendi, with aliases, key tags, and jurisdiction tags. This is a fixed snapshot; modify the JSON to update the corpus. The corpus is served as a static asset, so subsequent loads are cache-first via `sw.js`.
 
 ### Adding a new case
 
-Append an entry to the `cases` array in `indian_cases.json`:
+Append an entry to the `cases` array in `global_cases.json` (keep the real case name and citation — no invented parties):
 
 ```jsonc
 {
@@ -240,7 +240,7 @@ Then rebuild: `npm run build`.
 
 ### Statutes
 
-Append an entry to the `statutes` array in `indian_cases.json`:
+Append an entry to the `statutes` array in `global_cases.json`:
 
 ```jsonc
 {
@@ -277,7 +277,7 @@ The section matcher supports integer sections (`§4`, `R.2(4)`) and decimal subs
 | `opposingCounselPersona` | `{ name, style, initialOpeningStatement, interlocutoryAttackTheme }` | Opposing counsel identity (name, `Aggressive` / `Technical_Procedural` / `Constitutional_Statist`, opening, attack theme) |
 | `closingPrompt` | string | Prompt snippet injected on the final turn |
 
-Duplicate an existing entry, change the id/facts/persona, add any new precedents or statutes to `indian_cases.json` if needed, and the game picks it up automatically.
+Duplicate an existing entry, change the id/facts/persona, add any new precedents or statutes to `global_cases.json` if needed, and the game picks it up automatically.
 
 ---
 

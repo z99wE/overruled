@@ -36,7 +36,7 @@ export function buildSessionSummary(args: {
       }
     }
     if (!rec.resolution.citation_valid) {
-      exposure.push(`Turn ${rec.turnNumber}: the citation offered was unverified against the Indian case/statute corpus (risk of fabricated authority).`);
+      exposure.push(`Turn ${rec.turnNumber}: the citation offered was unverified against the global case/statute corpus (risk of fabricated authority).`);
     }
     if (rec.resolution.bench_verdict_tag === 'BENCH_WARNING') {
       exposure.push(`Turn ${rec.turnNumber}: Bench warning — ${rec.resolution.judge_dialogue}`);
@@ -51,6 +51,7 @@ export function buildSessionSummary(args: {
     caseTitle: scenario.title,
     clientName: scenario.clientName,
     bench: scenario.bench,
+    jurisdiction: scenario.jurisdiction,
     turnRecords,
     finalFavor,
     admittedPrecedents: admitted,
@@ -84,7 +85,7 @@ export async function enrichConsultationQuestions(
   scenario: ScenarioBundle,
 ): Promise<string[]> {
   const system = [
-    'You are a senior Indian litigator preparing an Advocate Consultation Docket.',
+    'You are a senior litigator preparing an Advocate Consultation Docket.',
     'Based on the simulation transcript below, produce EXACTLY 5 precise, technical, high-leverage questions a junior counsel should put to a practicing advocate.',
     'Questions must be specific to the case posture, cite the likely governing law, and avoid generalities.',
     'Respond with a single JSON object: {"questions": ["...", "...", "...", "...", "..."]}',
@@ -93,6 +94,7 @@ export async function enrichConsultationQuestions(
   const user = [
     `CASE: ${scenario.title}`,
     `CLIENT: ${scenario.clientName}`,
+    `JURISDICTION: ${scenario.jurisdiction}`,
     `FINAL JUDICIAL FAVOR: ${summary.finalFavor}/100`,
     '',
     'ADMITTED PRECEDENTS:',
@@ -133,7 +135,7 @@ export function serializeDocketMarkdown(summary: SessionSummary): string {
   lines.push(`**Final Judicial Favor:** ${summary.finalFavor}/100`);
   lines.push(`**Completed:** ${new Date(summary.completedAt).toLocaleString()}`);
   lines.push('');
-  lines.push('> Overrool is an educational legal literacy and strategic simulation tool under the Information Technology Act, 2000. It does not provide legal advice and cannot replace a certified advocate registered under the Advocates Act, 1961.');
+  lines.push('> Overrool is an educational legal-strategy simulation built on real, published judgments from seven legal systems. It does not provide legal advice and cannot replace a qualified advocate, solicitor, or attorney admitted in your jurisdiction. Verify every citation against certified law reports.');
   lines.push('');
 
   lines.push('## 1. Executive Summary');

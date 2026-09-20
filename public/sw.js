@@ -1,6 +1,6 @@
 /* Overrool — service worker: app shell + corpus precaching, network-first with cache fallback. */
-const CACHE = 'overrool-v3';
-const PRECACHE = ['/', '/index.html', '/manifest.webmanifest', '/data/indian_cases.json', '/data/scenarios.json'];
+const CACHE = 'overrool-v10';
+const PRECACHE = ['/', '/index.html', '/manifest.webmanifest', '/data/global_cases.json', '/data/scenarios.json'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

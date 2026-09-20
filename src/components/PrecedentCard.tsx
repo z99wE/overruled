@@ -1,5 +1,5 @@
-import { BookOpenText, Check, Landmark, Scale } from 'lucide-react';
-import type { Domain, PrecedentCard } from '../types/legal';
+import { Check, ExternalLink } from 'lucide-react';
+import type { Domain, Jurisdiction, PrecedentCard } from '../types/legal';
 
 interface PrecedentCardProps {
   card: PrecedentCard;
@@ -10,78 +10,100 @@ interface PrecedentCardProps {
   exhausted?: boolean;
 }
 
-const DOMAIN_EMOJI: Record<Domain, string> = {
-  Environmental: '⛰',
-  Constitutional: '⚖',
-  Digital_Rights: '🌐',
-  Labor: '🔧',
-  Tenancy: '🏠',
+const JURISDICTION_TAG: Record<Jurisdiction, string> = {
+  US: 'U.S.',
+  UK: 'U.K.',
+  EU: 'E.U.',
+  CA: 'CAN',
+  AU: 'AUS',
+  ZA: 'RSA',
+  IN: 'IND',
+};
+
+const DOMAIN_CHIP: Record<Domain, { label: string; cls: string }> = {
+  Constitutional: { label: 'CONSTITUTIONAL', cls: 'bg-poker-blue text-cream' },
+  Criminal: { label: 'CRIMINAL', cls: 'bg-poker-red text-cream' },
+  Administrative: { label: 'ADMIN', cls: 'bg-chip-orange text-ink' },
+  Property: { label: 'PROPERTY', cls: 'bg-felt-600 text-cream' },
+  Tort: { label: 'TORT', cls: 'bg-felt-700 text-cream' },
+  Contract: { label: 'CONTRACT', cls: 'bg-chip-gold text-ink' },
+  Digital_Rights: { label: 'DIGITAL', cls: 'bg-poker-blue-deep text-cream' },
+  Indigenous: { label: 'INDIGENOUS', cls: 'bg-felt-400 text-ink' },
+  Environmental: { label: 'ENVIRONMENTAL', cls: 'bg-felt-600 text-cream' },
+  Labor: { label: 'LABOR', cls: 'bg-chip-orange text-ink' },
+  Tenancy: { label: 'SHELTER', cls: 'bg-felt-700 text-cream' },
 };
 
 export function PrecedentCard({ card, selected, disabled, onSelect, exhaustible, exhausted }: PrecedentCardProps) {
-  const domainEmoji = DOMAIN_EMOJI[card.domain] ?? '⚖';
+  const chip = DOMAIN_CHIP[card.domain] ?? { label: card.domain.toUpperCase(), cls: 'bg-felt-600 text-cream' };
+  const jTag = card.jurisdiction ? JURISDICTION_TAG[card.jurisdiction] : 'LAW';
 
   return (
+    <div className="relative">
+      {card.sourceUrl && (
+        <a
+          href={card.sourceUrl}
+          target="_blank"
+          rel="noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          aria-label={`Read the full judgment of ${card.caseName}`}
+          className="absolute -left-1.5 -top-2 z-10 flex items-center gap-0.5 rounded-full border border-ink bg-paper px-1.5 py-0.5 font-display text-[8px] tracking-wider text-ink transition-colors hover:bg-chip-gold"
+        >
+          <ExternalLink className="h-2.5 w-2.5" strokeWidth={3} />
+          FULL TEXT
+        </a>
+      )}
     <button
+      aria-label={exhausted ? `${card.caseName} already played` : `Play ${card.caseName}`}
       type="button"
       onClick={onSelect}
       disabled={disabled || exhausted}
       aria-pressed={selected}
       className={[
-        'group w-full rounded-lg border bg-noir-900/80 text-left transition-all duration-150',
+        'group relative w-full rounded-xl border-2 border-ink text-left',
         exhausted
-          ? 'cursor-not-allowed opacity-40 saturate-0'
+          ? 'cursor-not-allowed opacity-45 saturate-0'
           : selected
-            ? 'border-gold shadow-[0_0_0_1px_#F59E0B,0_8px_24px_-8px_rgba(245,158,11,0.4)]'
-            : 'border-noir-700 hover:border-gold/60 hover:shadow-lg',
-        disabled ? 'pointer-events-none' : 'cursor-pointer',
+            ? 'card-3d -translate-y-1 ring-4 ring-chip-gold'
+            : disabled
+              ? 'cursor-default'
+              : 'card-3d cursor-pointer',
       ].join(' ')}
     >
-      <div className="space-y-2 p-4">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-md bg-noir-800 text-sm text-gold">
-              {domainEmoji}
-            </span>
-            <div className="min-w-0">
-              <p className="truncate text-[11px] font-semibold uppercase tracking-wide text-gold">
-                {card.citation}
-              </p>
-              <p className="text-[10px] text-noir-500">
-                {card.court} · {card.year}
-              </p>
-            </div>
-          </div>
-          {selected && <Check className="h-4 w-4 shrink-0 text-gold" />}
-          {exhaustible && !exhausted && (
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-noir-500" title="Expends after play" />
-          )}
-        </div>
-
-        <p className="font-serif text-[13px] font-medium leading-snug text-cream/90">{card.caseName}</p>
-
-        <p className="line-clamp-3 text-[11px] leading-relaxed text-noir-500">{card.ratioDecidendi}</p>
-
-        <div className="flex flex-wrap gap-1.5 pt-1">
-          <span className="inline-flex items-center gap-1 rounded border border-gold/25 bg-gold/10 px-1.5 py-0.5 text-[9px] font-medium text-gold">
-            <Landmark className="h-2.5 w-2.5" /> {card.domain.toUpperCase()}
+      <div className="overflow-hidden rounded-[10px] bg-paper">
+        <div className="flex items-center justify-between bg-poker-red px-3 py-1.5">
+          <span className="font-display text-[10px] tracking-wider text-cream">{card.citation}</span>
+          <span className="rounded border border-cream/50 bg-ink/25 px-1 font-mono text-[9px] font-bold text-cream">
+            {jTag}
           </span>
-          {card.statutoryProvisions.slice(0, 2).map((s, i) => (
-            <span
-              key={`${s}-${i}`}
-              className="inline-flex items-center gap-1 rounded border border-noir-700 bg-noir-800/70 px-1.5 py-0.5 font-mono text-[9px] text-cream/70"
-            >
-              <BookOpenText className="h-2.5 w-2.5" /> {s}
-            </span>
-          ))}
         </div>
 
-        {exhaustible && !exhausted && (
-          <div className="flex items-center justify-end pt-1 text-[9px] font-semibold uppercase tracking-wide text-noir-500 transition-colors group-hover:text-gold">
-            <Scale className="mr-1 h-3 w-3" /> Play card
+        <div className="space-y-2 p-3">
+          <p className="font-sans text-[14px] font-bold leading-tight text-ink">{card.caseName}</p>
+          <p className="font-mono text-[9px] uppercase tracking-wide text-ink/50">
+            {card.court} · {card.year}
+          </p>
+          <p className="line-clamp-3 text-[11px] leading-snug text-ink/70">{card.ratioDecidendi}</p>
+          <div className="flex items-center justify-between gap-2 pt-0.5">
+            <span className={`rounded-sm px-1.5 py-0.5 font-display text-[8px] tracking-wider ${chip.cls}`}>
+              {chip.label}
+            </span>
+            {exhaustible && !exhausted && (
+              <span className="font-display text-[8px] tracking-wider text-poker-red opacity-0 transition-opacity group-hover:opacity-100">
+                PLAY ▸
+              </span>
+            )}
+            {exhausted && <span className="font-display text-[8px] tracking-wider text-ink/40">SPENT</span>}
           </div>
-        )}
+        </div>
       </div>
+
+      {selected && (
+        <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border-2 border-ink bg-chip-gold text-ink">
+          <Check className="h-3.5 w-3.5" strokeWidth={3.5} />
+        </span>
+      )}
     </button>
+    </div>
   );
 }

@@ -7,6 +7,7 @@ const scenario: ScenarioBundle = {
   title: 'Some Matter',
   clientName: 'Client',
   bench: 'High Court',
+  jurisdiction: 'US',
   factualBackground: 'Facts.',
   coreDispute: 'Dispute.',
   initialJudicialFavor: 42,
@@ -124,6 +125,18 @@ describe('parseResolution', () => {
     expect(r.trial_terminated).toBe(true);
   });
 
+  it('treats the string "false" as false for citation_valid and trial_terminated', () => {
+    const r = parseResolution(JSON.stringify(resolutionPayload({ citation_valid: 'false', trial_terminated: 'false' })));
+    expect(r.citation_valid).toBe(false);
+    expect(r.trial_terminated).toBe(false);
+  });
+
+  it('treats non-boolean junk as false for boolean fields', () => {
+    const r = parseResolution(JSON.stringify(resolutionPayload({ citation_valid: 'junk', trial_terminated: 0 })));
+    expect(r.citation_valid).toBe(false);
+    expect(r.trial_terminated).toBe(false);
+  });
+
   it('normalises a missing or nonsense verdict tag', () => {
     for (const tag of ['CONCEDED', '', 'SUSTAINED!']) {
       const r = parseResolution(JSON.stringify(resolutionPayload({ bench_verdict_tag: tag })));
@@ -206,5 +219,55 @@ describe('resolveTurn', () => {
     expect(resolution.bench_verdict_tag).toBe('SUSTAINED');
     expect(resolution.citation_valid).toBe(true);
     expect(raw).toContain('SUSTAINED');
+  });
+
+  it('retries once with a repair prompt when the first response is unparseable, and recovers', async () => {
+    const responses = [
+      'The bench is inclined to sustain the motion but declines JSON entirely.',
+      JSON.stringify(resolutionPayload({ bench_verdict_tag: 'SUSTAINED' })),
+    ];
+    const fetchMock = vi.fn(async (_url: string, _init?: RequestInit) =>
+      new Response(
+        JSON.stringify({ choices: [{ message: { content: responses.shift() } }] }),
+        { status: 200 },
+      ),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const { resolution, raw } = await resolveTurn({
+      config,
+      scenario,
+      favorBefore: 40,
+      turnNumber: 1,
+      history: [],
+      action: { kind: 'freeform_motion', rawText: 'Argue.' },
+      validation: { verified: false },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const repairCall = JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body));
+    expect(repairCall.messages[1].content).toContain('could not be parsed');
+    expect(repairCall.messages[1].content).toContain('no JSON object');
+    expect(resolution.bench_verdict_tag).toBe('SUSTAINED');
+    expect(raw).toContain('SUSTAINED');
+  });
+
+  it('propagates the error after a failed repair attempt', async () => {
+    const bad = 'still not json, your honour';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        new Response(JSON.stringify({ choices: [{ message: { content: bad } }] }), { status: 200 }),
+      ),
+    );
+    await expect(
+      resolveTurn({
+        config,
+        scenario,
+        favorBefore: 40,
+        turnNumber: 1,
+        history: [],
+        action: { kind: 'freeform_motion', rawText: 'Argue.' },
+        validation: { verified: false },
+      }),
+    ).rejects.toThrow(LLMOrchestratorError);
   });
 });

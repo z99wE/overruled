@@ -14,35 +14,44 @@ export function lerpColor(a: [number, number, number], b: [number, number, numbe
 }
 
 export function favorColor(v: number): string {
-  const crimson: [number, number, number] = [225, 29, 72];
-  const amber: [number, number, number] = [245, 158, 11];
-  const gold: [number, number, number] = [250, 204, 21];
-  if (v <= 50) return lerpColor(crimson, amber, v / 50);
-  return lerpColor(amber, gold, (v - 50) / 50);
+  const red: [number, number, number] = [208, 48, 48];
+  const orange: [number, number, number] = [232, 131, 58];
+  const gold: [number, number, number] = [244, 180, 27];
+  if (v <= 50) return lerpColor(red, orange, v / 50);
+  return lerpColor(orange, gold, (v - 50) / 50);
 }
+
+const CHIP_STEPS = 20;
 
 export function FavorMeter({ value, delta, compact }: FavorMeterProps) {
   const pct = Math.max(0, Math.min(100, value));
-  const color = favorColor(pct);
-  const verdict = value >= 70 ? 'Court looks favourably on your client' : value <= 30 ? 'The Bench is hostile' : 'Proceeding is finely balanced';
+  const chips = Math.round(pct / (100 / CHIP_STEPS));
+  const verdict =
+    value >= 70 ? 'THE BENCH LEANS YOUR WAY' : value <= 30 ? 'THE BENCH IS HOSTILE' : 'ALL TO PLAY FOR';
 
   return (
     <div className={`w-full ${compact ? 'space-y-1' : 'space-y-2'}`}>
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-gold">
-          <Scale className={compact ? 'h-4 w-4' : 'h-5 w-5'} strokeWidth={2} />
-          <span className={`font-serif font-semibold uppercase tracking-widest ${compact ? 'text-[10px]' : 'text-xs'}`}>
-            Judicial Favor
+        <div className="flex items-center gap-2 text-chip-gold">
+          <Scale className={compact ? 'h-4 w-4' : 'h-5 w-5'} strokeWidth={2.5} />
+          <span className={`font-display uppercase tracking-widest ${compact ? 'text-[10px]' : 'text-xs'}`}>
+            Bench Favor
           </span>
         </div>
         <div className="flex items-baseline gap-2">
-          <span className={`font-serif font-bold tabular-nums ${compact ? 'text-sm' : 'text-lg'}`} style={{ color }}>
+          <span
+            key={Math.round(value)}
+            className={`anim-pop font-display tabular-nums ${compact ? 'text-base' : 'text-2xl'} text-cream`}
+            style={{ textShadow: '2px 2px 0 var(--color-ink)' }}
+          >
             {Math.round(value)}
           </span>
-          <span className="text-[10px] text-noir-500">/ 100</span>
+          <span className="font-mono text-[10px] text-cream/50">/100</span>
           {delta !== undefined && delta !== 0 && (
             <span
-              className={`font-mono text-[11px] font-semibold ${delta > 0 ? 'text-gold' : 'text-crimson'}`}
+              key={`${delta}-${Math.random()}`}
+              className={`anim-pop font-display text-[11px] ${delta > 0 ? 'text-felt-200' : 'text-poker-red'}`}
+              style={{ textShadow: '1px 1px 0 var(--color-ink)' }}
             >
               {delta > 0 ? `+${delta}` : delta}
             </span>
@@ -50,18 +59,25 @@ export function FavorMeter({ value, delta, compact }: FavorMeterProps) {
         </div>
       </div>
 
-      <div className="relative h-2 w-full overflow-hidden rounded-full bg-noir-800">
-        <div
-          className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
-          style={{ width: `${pct}%`, backgroundColor: color, boxShadow: `0 0 12px ${color}55` }}
-        />
-        <div
-          className="absolute top-1/2 h-3 w-1.5 -translate-y-1/2 rounded-sm bg-cream shadow"
-          style={{ left: `calc(${pct}% - 3px)` }}
-        />
+      <div className="flex items-center gap-1">
+        {Array.from({ length: CHIP_STEPS }, (_, i) => {
+          const lit = i < chips;
+          const color = favorColor(((i + 0.5) / CHIP_STEPS) * 100);
+          return (
+            <span
+              key={i}
+              className="h-4 flex-1 rounded-full border border-ink"
+              style={{
+                backgroundColor: lit ? color : 'rgba(6, 19, 13, 0.55)',
+                boxShadow: lit ? `inset 0 -2px 0 rgba(6,19,13,0.45), inset 0 2px 0 rgba(253,246,227,0.25)` : 'inset 0 1px 0 rgba(253,246,227,0.08)',
+                transition: 'background-color 250ms ease',
+              }}
+            />
+          );
+        })}
       </div>
 
-      {!compact && <p className="text-[10px] italic text-noir-500">{verdict}</p>}
+      {!compact && <p className="font-display text-[10px] tracking-widest text-cream/60">{verdict}</p>}
     </div>
   );
 }

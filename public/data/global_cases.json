@@ -1,0 +1,1836 @@
+{
+  "cases": [
+    {
+      "id": "marbury-madison",
+      "citation": "5 U.S. 137",
+      "caseName": "Marbury v. Madison",
+      "year": 1803,
+      "court": "Supreme Court of the United States",
+      "jurisdiction": "US",
+      "ratioDecidendi": "It is emphatically the province and duty of the judicial department to say what the law is. Courts may strike down legislative and executive acts that conflict with the Constitution, and a writ of mandamus cannot issue where the statute purporting to grant jurisdiction exceeds Article III.",
+      "statutoryProvisions": [
+        "U.S. Const. art. III",
+        "Judiciary Act 1789 §13"
+      ],
+      "keyTags": [
+        "judicial review",
+        "constitutional supremacy",
+        "mandamus",
+        "separation of powers"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "marbury",
+        "marbury v madison",
+        "judicial review",
+        "midnight appointments"
+      ],
+      "sourceUrl": "https://supreme.justia.com/cases/federal/us/5/137/"
+    },
+    {
+      "id": "brown-board",
+      "citation": "347 U.S. 483",
+      "caseName": "Brown v. Board of Education of Topeka",
+      "year": 1954,
+      "court": "Supreme Court of the United States",
+      "jurisdiction": "US",
+      "ratioDecidendi": "Separate educational facilities are inherently unequal. De jure segregation of children in public schools solely on the basis of race deprives minority children of equal protection of the laws, overruling the separate-but-equal doctrine in public education.",
+      "statutoryProvisions": [
+        "U.S. Const. amend. XIV"
+      ],
+      "keyTags": [
+        "equal protection",
+        "segregation",
+        "education",
+        "racial equality"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "brown v board",
+        "brown",
+        "school desegregation",
+        "separate but equal",
+        "topeka"
+      ],
+      "sourceUrl": "https://supreme.justia.com/cases/federal/us/347/483/"
+    },
+    {
+      "id": "gideon-wainwright",
+      "citation": "372 U.S. 335",
+      "caseName": "Gideon v. Wainwright",
+      "year": 1963,
+      "court": "Supreme Court of the United States",
+      "jurisdiction": "US",
+      "ratioDecidendi": "The Sixth Amendment right to counsel is fundamental and obligatory on the States through the Fourteenth Amendment. An indigent defendant charged with a felony must be appointed counsel at public expense; trials without one are inherently unfair.",
+      "statutoryProvisions": [
+        "U.S. Const. amend. VI",
+        "U.S. Const. amend. XIV"
+      ],
+      "keyTags": [
+        "right to counsel",
+        "indigent defense",
+        "fair trial",
+        "incorporation"
+      ],
+      "domain": "Criminal",
+      "aliases": [
+        "gideon",
+        "right to a lawyer",
+        "counsel for the poor"
+      ],
+      "sourceUrl": "https://supreme.justia.com/cases/federal/us/372/335/"
+    },
+    {
+      "id": "miranda-arizona",
+      "citation": "384 U.S. 436",
+      "caseName": "Miranda v. Arizona",
+      "year": 1966,
+      "court": "Supreme Court of the United States",
+      "jurisdiction": "US",
+      "ratioDecidendi": "Custodial interrogation is inherently compelling. Before questioning, police must warn a suspect of the rights to silence and to counsel and honor any assertion of them; statements taken without these safeguards are presumed involuntary and inadmissible in the prosecution's case.",
+      "statutoryProvisions": [
+        "U.S. Const. amend. V",
+        "U.S. Const. amend. VI"
+      ],
+      "keyTags": [
+        "custodial interrogation",
+        "right to silence",
+        "confession",
+        "police procedure"
+      ],
+      "domain": "Criminal",
+      "aliases": [
+        "miranda",
+        "miranda warning",
+        "miranda rights",
+        "custodial confession"
+      ],
+      "sourceUrl": "https://supreme.justia.com/cases/federal/us/384/436/"
+    },
+    {
+      "id": "nytimes-sullivan",
+      "citation": "376 U.S. 254",
+      "caseName": "New York Times Co. v. Sullivan",
+      "year": 1964,
+      "court": "Supreme Court of the United States",
+      "jurisdiction": "US",
+      "ratioDecidendi": "A public official may not recover damages for a defamatory falsehood relating to official conduct unless actual malice is shown by clear and convincing evidence — knowledge of falsity or reckless disregard of the truth. The First Amendment breathes with a commitment to uninhibited, robust and wide-open debate on public questions.",
+      "statutoryProvisions": [
+        "U.S. Const. amend. I",
+        "U.S. Const. amend. XIV"
+      ],
+      "keyTags": [
+        "defamation",
+        "actual malice",
+        "free press",
+        "public debate"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "sullivan",
+        "new york times v sullivan",
+        "actual malice"
+      ],
+      "sourceUrl": "https://supreme.justia.com/cases/federal/us/376/254/"
+    },
+    {
+      "id": "loving-virginia",
+      "citation": "388 U.S. 1",
+      "caseName": "Loving v. Virginia",
+      "year": 1967,
+      "court": "Supreme Court of the United States",
+      "jurisdiction": "US",
+      "ratioDecidendi": "Marriage is one of the vital personal rights essential to the orderly pursuit of happiness. Statutes banning interracial marriage rest solely upon invidious racial discrimination and violate equal protection and due process; the freedom to marry cannot be restricted by racial classifications.",
+      "statutoryProvisions": [
+        "U.S. Const. amend. XIV"
+      ],
+      "keyTags": [
+        "marriage equality",
+        "antimiscegenation",
+        "racial discrimination",
+        "due process"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "loving",
+        "interracial marriage",
+        "antimiscegenation"
+      ],
+      "sourceUrl": "https://supreme.justia.com/cases/federal/us/388/1/"
+    },
+    {
+      "id": "roe-wade",
+      "citation": "410 U.S. 113",
+      "caseName": "Roe v. Wade",
+      "year": 1973,
+      "court": "Supreme Court of the United States",
+      "jurisdiction": "US",
+      "ratioDecidendi": "A state criminal abortion statute that excepts only life-saving procedures, without regard to pregnancy stage, violates the liberty protected by the Due Process Clause. The decision in Dobbs (2022) later overruled this holding and returned the issue to the States — cite it today as overruled authority or for its continuing persuasive framework.",
+      "statutoryProvisions": [
+        "U.S. Const. amend. XIV"
+      ],
+      "keyTags": [
+        "bodily autonomy",
+        "privacy",
+        "overruled precedent",
+        "due process"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "roe",
+        "roe v wade",
+        "dobbs",
+        "abortion ruling"
+      ],
+      "sourceUrl": "https://supreme.justia.com/cases/federal/us/410/113/"
+    },
+    {
+      "id": "chevron-usa",
+      "citation": "467 U.S. 837",
+      "caseName": "Chevron U.S.A. Inc. v. Natural Resources Defense Council, Inc.",
+      "year": 1984,
+      "court": "Supreme Court of the United States",
+      "jurisdiction": "US",
+      "ratioDecidendi": "Where a statute administered by an agency is silent or ambiguous with respect to the specific question, courts must give effect to the agency's interpretation if it reflects a permissible construction — the two-step deference doctrine. Loper Bright (2024) overruled Chevron: courts must now exercise independent judgment on statutory meaning.",
+      "statutoryProvisions": [
+        "Administrative Procedure Act"
+      ],
+      "keyTags": [
+        "agency deference",
+        "statutory interpretation",
+        "administrative law",
+        "overruled precedent"
+      ],
+      "domain": "Administrative",
+      "aliases": [
+        "chevron",
+        "chevron deference",
+        "loper bright",
+        "agency interpretation"
+      ],
+      "sourceUrl": "https://supreme.justia.com/cases/federal/us/467/837/"
+    },
+    {
+      "id": "nollan-nollan",
+      "citation": "483 U.S. 825",
+      "caseName": "Nollan v. California Coastal Commission",
+      "year": 1987,
+      "court": "Supreme Court of the United States",
+      "jurisdiction": "US",
+      "ratioDecidendi": "A land-use permit condition that compels an easement must substantially advance a legitimate state interest and be roughly proportionate to the impact of the proposed development; an out-and-out plan of extortion flunks the Takings Clause.",
+      "statutoryProvisions": [
+        "U.S. Const. amend. V"
+      ],
+      "keyTags": [
+        "takings",
+        "exaction",
+        "land use",
+        "zoning condition"
+      ],
+      "domain": "Property",
+      "aliases": [
+        "nollan",
+        "takings exaction",
+        "coastal easement"
+      ],
+      "sourceUrl": "https://supreme.justia.com/cases/federal/us/483/825/"
+    },
+    {
+      "id": "dolan-city",
+      "citation": "512 U.S. 374",
+      "caseName": "Dolan v. City of Tigard",
+      "year": 1994,
+      "court": "Supreme Court of the United States",
+      "jurisdiction": "US",
+      "ratioDecidendi": "An exaction must have an essential nexus to a legitimate state interest and be roughly proportional in nature and extent to the impact of the proposed use; the agency bears the burden of showing the required degree of connection.",
+      "statutoryProvisions": [
+        "U.S. Const. amend. V"
+      ],
+      "keyTags": [
+        "takings",
+        "rough proportionality",
+        "permit condition",
+        "burden of proof"
+      ],
+      "domain": "Property",
+      "aliases": [
+        "dolan",
+        "rough proportionality",
+        "tigard"
+      ],
+      "sourceUrl": "https://supreme.justia.com/cases/federal/us/512/374/"
+    },
+    {
+      "id": "obergefell-hodges",
+      "citation": "576 U.S. 644",
+      "caseName": "Obergefell v. Hodges",
+      "year": 2015,
+      "court": "Supreme Court of the United States",
+      "jurisdiction": "US",
+      "ratioDecidendi": "Same-sex couples may exercise the fundamental right to marry in all States, and States must recognize lawful out-of-state marriages; denying that right violates the Due Process and Equal Protection Clauses.",
+      "statutoryProvisions": [
+        "U.S. Const. amend. XIV"
+      ],
+      "keyTags": [
+        "marriage equality",
+        "dignity",
+        "equal dignity of love",
+        "due process"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "obergefell",
+        "same sex marriage",
+        "marriage equality"
+      ],
+      "sourceUrl": "https://supreme.justia.com/cases/federal/us/576/644/"
+    },
+    {
+      "id": "donoghue-stevenson",
+      "citation": "[1932] AC 562",
+      "caseName": "Donoghue v Stevenson",
+      "year": 1932,
+      "court": "House of Lords (United Kingdom)",
+      "jurisdiction": "UK",
+      "ratioDecidendi": "A manufacturer of articles of daily consumption owes a duty of care to the ultimate consumer even absent contract. You must take reasonable care to avoid acts or omissions which you can reasonably foresee would be likely to injure your neighbour — persons so closely and directly affected by the act.",
+      "statutoryProvisions": [],
+      "keyTags": [
+        "negligence",
+        "duty of care",
+        "neighbour principle",
+        "product liability"
+      ],
+      "domain": "Tort",
+      "aliases": [
+        "donoghue",
+        "snail in the bottle",
+        "ginger beer",
+        "neighbour principle"
+      ],
+      "sourceUrl": "https://www.bailii.org/uk/cases/UKHL/1932/100.html"
+    },
+    {
+      "id": "entick-carrington",
+      "citation": "(1765) 19 St Tr 1029",
+      "caseName": "Entick v Carrington",
+      "year": 1765,
+      "court": "Court of King's Bench (England)",
+      "jurisdiction": "UK",
+      "ratioDecidendi": "Messengers of the Crown may not enter private property to seize papers without positive legal authority. Every invasion of private property, be it ever so minute, is a trespass; the great end of society is that men have a right to their property undisturbed — the seed of modern privacy and search law.",
+      "statutoryProvisions": [],
+      "keyTags": [
+        "search and seizure",
+        "general warrants",
+        "trespass",
+        "rule of law"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "entick",
+        "general warrants",
+        "kings messengers"
+      ],
+      "sourceUrl": "https://www.bailii.org/ew/cases/EWHC/KB/1765/J98.html"
+    },
+    {
+      "id": "carlill-carbolic",
+      "citation": "[1893] 1 QB 256",
+      "caseName": "Carlill v Carbolic Smoke Ball Co",
+      "year": 1893,
+      "court": "Court of Appeal (England)",
+      "jurisdiction": "UK",
+      "ratioDecidendi": "An advertisement offering a reward to anyone who uses a product as directed and still falls ill is a unilateral offer to the world at large; performing the conditions is acceptance. The £1,000 deposited at the bank showed contractual seriousness — no negotiation required, no notice of acceptance needed.",
+      "statutoryProvisions": [],
+      "keyTags": [
+        "unilateral contract",
+        "offer to the world",
+        "acceptance by performance",
+        "consideration"
+      ],
+      "domain": "Contract",
+      "aliases": [
+        "carlill",
+        "smoke ball",
+        "reward offer",
+        "unilateral offer"
+      ],
+      "sourceUrl": "https://www.bailii.org/ew/cases/EWCA/Civ/1892/1.html"
+    },
+    {
+      "id": "boots-display",
+      "citation": "[1953] 1 QB 401",
+      "caseName": "Pharmaceutical Society of Great Britain v Boots Cash Chemists (Southern) Ltd",
+      "year": 1953,
+      "court": "Court of Appeal (England)",
+      "jurisdiction": "UK",
+      "ratioDecidendi": "Goods displayed on a self-service shop shelf are an invitation to treat, not an offer; the contract is concluded at the cash desk when the cashier accepts. Display-plus-price does not bind the shopkeeper, which keeps statutory supervision of restricted sales workable.",
+      "statutoryProvisions": [
+        "Pharmacy Act 1952"
+      ],
+      "keyTags": [
+        "invitation to treat",
+        "display of goods",
+        "self-service",
+        "contract formation"
+      ],
+      "domain": "Contract",
+      "aliases": [
+        "boots",
+        "invitation to treat",
+        "shop display",
+        "self service"
+      ]
+    },
+    {
+      "id": "felthouse-bindley",
+      "citation": "(1862) 11 CB (NS) 869",
+      "caseName": "Felthouse v Bindley",
+      "year": 1862,
+      "court": "Court of Common Pleas (England)",
+      "jurisdiction": "UK",
+      "ratioDecidendi": "Silence or mental reservation cannot amount to acceptance of an offer. An uncle's letter — 'if I hear no more from you, I shall consider the horse mine' — bound nobody: acceptance must be communicated by the offeree, and the nephew's intended silence was no contract.",
+      "statutoryProvisions": [],
+      "keyTags": [
+        "acceptance",
+        "silence",
+        "communication",
+        "contract formation"
+      ],
+      "domain": "Contract",
+      "aliases": [
+        "felthouse",
+        "if i hear no more",
+        "silence is not acceptance",
+        "horse case"
+      ],
+      "sourceUrl": "https://www.bailii.org/ew/cases/EWHC/CP/1862/J35.html"
+    },
+    {
+      "id": "pepper-hart",
+      "citation": "[1993] AC 593",
+      "caseName": "Pepper (Inspector of Taxes) v Hart",
+      "year": 1993,
+      "court": "House of Lords (United Kingdom)",
+      "jurisdiction": "UK",
+      "ratioDecidendi": "Parliamentary statements by a Bill's sponsor may be consulted to resolve statutory ambiguity or absurdity, provided the language is unclear and the statements are clear and relied upon by the opposition — the controlled relaxation of the exclusionary rule on legislative history.",
+      "statutoryProvisions": [],
+      "keyTags": [
+        "statutory interpretation",
+        "hansard",
+        "legislative history",
+        "ambiguity"
+      ],
+      "domain": "Administrative",
+      "aliases": [
+        "pepper v hart",
+        "hansard",
+        "legislative history"
+      ],
+      "sourceUrl": "https://www.bailii.org/uk/cases/UKHL/1992/3.html"
+    },
+    {
+      "id": "cundy-lindsay",
+      "citation": "(1878) 3 App Cas 459",
+      "caseName": "Cundy v Lindsay",
+      "year": 1878,
+      "court": "House of Lords (United Kingdom)",
+      "jurisdiction": "UK",
+      "ratioDecidendi": "A rogue who impersonates a reputable firm induces a contract void for mistake of identity, not merely voidable: title never passes to him, so even an innocent third-party purchaser from the rogue acquires nothing. Fraud aimed at identity leaves the victim's property intact in law.",
+      "statutoryProvisions": [],
+      "keyTags": [
+        "mistake of identity",
+        "void contract",
+        "title",
+        "fraud"
+      ],
+      "domain": "Contract",
+      "aliases": [
+        "cundy",
+        "blenkarn",
+        "void for mistake",
+        "mistake identity"
+      ]
+    },
+    {
+      "id": "gchq-nsa",
+      "citation": "[1985] AC 374",
+      "caseName": "Council of Civil Service Unions v Minister for the Civil Service",
+      "year": 1985,
+      "court": "House of Lords (United Kingdom)",
+      "jurisdiction": "UK",
+      "ratioDecidendi": "Prerogative powers are justiciable and reviewable: exclusion from a labour right in the GCHQ ban failed on procedural fairness — employees had a legitimate expectation of consultation. The three grounds of review are illegality, irrationality (Wednesbury unreasonableness) and procedural impropriety.",
+      "statutoryProvisions": [],
+      "keyTags": [
+        "judicial review",
+        "legitimate expectation",
+        "irrationality",
+        "prerogative"
+      ],
+      "domain": "Administrative",
+      "aliases": [
+        "gchq",
+        "ccsu",
+        "wednesbury",
+        "legitimate expectation"
+      ],
+      "sourceUrl": "https://www.bailii.org/uk/cases/UKHL/1984/9.html"
+    },
+    {
+      "id": "google-vuitton",
+      "citation": "C-236/08",
+      "caseName": "Google France SARL v Louis Vuitton Malletier SA",
+      "year": 2010,
+      "court": "Court of Justice of the European Union",
+      "jurisdiction": "EU",
+      "ratioDecidendi": "An internet referencing service does not use a trademark in its own commercial communication when it merely stores a keyword; liability arises only where the advertiser's use itself creates confusion or takes unfair advantage — the platform's own conduct remains neutral.",
+      "statutoryProvisions": [
+        "Trade Mark Directive 2008/95 Art. 5"
+      ],
+      "keyTags": [
+        "trademark",
+        "advertising keywords",
+        "platform liability",
+        "intermediary"
+      ],
+      "domain": "Digital_Rights",
+      "aliases": [
+        "google vuitton",
+        "adwords case",
+        "keyword advertising"
+      ],
+      "sourceUrl": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:62008CJ0236"
+    },
+    {
+      "id": "google-spain",
+      "citation": "C-131/12",
+      "caseName": "Google Spain SL v Agencia Española de Protección de Datos (AEPD) and Mario Costeja González",
+      "year": 2014,
+      "court": "Court of Justice of the European Union",
+      "jurisdiction": "EU",
+      "ratioDecidendi": "A search engine operator is a controller of personal data it indexes. Where results are inadequate, irrelevant or no longer relevant and not justified by public interest, the individual may demand delisting — the right to be forgotten against the operator, not the original publisher.",
+      "statutoryProvisions": [
+        "GDPR Art. 17",
+        "GDPR Art. 6(1)(f)",
+        "Data Protection Directive 95/46 Art. 12(b)"
+      ],
+      "keyTags": [
+        "right to be forgotten",
+        "data controller",
+        "delisting",
+        "search engine"
+      ],
+      "domain": "Digital_Rights",
+      "aliases": [
+        "google spain",
+        "costeja",
+        "right to be forgotten",
+        "delisting"
+      ],
+      "sourceUrl": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:62012CJ0131"
+    },
+    {
+      "id": "schrems-ii",
+      "citation": "C-311/18",
+      "caseName": "Data Protection Commissioner v Facebook Ireland Ltd and Maximillian Schrems",
+      "year": 2020,
+      "court": "Court of Justice of the European Union",
+      "jurisdiction": "EU",
+      "ratioDecidendi": "Mass indiscriminate surveillance in a third country cannot secure an essentially equivalent level of protection. Transfers of personal data rest on standard contractual clauses only where the exporter and importer verify effective safeguards case by case — the Privacy Shield was invalid.",
+      "statutoryProvisions": [
+        "GDPR Ch. V",
+        "GDPR Art. 45",
+        "GDPR Art. 46"
+      ],
+      "keyTags": [
+        "international transfers",
+        "adequacy",
+        "surveillance",
+        "privacy shield"
+      ],
+      "domain": "Digital_Rights",
+      "aliases": [
+        "schrems ii",
+        "schrems",
+        "privacy shield",
+        "data transfers"
+      ],
+      "sourceUrl": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:62018CJ0311"
+    },
+    {
+      "id": "schrems-i",
+      "citation": "C-362/14",
+      "caseName": "Maximillian Schrems v Data Protection Commissioner (Schrems I)",
+      "year": 2015,
+      "court": "Court of Justice of the European Union",
+      "jurisdiction": "EU",
+      "ratioDecidendi": "The Safe Harbour adequacy decision was invalid: the Directive does not bar a national authority from investigating a third-country transfer even under a Commission decision. Adequacy must be assessed on the ground, in light of the third country's actual practices of access and redress.",
+      "statutoryProvisions": [
+        "Data Protection Directive 95/46 Art. 25"
+      ],
+      "keyTags": [
+        "adequacy decision",
+        "safe harbour",
+        "supervisory authority",
+        "transfers"
+      ],
+      "domain": "Digital_Rights",
+      "aliases": [
+        "schrems i",
+        "safe harbour",
+        "safe harbor"
+      ],
+      "sourceUrl": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:62014CJ0362"
+    },
+    {
+      "id": "digital-rights-ireland",
+      "citation": "C-293/12",
+      "caseName": "Digital Rights Ireland Ltd v Minister for Communications, Marine and Natural Resources",
+      "year": 2014,
+      "court": "Court of Justice of the European Union",
+      "jurisdiction": "EU",
+      "ratioDecidendi": "The Data Retention Directive, requiring wholesale retention of traffic and location data of the entire population, was invalid as a serious interference with privacy and data protection that lacked proportionality — blanket retention must be confined to what is strictly necessary.",
+      "statutoryProvisions": [
+        "Data Retention Directive 2006/24",
+        "EU Charter Art. 7",
+        "EU Charter Art. 8"
+      ],
+      "keyTags": [
+        "data retention",
+        "blanket surveillance",
+        "proportionality",
+        "charter rights"
+      ],
+      "domain": "Digital_Rights",
+      "aliases": [
+        "digital rights ireland",
+        "data retention directive",
+        "mass retention"
+      ],
+      "sourceUrl": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:62012CJ0293"
+    },
+    {
+      "id": "oakes-test",
+      "citation": "[1986] 1 SCR 103",
+      "caseName": "R v Oakes",
+      "year": 1986,
+      "court": "Supreme Court of Canada",
+      "jurisdiction": "CA",
+      "ratioDecidendi": "Limits on Charter rights under section 1 must be demonstrably justified in a free and democratic society: a pressing and substantial objective, rational connection, minimal impairment, and proportionality between the salutary effects and the deleterious effects of the measure. The reverse-onus presumption of possession for trafficking flunked.",
+      "statutoryProvisions": [
+        "Canadian Charter s. 1",
+        "Narcotic Control Act s. 8"
+      ],
+      "keyTags": [
+        "proportionality",
+        "charter limits",
+        "reverse onus",
+        "oakes test"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "oakes",
+        "oakes test",
+        "proportionality test",
+        "section one"
+      ],
+      "sourceUrl": "https://www.canlii.org/en/ca/scc/doc/1986/1986canlii46/1986canlii46.html"
+    },
+    {
+      "id": "van-der-peet",
+      "citation": "[1996] 2 SCR 507",
+      "caseName": "R v Van der Peet",
+      "year": 1996,
+      "court": "Supreme Court of Canada",
+      "jurisdiction": "CA",
+      "ratioDecidendi": "Aboriginal rights under section 35(1) protect activities integral to the distinctive culture of the claimant society existing prior to contact. Selling small quantities of fish was not integral in that sense for the Sto:lo claimant — the integral-to-distinctive-culture test governs the existence of the right.",
+      "statutoryProvisions": [
+        "Constitution Act 1982 s. 35(1)"
+      ],
+      "keyTags": [
+        "aboriginal rights",
+        "indigenous fisheries",
+        "integral culture test",
+        "pre-contact"
+      ],
+      "domain": "Indigenous",
+      "aliases": [
+        "van der peet",
+        "aboriginal fishing",
+        "integral to distinctive culture"
+      ],
+      "sourceUrl": "https://www.canlii.org/en/ca/scc/doc/1996/1996canlii216/1996canlii216.html"
+    },
+    {
+      "id": "stinchcombe-disclosure",
+      "citation": "[1991] 3 SCR 326",
+      "caseName": "R v Stinchcombe",
+      "year": 1991,
+      "court": "Supreme Court of Canada",
+      "jurisdiction": "CA",
+      "ratioDecidendi": "The Crown has a legal duty to disclose all relevant information to the defence, whether inculpatory or exculpatory, subject only to a clearly articulated claim of privilege. Nondisclosure is a breach of the fair-trial right under section 7; claims of privilege are reviewed by the trial judge, in camera if necessary.",
+      "statutoryProvisions": [
+        "Canadian Charter s. 7",
+        "Canadian Charter s. 11(d)"
+      ],
+      "keyTags": [
+        "disclosure",
+        "crown duty",
+        "fair trial",
+        "privilege"
+      ],
+      "domain": "Criminal",
+      "aliases": [
+        "stinchcombe",
+        "crown disclosure",
+        "disclosure duty"
+      ],
+      "sourceUrl": "https://www.canlii.org/en/ca/scc/doc/1991/1991canlii45/1991canlii45.html"
+    },
+    {
+      "id": "jordan-delay",
+      "citation": "2016 SCC 27",
+      "caseName": "R v Jordan",
+      "year": 2016,
+      "court": "Supreme Court of Canada",
+      "jurisdiction": "CA",
+      "ratioDecidendi": "Reasonable trial delay is capped: 18 months in provincial court, 30 in superior court, with a transitional exception only where the delay is clearly the product of a marked and unpredictable change in the system. Beyond the ceiling the delay is presumptively unreasonable and the charge is stayed.",
+      "statutoryProvisions": [
+        "Canadian Charter s. 11(b)"
+      ],
+      "keyTags": [
+        "trial delay",
+        "speedy trial",
+        "stay of proceedings",
+        "ceiling framework"
+      ],
+      "domain": "Criminal",
+      "aliases": [
+        "jordan",
+        "jordan case",
+        "trial delay",
+        "askov"
+      ],
+      "sourceUrl": "https://www.canlii.org/en/ca/scc/doc/2016/2016scc27/2016scc27.html"
+    },
+    {
+      "id": "mabo-queensland",
+      "citation": "(1992) 175 CLR 1",
+      "caseName": "Mabo v Queensland (No 2)",
+      "year": 1992,
+      "court": "High Court of Australia",
+      "jurisdiction": "AU",
+      "ratioDecidendi": "The common law of Australia recognises native title where the Meriam people's traditional connection to their islands had not been extinguished by the Crown. The fiction of terra nullius is rejected: the land was not empty, its inhabitants' rights did not vanish at settlement.",
+      "statutoryProvisions": [
+        "Native Title Act 1993 (Cth)"
+      ],
+      "keyTags": [
+        "native title",
+        "terra nullius",
+        "indigenous land",
+        "torres strait"
+      ],
+      "domain": "Indigenous",
+      "aliases": [
+        "mabo",
+        "terra nullius",
+        "murray islands",
+        "native title"
+      ],
+      "sourceUrl": "https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1992/23.html"
+    },
+    {
+      "id": "wik-pastoral",
+      "citation": "(1996) 187 CLR 1",
+      "caseName": "Wik Peoples v Queensland",
+      "year": 1996,
+      "court": "High Court of Australia",
+      "jurisdiction": "AU",
+      "ratioDecidendi": "Pastoral leases do not necessarily extinguish native title: rights can coexist, with the leaseholder's rights prevailing in any inconsistency. Native title may survive on land held under statutory lease where the grant did not confer exclusive possession.",
+      "statutoryProvisions": [
+        "Pastoral Acts (Qld)",
+        "Native Title Act 1993 (Cth) s. 212"
+      ],
+      "keyTags": [
+        "native title",
+        "pastoral lease",
+        "coexistence",
+        "extinguishment"
+      ],
+      "domain": "Indigenous",
+      "aliases": [
+        "wik",
+        "pastoral leases",
+        "coexistence of title"
+      ],
+      "sourceUrl": "https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1996/40.html"
+    },
+    {
+      "id": "dietrich-queen",
+      "citation": "(1992) 177 CLR 292",
+      "caseName": "Dietrich v The Queen",
+      "year": 1992,
+      "court": "High Court of Australia",
+      "jurisdiction": "AU",
+      "ratioDecidendi": "A serious criminal trial conducted without counsel for an indigent accused who cannot obtain representation may result in a miscarriage of justice; the trial judge should stay proceedings until counsel is available unless the accused competently insists on proceeding.",
+      "statutoryProvisions": [],
+      "keyTags": [
+        "right to counsel",
+        "fair trial",
+        "indigent accused",
+        "stay of proceedings"
+      ],
+      "domain": "Criminal",
+      "aliases": [
+        "dietrich",
+        "right to lawyer australia",
+        "counsel fair trial"
+      ],
+      "sourceUrl": "https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1992/57.html"
+    },
+    {
+      "id": "makwanyane",
+      "citation": "1995 (3) SA 391 (CC)",
+      "caseName": "S v Makwanyane and Another",
+      "year": 1995,
+      "court": "Constitutional Court of South Africa",
+      "jurisdiction": "ZA",
+      "ratioDecidendi": "Capital punishment is inconsistent with sections 9 and 10 (life and dignity) and section 11(2) (cruel, inhuman or degrading punishment) of the interim Constitution. Ubuntu — respect for human dignity and community — is a guiding value; the death penalty is struck down for all offences in South Africa.",
+      "statutoryProvisions": [
+        "Interim Constitution 1993 s. 9",
+        "Interim Constitution 1993 s. 10",
+        "Interim Constitution 1993 s. 11(2)"
+      ],
+      "keyTags": [
+        "death penalty",
+        "dignity",
+        "ubuntu",
+        "cruel punishment"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "makwanyane",
+        "death penalty south africa",
+        "ubuntu"
+      ],
+      "sourceUrl": "https://www.saflii.org/za/cases/ZACC/1995/3.html"
+    },
+    {
+      "id": "khosa-grants",
+      "citation": "2004 (6) SA 505 (CC)",
+      "caseName": "Khosa v Minister of Social Development",
+      "year": 2004,
+      "court": "Constitutional Court of South Africa",
+      "jurisdiction": "ZA",
+      "ratioDecidendi": "Excluding permanent residents from social assistance for the aged, disability and child support is unfair discrimination that violates dignity and equality. Permanent residents who have made South Africa their home share the moral claim of citizens to the means of survival; the citizenship line in the benefit statutes falls.",
+      "statutoryProvisions": [
+        "Constitution 1996 s. 27",
+        "Constitution 1996 s. 9"
+      ],
+      "keyTags": [
+        "social security",
+        "equality",
+        "permanent residents",
+        "dignity"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "khosa",
+        "social grants",
+        "permanent residents",
+        "khumalo"
+      ],
+      "sourceUrl": "https://www.saflii.org/za/cases/ZACC/2004/11.html"
+    },
+    {
+      "id": "glenister-president",
+      "citation": "2011 (3) SA 347 (CC)",
+      "caseName": "Glenister v President of the Republic of South Africa",
+      "year": 2011,
+      "court": "Constitutional Court of South Africa",
+      "jurisdiction": "ZA",
+      "ratioDecidendi": "Sections 38, 39 and the constitutional scheme read with international law impose a duty on the State to establish an independent, adequately resourced anti-corruption entity; a unit insufficiently independent of executive control fails the constitutional obligation to combat corruption effectively.",
+      "statutoryProvisions": [
+        "Constitution 1996 s. 38",
+        "Constitution 1996 s. 39(2)"
+      ],
+      "keyTags": [
+        "anti-corruption",
+        "independent institution",
+        "international law",
+        "state duty"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "glenister",
+        "anti corruption unit",
+        "hawks"
+      ],
+      "sourceUrl": "https://www.saflii.org/za/cases/ZACC/2011/6.html"
+    },
+    {
+      "id": "kesavananda-bharati",
+      "citation": "(1973) 4 SCC 225",
+      "caseName": "Kesavananda Bharati v State of Kerala",
+      "year": 1973,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "Parliament's power to amend the Constitution under Article 368 is plenary but bounded: it cannot alter the basic structure — the identity and essential features such as judicial review, rule of law, and dignity-based rights. Thirteen judges, decided by the slimmest of margins.",
+      "statutoryProvisions": [
+        "Constitution of India art. 368",
+        "Constitution of India art. 21"
+      ],
+      "keyTags": [
+        "basic structure",
+        "amendment power",
+        "judicial review",
+        "constitutional identity"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "kesavananda",
+        "basic structure",
+        "amendment power"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/257876/"
+    },
+    {
+      "id": "puttaswamy-privacy",
+      "citation": "(2017) 10 SCC 1",
+      "caseName": "Justice K.S. Puttaswamy (Retd.) v Union of India",
+      "year": 2017,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "Privacy is a constitutionally protected fundamental right flowing from Article 21. State intrusions must pass a three-part test: legality backed by law, legitimate state aim, and proportionality of the measure to the object — the nine-judge bench overruled the MP Sharma and Kharak Singh privacy holdings.",
+      "statutoryProvisions": [
+        "Constitution of India art. 21",
+        "Constitution of India art. 14",
+        "Constitution of India art. 19"
+      ],
+      "keyTags": [
+        "privacy",
+        "proportionality",
+        "fundamental rights",
+        "informational autonomy"
+      ],
+      "domain": "Digital_Rights",
+      "aliases": [
+        "puttaswamy",
+        "right to privacy",
+        "ks puttaswamy",
+        "informational privacy"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/91938676/"
+    },
+    {
+      "id": "maneka-gandhi",
+      "citation": "(1978) 1 SCC 248",
+      "caseName": "Maneka Gandhi v Union of India",
+      "year": 1978,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "Any procedure depriving a person of personal liberty under Article 21 must be fair, just and reasonable — not merely enacted. Articles 14, 19 and 21 form a golden triangle; arbitrary executive action fails all three, converting procedural fairness into substantive due process for India.",
+      "statutoryProvisions": [
+        "Constitution of India art. 21",
+        "Constitution of India art. 14",
+        "Passport Act 1967 §10"
+      ],
+      "keyTags": [
+        "due process",
+        "fair procedure",
+        "liberty",
+        "golden triangle"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "maneka gandhi",
+        "passport seizure",
+        "due process india"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/43475503/"
+    },
+    {
+      "id": "anuradha-bhasin",
+      "citation": "(2020) 3 SCC 637",
+      "caseName": "Anuradha Bhasin v Union of India",
+      "year": 2020,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "Internet shutdown orders are judicially reviewable and must be published. Indefinite suspension of internet services fails the proportionality test under Articles 19(1)(a) and 19(1)(g); authorities must confine orders in time and territory to what is necessary, with a standing review committee.",
+      "statutoryProvisions": [
+        "Telecom Suspension Rules 2017 r. 2(4)",
+        "IT Act 2000 §69",
+        "Constitution of India art. 19(1)(a)"
+      ],
+      "keyTags": [
+        "internet shutdown",
+        "proportionality",
+        "publication of orders",
+        "free expression"
+      ],
+      "domain": "Digital_Rights",
+      "aliases": [
+        "anuradha bhasin",
+        "internet shutdown",
+        "kashmir shutdown"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/82461587/"
+    },
+    {
+      "id": "olga-tellis",
+      "citation": "(1985) 3 SCC 545",
+      "caseName": "Olga Tellis v Bombay Municipal Corporation",
+      "year": 1985,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "Eviction of pavement and slum dwellers deprives them of their livelihood, which is part of the right to life under Article 21. Removal requires notice and hearing, and humane relocation consideration — a right to livelihood, not merely property, binds municipal demolition.",
+      "statutoryProvisions": [
+        "Constitution of India art. 21",
+        "Constitution of India art. 19(1)(e)",
+        "Bombay Municipal Corporation Act §314"
+      ],
+      "keyTags": [
+        "eviction",
+        "livelihood",
+        "slum dwellers",
+        "notice and hearing"
+      ],
+      "domain": "Tenancy",
+      "aliases": [
+        "olga tellis",
+        "pavement dwellers",
+        "right to livelihood"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/709776/"
+    },
+    {
+      "id": "narmada-bachao",
+      "citation": "(2000) 10 SCC 664",
+      "caseName": "Narmada Bachao Andolan v Union of India",
+      "year": 2000,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "Large development projects may proceed where relief and rehabilitation measures are in place pari passu with submergence; oustees' Article 21 rights bind the State to rehabilitate before displacement. The Court retained oversight of the rehabilitation timeline rather than stopping the dam.",
+      "statutoryProvisions": [
+        "Constitution of India art. 21",
+        "NWPRA 1986 (award)"
+      ],
+      "keyTags": [
+        "displacement",
+        "rehabilitation",
+        "development projects",
+        "dam oustees"
+      ],
+      "domain": "Tenancy",
+      "aliases": [
+        "narmada",
+        "narmada bachao",
+        "sardar sarovar",
+        "dam oustees"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/1938608/"
+    },
+    {
+      "id": "mc-mehta-oleum",
+      "citation": "(1987) 1 SCC 395",
+      "caseName": "M.C. Mehta v Union of India (Oleum Gas Leak)",
+      "year": 1987,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "An enterprise engaged in a hazardous or inherently dangerous activity owes an absolute and non-delegable duty to the community; it is strictly and absolutely liable for harm, and the measure of compensation is correlated to its magnitude and capacity to pay. Sovereign immunity offers no escape from this deep-pocket accountability.",
+      "statutoryProvisions": [
+        "Constitution of India art. 21",
+        "Environment (Protection) Act 1986"
+      ],
+      "keyTags": [
+        "absolute liability",
+        "hazardous industry",
+        "compensation",
+        "state liability"
+      ],
+      "domain": "Tort",
+      "aliases": [
+        "mc mehta",
+        "oleum gas leak",
+        "absolute liability",
+        "shriram"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/1486949/"
+    },
+    {
+      "id": "bandhua-mukti",
+      "citation": "(1984) 3 SCC 161",
+      "caseName": "Bandhua Mukti Morcha v Union of India",
+      "year": 1984,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "The State must take positive measures to identify, release and rehabilitate bonded labourers. Article 21 obligates decent working conditions, and a letter disclosing bondage is treated as a writ petition — epistolary jurisdiction reaching the powerless without formal pleadings.",
+      "statutoryProvisions": [
+        "Constitution of India art. 21",
+        "Constitution of India art. 23",
+        "Bonded Labour System (Abolition) Act 1976"
+      ],
+      "keyTags": [
+        "bonded labour",
+        "forced labour",
+        "epistolary jurisdiction",
+        "rehabilitation"
+      ],
+      "domain": "Labor",
+      "aliases": [
+        "bandhua mukti morcha",
+        "bonded labour",
+        "forced labour india"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/595099/"
+    },
+    {
+      "id": "pudr-asiad",
+      "citation": "(1982) 3 SCC 235",
+      "caseName": "People's Union for Democratic Rights v Union of India",
+      "year": 1982,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "Paying construction workers less than the minimum wage is forced labour within Article 23: economic compulsion that leaves no choice vitiates consent. Labour welfare statutes bind contractors and principal employers alike; the State cannot look away from systematic violation on its own projects.",
+      "statutoryProvisions": [
+        "Constitution of India art. 23",
+        "Minimum Wages Act 1948",
+        "Contract Labour Act 1970"
+      ],
+      "keyTags": [
+        "minimum wages",
+        "forced labour",
+        "construction workers",
+        "contractor liability"
+      ],
+      "domain": "Labor",
+      "aliases": [
+        "pudr",
+        "asiad workers",
+        "minimum wages india"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/496663/"
+    },
+    {
+      "id": "carter-maid",
+      "citation": "2015 SCC 5",
+      "caseName": "Carter v Canada (Attorney General)",
+      "year": 2015,
+      "court": "Supreme Court of Canada",
+      "jurisdiction": "CA",
+      "ratioDecidendi": "An absolute prohibition on physician-assisted death deprives competent adults who suffer intolerably from grievous and irremediable conditions of life, liberty and security of the person contrary to section 7, and the deprivation is not justified under section 1 because the blanket ban is overbroad.",
+      "statutoryProvisions": [
+        "Canadian Charter s. 7",
+        "Canadian Charter s. 1",
+        "Criminal Code s. 241(b)"
+      ],
+      "keyTags": [
+        "assisted dying",
+        "section 7",
+        "overbreadth",
+        "autonomy"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "carter",
+        "assisted dying",
+        "maid",
+        "physician assisted death"
+      ],
+      "sourceUrl": "https://www.canlii.org/en/ca/scc/doc/2015/2015scc5/2015scc5.html"
+    },
+    {
+      "id": "singh-refugees",
+      "citation": "[1985] 1 SCR 177",
+      "caseName": "Singh v Minister of Employment and Immigration",
+      "year": 1985,
+      "court": "Supreme Court of Canada",
+      "jurisdiction": "CA",
+      "ratioDecidendi": "Section 7 protects every person physically present in Canada: a credible refugee claimant facing return to persecution engages life and security of the person. Fundamental justice required an oral hearing before an independent decision-maker where credibility is determinative — written review alone was not enough.",
+      "statutoryProvisions": [
+        "Canadian Charter s. 7",
+        "Immigration Act 1976"
+      ],
+      "keyTags": [
+        "section 7",
+        "refugee claims",
+        "oral hearing",
+        "fundamental justice"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "singh",
+        "refugee hearing",
+        "life liberty security"
+      ],
+      "sourceUrl": "https://www.canlii.org/en/ca/scc/doc/1985/1985canlii65/1985canlii65.html"
+    },
+    {
+      "id": "hunter-southam",
+      "citation": "[1984] 2 SCR 145",
+      "caseName": "Hunter v Southam Inc",
+      "year": 1984,
+      "court": "Supreme Court of Canada",
+      "jurisdiction": "CA",
+      "ratioDecidendi": "Section 8 protects people, not places: a reasonable expectation of privacy against unjustified state intrusion. Warrantless searches are presumptively unreasonable; prior authorization by an independent and impartial decision-maker on reasonable and probable grounds is the minimum, and administrative convenience cannot displace it.",
+      "statutoryProvisions": [
+        "Canadian Charter s. 8",
+        "Combines Investigation Act"
+      ],
+      "keyTags": [
+        "search and seizure",
+        "warrant",
+        "privacy",
+        "prior authorization"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "hunter v southam",
+        "section 8",
+        "unreasonable search",
+        "warrantless"
+      ],
+      "sourceUrl": "https://www.canlii.org/en/ca/scc/doc/1984/1984canlii33/1984canlii33.html"
+    },
+    {
+      "id": "love-thoms",
+      "citation": "[2020] HCA 3",
+      "caseName": "Love v Commonwealth; Thoms v Commonwealth",
+      "year": 2020,
+      "court": "High Court of Australia",
+      "jurisdiction": "AU",
+      "ratioDecidendi": "An Aboriginal Australian who satisfies the Mabo (No 2) tripartite test — biological descent, self-identification, and mutual recognition by the community — is not within 'aliens' under section 51(xix): the ordinary meaning of alien cannot apply to persons whose ties to land and community predate the Constitution. A majority so held.",
+      "statutoryProvisions": [
+        "Constitution of Australia s 51(xix)"
+      ],
+      "keyTags": [
+        "aliens power",
+        "aboriginal identity",
+        "mabo test",
+        "constitutional status"
+      ],
+      "domain": "Indigenous",
+      "aliases": [
+        "love v commonwealth",
+        "love and thoms",
+        "aboriginal aliens"
+      ],
+      "sourceUrl": "https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2020/3.html"
+    },
+    {
+      "id": "acp-communist",
+      "citation": "(1951) 83 CLR 1",
+      "caseName": "Australian Communist Party v The Commonwealth",
+      "year": 1951,
+      "court": "High Court of Australia",
+      "jurisdiction": "AU",
+      "ratioDecidendi": "The Act dissolving the Communist Party and forfeiting its property was invalid: Parliament cannot, in substance, adjudicate guilt and punish an association without judicial process, and recitals of national-security purpose cannot save it. Constitutional limits bind even in emergencies, and implications drawn from the constitutional structure limit legislative power.",
+      "statutoryProvisions": [
+        "Communist Party Dissolution Act 1950"
+      ],
+      "keyTags": [
+        "invalid statute",
+        "judicial process",
+        "implied limitations",
+        "national security"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "communist party case",
+        "acp v commonwealth"
+      ],
+      "sourceUrl": "https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1951/5.html"
+    },
+    {
+      "id": "teoh-legitimate-expectation",
+      "citation": "(1995) 183 CLR 273",
+      "caseName": "Minister of State for Immigration and Ethnic Affairs v Teoh",
+      "year": 1995,
+      "court": "High Court of Australia",
+      "jurisdiction": "AU",
+      "ratioDecidendi": "Ratification of a treaty by the Executive is a positive statement that it will honour its obligations, capable of founding a legitimate expectation that decision-makers will exercise statutory discretion in conformity with the treaty — absent contrary statutory intent — even though unincorporated treaties do not create binding domestic law.",
+      "statutoryProvisions": [
+        "Migration Act 1958",
+        "Convention on the Rights of the Child"
+      ],
+      "keyTags": [
+        "legitimate expectation",
+        "treaties",
+        "procedural fairness",
+        "executive"
+      ],
+      "domain": "Administrative",
+      "aliases": [
+        "teoh",
+        "legitimate expectation",
+        "treaty ratification"
+      ],
+      "sourceUrl": "https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1995/20.html"
+    },
+    {
+      "id": "grootboom-housing",
+      "citation": "2001 (1) SA 46 (CC)",
+      "caseName": "Government of the Republic of South Africa v Grootboom",
+      "year": 2000,
+      "court": "Constitutional Court of South Africa",
+      "jurisdiction": "ZA",
+      "ratioDecidendi": "The state must take reasonable legislative and other measures within available resources to realise the right of access to adequate housing. A programme that leaves the desperate — those with no roof over their heads — without any relief is not reasonable: reasonableness is context-sensitive and must include short-term measures for people in crisis.",
+      "statutoryProvisions": [
+        "Constitution 1996 s. 26",
+        "Constitution 1996 s. 28(1)(c)"
+      ],
+      "keyTags": [
+        "socio-economic rights",
+        "housing",
+        "reasonableness",
+        "vulnerable groups"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "grootboom",
+        "right to housing",
+        "reasonableness review"
+      ],
+      "sourceUrl": "https://www.saflii.org/za/cases/ZACC/2000/19.html"
+    },
+    {
+      "id": "tac-nevirapine",
+      "citation": "2002 (5) SA 721 (CC)",
+      "caseName": "Minister of Health v Treatment Action Campaign (No 2)",
+      "year": 2002,
+      "court": "Constitutional Court of South Africa",
+      "jurisdiction": "ZA",
+      "ratioDecidendi": "A rigid, inflexible policy restricting the provision of nevirapine to prevent mother-to-child HIV transmission unreasonably limited section 27: the state must take reasonable measures within available resources and cannot put policy rigidities above the interests of those in need. The state was ordered to remove the research-only restrictions and plan an expansion of the programme.",
+      "statutoryProvisions": [
+        "Constitution 1996 s. 27",
+        "Constitution 1996 s. 1"
+      ],
+      "keyTags": [
+        "health rights",
+        "hiv",
+        "policy rigidity",
+        "socio-economic rights"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "tac",
+        "treatment action campaign",
+        "nevirapine"
+      ],
+      "sourceUrl": "https://www.saflii.org/za/cases/ZACC/2002/15.html"
+    },
+    {
+      "id": "kaunda-diplomatic",
+      "citation": "2005 (4) SA 235 (CC)",
+      "caseName": "Kaunda v President of the Republic of South Africa",
+      "year": 2004,
+      "court": "Constitutional Court of South Africa",
+      "jurisdiction": "ZA",
+      "ratioDecidendi": "There is no general enforceable right to demand specific diplomatic protection, but citizens may request it and the executive's response is reviewable for rationality, bad faith or improper purpose. Foreign affairs are a domain of deference where courts police the legality of the process, not the wisdom of the policy.",
+      "statutoryProvisions": [
+        "Constitution 1996 s. 3",
+        "Constitution 1996 s. 10",
+        "Constitution 1996 s. 35"
+      ],
+      "keyTags": [
+        "diplomatic protection",
+        "foreign affairs",
+        "deference",
+        "rationality review"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "kaunda",
+        "diplomatic protection",
+        "foreign affairs deference"
+      ],
+      "sourceUrl": "https://www.saflii.org/za/cases/ZACC/2004/5.html"
+    },
+    {
+      "id": "ram-jawaya-executive",
+      "citation": "AIR 1955 SC 549",
+      "caseName": "Ram Jawaya Kapur v State of Punjab",
+      "year": 1955,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "The executive power of a State is co-extensive with its legislative power, but the executive cannot make law or take on what is properly legislative business without authority: it may act within fields untouched by legislation, yet where the Constitution or a statute requires a particular procedure, the executive must follow it.",
+      "statutoryProvisions": [
+        "Constitution of India art. 162",
+        "Constitution of India art. 166"
+      ],
+      "keyTags": [
+        "executive power",
+        "co-extensive doctrine",
+        "legislative authority",
+        "article 162"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "ram jawaya",
+        "executive power india",
+        "co-extensive doctrine"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/1446086/"
+    },
+    {
+      "id": "vishaka-harassment",
+      "citation": "(1997) 6 SCC 241",
+      "caseName": "Vishaka v State of Rajasthan",
+      "year": 1997,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "Sexual harassment at the workplace violates Articles 14, 19 and 21. Pending legislation, the Supreme Court laid down binding Guidelines — drawing on CEDAW as a convention consonant with fundamental rights — defining harassment, requiring complaint committees and redressal mechanisms, and holding employers and institutions responsible for enforcement.",
+      "statutoryProvisions": [
+        "Constitution of India art. 14",
+        "Constitution of India art. 19",
+        "Constitution of India art. 21",
+        "CEDAW"
+      ],
+      "keyTags": [
+        "sexual harassment",
+        "workplace",
+        "gender equality",
+        "CEDAW"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "vishaka",
+        "vishaka guidelines",
+        "sexual harassment india"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/1031794/"
+    },
+    {
+      "id": "minerva-mills",
+      "citation": "(1980) 3 SCC 625",
+      "caseName": "Minerva Mills Ltd v Union of India",
+      "year": 1980,
+      "court": "Supreme Court of India",
+      "jurisdiction": "IN",
+      "ratioDecidendi": "Sections 4 and 55 of the 42nd Amendment, which immunized constitutional amendments from review and made fundamental rights subordinate to amendment power, destroyed the basic structure: limited amending power, judicial review, and the balance between Part III and the directive principles are all essential features. Parliament cannot, by exercising a limited power, acquire the power to erase the Constitution's identity.",
+      "statutoryProvisions": [
+        "Constitution of India art. 368",
+        "Constitution of India art. 31C"
+      ],
+      "keyTags": [
+        "basic structure",
+        "judicial review",
+        "limited amendment power",
+        "42nd amendment"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "minerva mills",
+        "42nd amendment",
+        "amendment power limits"
+      ],
+      "sourceUrl": "https://indiankanoon.org/doc/1215719/"
+    },
+    {
+      "id": "google-cnil-delisting",
+      "citation": "C-507/17",
+      "caseName": "Google LLC v Commission nationale de l'informatique et des libertés (CNIL)",
+      "year": 2019,
+      "court": "Court of Justice of the European Union (Grand Chamber)",
+      "jurisdiction": "EU",
+      "ratioDecidendi": "The right to de-referencing under the Data Protection Directive cannot in principle extend to all versions of a search engine worldwide: a supervisory authority may require de-listing on all EU domain versions together with measures effectively preventing EU users from reaching the results on non-EU versions, but the balance between data protection and the free flow of information must be assessed against the relevant national legal order — global delisting is not the default.",
+      "statutoryProvisions": [
+        "Directive 95/46/EC art. 12",
+        "Charter of Fundamental Rights art. 7",
+        "Charter of Fundamental Rights art. 11"
+      ],
+      "keyTags": [
+        "de-referencing",
+        "territorial scope",
+        "search engines",
+        "right to be forgotten"
+      ],
+      "domain": "Digital_Rights",
+      "aliases": [
+        "google v cnil",
+        "c-507/17",
+        "global delisting",
+        "de-referencing scope"
+      ],
+      "sourceUrl": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:62017CJ0507"
+    },
+    {
+      "id": "usedsoft-oracle",
+      "citation": "C-128/11",
+      "caseName": "UsedSoft GmbH v Oracle International Corp",
+      "year": 2012,
+      "court": "Court of Justice of the European Union (Grand Chamber)",
+      "jurisdiction": "EU",
+      "ratioDecidendi": "A software licence granted for an unlimited period in return for a one-off fee is a sale of a copy, and the distribution right is exhausted on first sale even for downloaded programs. The lawful acquirer of a used licence may resell it and the copyright owner cannot oppose — provided the previous copy is made unusable — and the acquirer may re-download the copy from the right-holder's site if the licence agreement so provides.",
+      "statutoryProvisions": [
+        "Directive 2009/24/EC arts. 4(2) and 5(1)",
+        "Directive 2001/29/EC art. 4(2)"
+      ],
+      "keyTags": [
+        "exhaustion",
+        "software licences",
+        "resale",
+        "digital exhaustion"
+      ],
+      "domain": "Digital_Rights",
+      "aliases": [
+        "usedsoft",
+        "used software resale",
+        "exhaustion doctrine"
+      ],
+      "sourceUrl": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:62011CJ0128"
+    },
+    {
+      "id": "coco-queen",
+      "citation": "(1994) 179 CLR 427",
+      "caseName": "Coco v The Queen",
+      "year": 1994,
+      "court": "High Court of Australia",
+      "jurisdiction": "AU",
+      "ratioDecidendi": "Police who enter premises and install a listening device without valid authority commit a trespass, and the resulting evidence may be excluded on public-interest grounds. The principle of legality: courts will not impute to the legislature an intention to interfere with fundamental rights or to negate a statutory requirement of authorization unless that intention is made unmistakably clear.",
+      "statutoryProvisions": [
+        "Listening Devices Act 1960 (NSW)",
+        "Crimes Act 1914 (Cth) s 25"
+      ],
+      "keyTags": [
+        "principle of legality",
+        "unlawful entry",
+        "listening devices",
+        "exclusion of evidence"
+      ],
+      "domain": "Criminal",
+      "aliases": [
+        "coco",
+        "principle of legality",
+        "trespass police",
+        "listening device"
+      ],
+      "sourceUrl": "https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1994/15.html"
+    },
+    {
+      "id": "soobramoney-dialysis",
+      "citation": "1998 (1) SA 765 (CC)",
+      "caseName": "Soobramoney v Minister of Health, KwaZulu-Natal",
+      "year": 1997,
+      "court": "Constitutional Court of South Africa",
+      "jurisdiction": "ZA",
+      "ratioDecidendi": "A hospital's dialysis triage policy, allocating scarce machines to patients most likely to benefit, was not a breach of the right to emergency medical treatment or the state's section 27(1)(a) obligations: chronic renal failure is not an emergency within section 27(3), tragic choices forced by scarce resources fall within the domain of reasonable measures, and courts will not second-guess good-faith resource allocations that respect human dignity.",
+      "statutoryProvisions": [
+        "Constitution 1996 s. 27",
+        "Constitution 1996 s. 11"
+      ],
+      "keyTags": [
+        "resource allocation",
+        "health rights",
+        "triage",
+        "emergency treatment"
+      ],
+      "domain": "Constitutional",
+      "aliases": [
+        "soobramoney",
+        "dialysis",
+        "resource allocation",
+        "emergency medical treatment"
+      ],
+      "sourceUrl": "https://www.saflii.org/za/cases/ZACC/1997/17.html"
+    }
+  ],
+  "statutes": [
+    {
+      "id": "eu-gdpr",
+      "citation": "Regulation (EU) 2016/679",
+      "name": "General Data Protection Regulation (GDPR)",
+      "year": 2016,
+      "keyTags": [
+        "data protection",
+        "processing",
+        "controller",
+        "erasure",
+        "consent",
+        "transfers"
+      ],
+      "domain": "Digital_Rights",
+      "sections": [
+        {
+          "section": "Art. 5(1)(a)",
+          "title": "Lawfulness, fairness and transparency",
+          "principle": "Personal data must be processed lawfully, fairly and transparently in relation to the data subject."
+        },
+        {
+          "section": "Art. 6(1)(f)",
+          "title": "Legitimate interests",
+          "principle": "Processing is lawful where necessary for a legitimate interest, unless overridden by the interests or rights of the data subject."
+        },
+        {
+          "section": "Art. 17",
+          "title": "Right to erasure",
+          "principle": "The data subject may obtain erasure of personal data no longer necessary, unlawfully processed, or where consent is withdrawn."
+        },
+        {
+          "section": "Art. 45",
+          "title": "Adequacy decisions",
+          "principle": "Transfers to third countries require an adequacy decision ensuring an essentially equivalent level of protection."
+        }
+      ]
+    },
+    {
+      "id": "us-first-amendment",
+      "citation": "U.S. Const. amend. I",
+      "name": "First Amendment (United States)",
+      "year": 1791,
+      "keyTags": [
+        "free speech",
+        "free press",
+        "establishment",
+        "assembly"
+      ],
+      "domain": "Constitutional",
+      "sections": [
+        {
+          "section": "amend. I (speech)",
+          "title": "Freedom of speech and press",
+          "principle": "Congress shall make no law abridging the freedom of speech, or of the press — enforced against the States through the Fourteenth Amendment."
+        },
+        {
+          "section": "amend. I (assembly)",
+          "title": "Assembly and petition",
+          "principle": "The right of the people peaceably to assemble, and to petition the Government for a redress of grievances, shall not be abridged."
+        }
+      ]
+    },
+    {
+      "id": "us-fourth-amendment",
+      "citation": "U.S. Const. amend. IV",
+      "name": "Fourth Amendment (United States)",
+      "year": 1791,
+      "keyTags": [
+        "search",
+        "seizure",
+        "warrant",
+        "probable cause"
+      ],
+      "domain": "Criminal",
+      "sections": [
+        {
+          "section": "amend. IV (warrant)",
+          "title": "Warrants on probable cause",
+          "principle": "No warrant shall issue but upon probable cause, supported by oath or affirmation, particularly describing the place to be searched and the persons or things to be seized."
+        },
+        {
+          "section": "amend. IV (unreasonable)",
+          "title": "Reasonableness",
+          "principle": "The right against unreasonable searches and seizures shall not be violated — the anchor of the exclusionary rule and privacy doctrine."
+        }
+      ]
+    },
+    {
+      "id": "charter-canada",
+      "citation": "Canadian Charter of Rights and Freedoms, Part I of the Constitution Act 1982",
+      "name": "Canadian Charter of Rights and Freedoms",
+      "year": 1982,
+      "keyTags": [
+        "charter rights",
+        "section 1 limits",
+        "life liberty security",
+        "speedy trial"
+      ],
+      "domain": "Constitutional",
+      "sections": [
+        {
+          "section": "s. 1",
+          "title": "Guarantee of rights",
+          "principle": "Charter rights are guaranteed subject only to such reasonable limits prescribed by law as can be demonstrably justified in a free and democratic society."
+        },
+        {
+          "section": "s. 7",
+          "title": "Life, liberty and security",
+          "principle": "Everyone has the right to life, liberty and security of the person and the right not to be deprived thereof except in accordance with the principles of fundamental justice."
+        },
+        {
+          "section": "s. 11(b)",
+          "title": "Trial within a reasonable time",
+          "principle": "Any person charged with an offence has the right to be tried within a reasonable time."
+        }
+      ]
+    },
+    {
+      "id": "uk-human-rights-act",
+      "citation": "Human Rights Act 1998 c. 42",
+      "name": "Human Rights Act 1998 (United Kingdom)",
+      "year": 1998,
+      "keyTags": [
+        "echr",
+        "convention rights",
+        "public authority",
+        "declaration of incompatibility"
+      ],
+      "domain": "Constitutional",
+      "sections": [
+        {
+          "section": "s. 3",
+          "title": "Interpretation compatible with Convention rights",
+          "principle": "So far as possible, primary and subordinate legislation must be read and given effect in a way compatible with Convention rights."
+        },
+        {
+          "section": "s. 6",
+          "title": "Acts of public authorities",
+          "principle": "It is unlawful for a public authority to act in a way incompatible with a Convention right, unless primary legislation leaves no choice."
+        },
+        {
+          "section": "Art. 8",
+          "title": "Private and family life",
+          "principle": "Everyone has the right to respect for private and family life, home and correspondence, with interference only as necessary and proportionate."
+        }
+      ]
+    },
+    {
+      "id": "native-title-act",
+      "citation": "Native Title Act 1993 (Cth)",
+      "name": "Native Title Act 1993 (Australia)",
+      "year": 1993,
+      "keyTags": [
+        "native title",
+        "indigenous land",
+        "determination",
+        "future acts"
+      ],
+      "domain": "Indigenous",
+      "sections": [
+        {
+          "section": "s. 10",
+          "title": "Recognition of native title",
+          "principle": "Native title is recognised and protected as a common law right that continues where connection and non-extinguishment are established."
+        },
+        {
+          "section": "s. 223",
+          "title": "Definition of native title",
+          "principle": "Native title means the communal, group or individual rights and interests of Aboriginal peoples or Torres Strait Islanders in relation to land or waters under traditional laws and customs."
+        },
+        {
+          "section": "s. 62",
+          "title": "Claimant application",
+          "principle": "A claimant application must describe the rights claimed and the factual basis of the asserted traditional connection."
+        }
+      ]
+    },
+    {
+      "id": "constitution-south-africa",
+      "citation": "Constitution of the Republic of South Africa, 1996",
+      "name": "South African Constitution 1996",
+      "year": 1996,
+      "keyTags": [
+        "dignity",
+        "equality",
+        "life",
+        "socio-economic rights"
+      ],
+      "domain": "Constitutional",
+      "sections": [
+        {
+          "section": "s. 9",
+          "title": "Equality",
+          "principle": "Everyone is equal before the law; unfair discrimination on any ground is prohibited, with reasonable affirmative measures permitted."
+        },
+        {
+          "section": "s. 10",
+          "title": "Human dignity",
+          "principle": "Everyone has inherent dignity and the right to have their dignity respected and protected."
+        },
+        {
+          "section": "s. 27",
+          "title": "Health care, food, water and social security",
+          "principle": "Everyone has the right of access to social security including appropriate social assistance when unable to support themselves."
+        }
+      ]
+    },
+    {
+      "id": "constitution-india",
+      "citation": "Constitution of India",
+      "name": "Constitution of India",
+      "year": 1950,
+      "keyTags": [
+        "fundamental rights",
+        "writ jurisdiction",
+        "equality",
+        "life and liberty"
+      ],
+      "domain": "Constitutional",
+      "sections": [
+        {
+          "section": "art. 14",
+          "title": "Equality before law",
+          "principle": "The State shall not deny to any person equality before the law or equal protection of the laws."
+        },
+        {
+          "section": "art. 21",
+          "title": "Life and personal liberty",
+          "principle": "No person shall be deprived of life or personal liberty except according to procedure established by law — read as requiring fair, just and reasonable procedure."
+        },
+        {
+          "section": "art. 32",
+          "title": "Remedies for enforcement",
+          "principle": "The right to move the Supreme Court for enforcement of fundamental rights is itself a fundamental right, with writ powers of habeas corpus, mandamus, prohibition, quo warranto and certiorari."
+        }
+      ]
+    },
+    {
+      "id": "fra-2006",
+      "citation": "Scheduled Tribes and Other Traditional Forest Dwellers (Recognition of Forest Rights) Act, 2006",
+      "name": "Forest Rights Act 2006 (India)",
+      "year": 2006,
+      "keyTags": [
+        "forest rights",
+        "gram sabha",
+        "tribal",
+        "scheduled areas"
+      ],
+      "domain": "Indigenous",
+      "sections": [
+        {
+          "section": "§4(1)",
+          "title": "Gram sabha as authority",
+          "principle": "The gram sabha is the authority to initiate the process of determining the nature and extent of individual or community forest rights."
+        },
+        {
+          "section": "§4(2)",
+          "title": "Consent before diversion",
+          "principle": "Diversion of forest land for non-forest purposes requires recognition of rights and informed consent of the gram sabha, with resettlement safeguards."
+        },
+        {
+          "section": "§5",
+          "title": "Duties of holders",
+          "principle": "Forest right holders are bound to protect forests, wildlife and biodiversity alongside the exercise of their rights."
+        }
+      ]
+    },
+    {
+      "id": "ucc-common-carrier",
+      "citation": "Uniform Commercial Code art. 2 (United States)",
+      "name": "UCC Article 2 (Sales of Goods)",
+      "year": 1952,
+      "keyTags": [
+        "goods",
+        "title",
+        "warranty",
+        "merchant"
+      ],
+      "domain": "Contract",
+      "sections": [
+        {
+          "section": "§2-302",
+          "title": "Unconscionable contract",
+          "principle": "A court may refuse to enforce a contract or clause it finds unconscionable, or enforce the remainder limited to avoid an unconscionable result."
+        },
+        {
+          "section": "§2-314",
+          "title": "Implied warranty of merchantability",
+          "principle": "Unless excluded, a warranty that goods are merchantable is implied in every contract for sale by a merchant with respect to such goods."
+        },
+        {
+          "section": "§2-601",
+          "title": "Buyer's rights on improper delivery",
+          "principle": "If goods fail in any respect to conform to the contract, the buyer may reject the whole or accept any commercial unit or units."
+        }
+      ]
+    }
+  ]
+}

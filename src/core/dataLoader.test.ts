@@ -1,7 +1,28 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadAllScenarios, loadLibrary, loadScenario, hydrateScenario } from './dataLoader';
 import { CitationIndex } from './searchIndex';
+import { INDIA_EXTRA_CASES } from './corpus/inExtra';
+import { US_EXTRA_CASES, EU_EXTRA_CASES } from './corpus/usEuExtra';
+import { UK_EXTRA_CASES, CA_EXTRA_CASES } from './corpus/ukCaExtra';
+import { AU_EXTRA_CASES, ZA_EXTRA_CASES } from './corpus/auZaExtra';
+import {
+  LABOR_IN_EXTRA_CASES,
+  LABOR_US_EXTRA_CASES,
+  LABOR_UK_EXTRA_CASES,
+} from './corpus/laborExtra';
 import type { LegalCorpus, ScenarioManifest } from '../types/legal';
+
+const EXPANSION_LENGTH =
+  INDIA_EXTRA_CASES.length +
+  US_EXTRA_CASES.length +
+  EU_EXTRA_CASES.length +
+  UK_EXTRA_CASES.length +
+  CA_EXTRA_CASES.length +
+  AU_EXTRA_CASES.length +
+  ZA_EXTRA_CASES.length +
+  LABOR_IN_EXTRA_CASES.length +
+  LABOR_US_EXTRA_CASES.length +
+  LABOR_UK_EXTRA_CASES.length;
 
 const corpus = {
   cases: [
@@ -49,6 +70,7 @@ const manifests: ScenarioManifest[] = [
     title: 'Matter One',
     clientName: 'Client A',
     bench: 'High Court',
+    jurisdiction: 'IN',
     factualBackground: 'Facts.',
     coreDispute: 'Dispute.',
     initialJudicialFavor: 50,
@@ -66,7 +88,7 @@ function mockFetch(envelope: boolean) {
   const scenariosBody = envelope ? JSON.stringify({ scenarios: manifests }) : JSON.stringify(manifests);
   const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
     const url = String(input);
-    if (url.endsWith('/indian_cases.json')) return new Response(casesJson, { status: 200 });
+    if (url.endsWith('/global_cases.json')) return new Response(casesJson, { status: 200 });
     if (url.endsWith('/scenarios.json')) return new Response(scenariosBody, { status: 200 });
     return new Response('not found', { status: 404 });
   });
@@ -93,7 +115,12 @@ describe('loadLibrary', () => {
     mockFetch(true);
     const { payload } = await loadLibrary(true);
     expect(payload.scenarios).toHaveLength(1);
-    expect(payload.corpus.cases).toHaveLength(2);
+    // The fetched corpus is merged with the verified expansion modules.
+    const ids = payload.corpus.cases.map((c) => c.id);
+    expect(ids).toContain('case-a');
+    expect(ids).toContain('case-b');
+    expect(ids).toContain('van-gend-en-loos');
+    expect(payload.corpus.cases).toHaveLength(2 + EXPANSION_LENGTH);
   });
 
   it('throws a friendly error on a failed fetch', async () => {
@@ -130,6 +157,7 @@ describe('hydrateScenario', () => {
     const bundle = hydrateScenario(manifests[0], corpus);
     expect(bundle.id).toBe('scenario-1');
     expect(bundle.maxTurns).toBe(4);
+    expect(bundle.jurisdiction).toBe('IN');
     expect(bundle.opposingCounselPersona.name).toBe('OC');
     expect(bundle.manifesto).toBe(manifests[0]);
     expect(bundle.statuteReferences[0].id).toBe('stat-x');

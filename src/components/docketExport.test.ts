@@ -7,6 +7,7 @@ const scenario: ScenarioBundle = {
   title: 'Matter <script>alert(1)</script>',
   clientName: 'Client & Co',
   bench: 'High Court',
+  jurisdiction: 'UK',
   factualBackground: 'Facts.',
   coreDispute: 'Dispute.',
   initialJudicialFavor: 42,

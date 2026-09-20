@@ -1,80 +1,124 @@
 {
   "scenarios": [
     {
-      "id": "sacred-ridge",
-      "title": "The Sacred Ridge Injunction",
-      "clientName": "Gram Sabha & Adivasi villagers of the Niyamgiri foothills",
-      "bench": "Two-Judge Bench of the Supreme Court of India (Constitution-civil)",
-      "factualBackground": "A state mining corporation holds a pending lease application for bauxite quarrying across a hill range that is sacred to the Dongria Kondh community. The district collector fast-tracked the lease without convening any gram sabha consultation, arguing tribal land records are incomplete and the 1994 lease is legally continuous.",
-      "coreDispute": "Whether bauxite mining can proceed on recognised forest land inhabited by indigenous communities when no free, prior and informed gram sabha consent has been obtained under the FRA 2006, and whether the environmental clearance itself survives review.",
-      "initialJudicialFavor": 50,
-      "maxTurns": 5,
-      "precedentIds": ["orissa-mining", "godavarman", "vellore-citizens", "mc-mehta-ganga", "subhash-kumar"],
-      "statuteIds": ["fra-2006", "fca-1980", "epa-1986", "water-act"],
-      "opposingCounselPersona": {
-        "name": "Sri Arvind Thakre (Senior Advocate for the Corporation)",
-        "style": "Aggressive",
-        "initialOpeningStatement": "My Lords, this is a strike of sentiment against sovereign need. The corporation holds a valid pre-FRA mineral concession, section 4(1) cannot be retrospectively applied, and the so-called 'sacred' claim is a manufactured barricade against industrial progress. I invite the Bench to note the staggering loss of revenue and employment the stay would occasion.",
-        "interlocutoryAttackTheme": "Jurisdiction and standing; whether the environmental clearance process already weighed tribal objections."
-      },
-      "closingPrompt": "The Bench rises. It is your client's final opportunity to frame the injunction. Instruct the Court on what order preserves both the forest and the process."
-    },
-    {
-      "id": "digital-blackout",
-      "title": "The Digital Blackout",
-      "clientName": "Civil society collectives and journalists based in a telecom circle",
-      "bench": "Constitution Bench proceedings on judicial review of the suspension",
-      "factualBackground": "Following a weekend of civic protests in a hill state, the Home Department issued an order suspending all internet and telecom services for an unspecified period, citing public order under the Telecom Suspension Rules. Access has now lapsed beyond three weeks; no notification of the order has been published, journalists cannot file copy, and digital payment systems remain down.",
-      "coreDispute": "Whether a published, duration-unlimited telecom suspension survives challenge under Articles 19(1)(a) and 19(1)(g) read with Article 21, and what review machinery the Court must impose.",
-      "initialJudicialFavor": 50,
-      "maxTurns": 5,
-      "precedentIds": ["anuradha-bhasin", "shreya-singhal", "puttaswamy-privacy", "puttaswamy-aadhaar"],
-      "statuteIds": ["it-act-2000", "telecom-suspension-rules"],
-      "opposingCounselPersona": {
-        "name": "Mr. Rahul Bhattacharya (Senior Additional Advocate General)",
-        "style": "Constitutional_Statist",
-        "initialOpeningStatement": "My Lords, sovereignty is not subordinate to social media. Section 69 of the IT Act and the Suspension Rules were exercised to prevent a wave of communal violence. The intermediateness of an inconvenience outweighed by the prevention of bloodshed. We shall show classified ground records that the situation remains live.",
-        "interlocutoryAttackTheme": "State privilege over internal security records; proportionality in the abstract."
-      },
-      "closingPrompt": "Time has come. Government persists. Give the Court the exact contours of the order it should pass on necessity, proportionality and transparency."
-    },
-    {
-      "id": "midnight-eviction",
-      "title": "The Midnight Eviction",
-      "clientName": "1,242 families of the canal-belt 'unauthorised colony' under a flyover",
-      "bench": "Division Bench of a High Court hearing a town-planning PIL",
-      "factualBackground": "At 2:00 a.m., a demolition squad and police bulldozed the informal settlement lining an irrigation canal without any prior notice, confiscated two decades of domicile records, and dumped rubble over household goods. No rehabilitation offer has been made. The municipality claims the colony obstructs flood relief and cites an ex parte court order granted in its own writ.",
-      "coreDispute": "Whether punitive nocturnal eviction of settled informal dwellings without notice, hearing or corrective action violates Article 21, and what restitution and relocation the Court should direct.",
+      "id": "midnight-sweep",
+      "title": "The Midnight Sweep",
+      "clientName": "Riverside dwellers of the flood-belt settlement (347 households)",
+      "bench": "Constitutional chamber seized of an urgent public-interest challenge",
+      "jurisdiction": "IN",
+      "factualBackground": "At 2:10 a.m., a demolition column with police escort levelled 347 informal homes along a storm canal. No notice preceded the operation, two decades of domicile records were confiscated in the rubble, and no rehabilitation scheme exists. The municipality invokes flood-safety bylaws and an ex parte order obtained in its own proceedings. Families are living in the open beside the debris of their homes.",
+      "coreDispute": "Whether summary nocturnal demolition without notice, hearing or resettlement violates the right to life and shelter, and what restitution the court must order.",
       "initialJudicialFavor": 45,
       "maxTurns": 5,
-      "precedentIds": ["olga-tellis", "sudama-singh", "ahmedabad-municipal", "pg-gupta"],
-      "statuteIds": ["rfctlarr-2013"],
+      "precedentIds": ["olga-tellis", "mc-mehta-oleum", "bandhua-mukti", "pudr-asiad", "maneka-gandhi"],
+      "statuteIds": ["constitution-india"],
       "opposingCounselPersona": {
-        "name": "Smt. Meera Kompally (Standing Counsel for the Municipal Authority)",
+        "name": "Standing Counsel for the Municipal Authority",
         "style": "Technical_Procedural",
-        "initialOpeningStatement": "My Lords, this is not an eviction but a statutory flood-control operation executed under a subsisting demolition order. These structures were built over the canal buffer in patent violation of building by-laws. The occupants had 20 years of constructive notice; a midnight execution harms nobody who obeyed the law.",
-        "interlocutoryAttackTheme": "Locus standi of the displaced; the finality of the municipal demolition order."
+        "initialOpeningStatement": "My Lords, this was a statutory flood-control operation under a subsisting order. The structures occupied the canal buffer in patent violation of building by-laws; twenty years of occupancy is twenty years of constructive notice. A midnight execution injures nobody who obeyed the law. The petitioners are trespassers seeking a subsidy in the guise of a fundamental right.",
+        "interlocutoryAttackTheme": "Locus standi of the displaced; finality of the municipal demolition order; the flood-safety justification."
       },
-      "closingPrompt": "The rubble has been cleared from the galleries. Your final address will decide whether these families get restitution or a file number."
+      "closingPrompt": "The Bench rises for the last time in this matter. Frame the operative order: restitution, rehabilitation, and the precedent this record should leave behind."
     },
     {
-      "id": "platform-lockout",
-      "title": "The Platform Lockout",
-      "clientName": "A union of 500 platform delivery partners deactivated by a gig-app aggregator",
-      "bench": "Division Bench considering collective writ claims of gig workers",
-      "factualBackground": "Overnight, a food-delivery platform deactivated the accounts of 500 delivery partners in one city after a coordinated wage-strike, without any prior notice, hearing, or dispute-resolution forum. The commerce platform cites the terms-of-service 'independent contractor' clause and denies any employer relationship, while continuing to route orders through the same partners' replacements.",
-      "coreDispute": "Whether mass deactivation of platform workers without hearing violates Articles 14, 19(1)(g) and 21, and whether the Code on Social Security 2020 and MV Aggregator Guidelines create enforceable entitlements notwithstanding the 'gig worker' label.",
+      "id": "interrogation-room",
+      "title": "The Interrogation Room",
+      "clientName": "A suspect charged on the strength of an unwarned confession",
+      "bench": "State supreme court, criminal division, hearing a suppression appeal",
+      "jurisdiction": "US",
+      "factualBackground": "Detectives questioned the accused for six hours in a locked interview room. No warning of the right to silence or counsel was given; the accused asked twice whether he could leave and was told the interview would end 'when you tell us the truth.' A signed statement followed. The prosecution's entire case rests on that statement and on a torn shirt recovered from his apartment.",
+      "coreDispute": "Whether the unwarned custodial statement and its fruits must be suppressed, and whether the interrogation's length and tone compounded the violation.",
       "initialJudicialFavor": 50,
       "maxTurns": 5,
-      "precedentIds": ["pudr-asiad", "cerc-asbestos", "bandhua-mukti-morcha"],
-      "statuteIds": ["code-social-security-2020", "mv-aggregator-guidelines"],
+      "precedentIds": ["miranda-arizona", "gideon-wainwright", "nytimes-sullivan", "brown-board", "roe-wade"],
+      "statuteIds": ["us-fourth-amendment", "us-first-amendment"],
       "opposingCounselPersona": {
-        "name": "Mr. Vikram Nagarajan (Counsel for the Aggregator)",
-        "style": "Technical_Procedural",
-        "initialOpeningStatement": "My Lords, this is a private contract dispute dressed as a constitutional catastrophe. The partners accepted our terms, are free to run rival apps, and were deactivated for 'misconduct' under clause 12.4. They are merchants, not employees; the Code itself acknowledges the gig distinction. Collective writ petitions over private contracts are the wrong vehicle.",
-        "interlocutoryAttackTheme": "Justiciability of private labour contracts; the probative value of deactivation logs."
+        "name": "State Deputy Attorney General",
+        "style": "Aggressive",
+        "initialOpeningStatement": "Your Honor, this was a voluntary interview with a willing participant. The warnings regime is a procedural trinket, not a constitutional straitjacket; the statement was reliable, the shirt was corroborative, and the public interest in convicting the guilty should not be felled by a tree of paper. Suppression is a remedy for tyrants, not for detectives doing their jobs.",
+        "interlocutoryAttackTheme": "Voluntariness on the facts; the attenuation doctrine; harmless-error arguments over the shirt."
       },
-      "closingPrompt": "The Bench listens to the sound of emptied keyboards. Make the final case for why deactivation minus process can't bind these 500 workers."
+      "closingPrompt": "Final argument. The appellate panel wants a rule it can apply to every interrogation room in the State. Give it one."
+    },
+    {
+      "id": "frozen-transfers",
+      "title": "The Frozen Transfers",
+      "clientName": "A European health-data cooperative serving 2.4 million patients",
+      "bench": "EU referencing chamber on a cross-border data-processing referral",
+      "jurisdiction": "EU",
+      "factualBackground": "A data-processing agreement routes patient records to a third country whose intelligence statutes compel disclosure on demand and criminalise the recipient's silence about it. The importer's own transparency reports admit state access without judicial oversight. The cooperative suspended transfers after its supervisory authority opened an inquiry; processors and hospital clients now demand restoration or a lawful alternative framework.",
+      "coreDispute": "Whether transfers may lawfully continue under contractual safeguards alone, what verification the exporter owes, and whether the receiving country's surveillance regime defeats adequacy.",
+      "initialJudicialFavor": 50,
+      "maxTurns": 5,
+      "precedentIds": ["schrems-i", "schrems-ii", "google-spain", "digital-rights-ireland", "google-vuitton"],
+      "statuteIds": ["eu-gdpr"],
+      "opposingCounselPersona": {
+        "name": "Counsel for the Cloud Processor",
+        "style": "Technical_Procedural",
+        "initialOpeningStatement": "Mr President, standard contractual clauses remain the Commission-approved transfer tool. The third country's laws are for that country's courts; the exporter's obligation is a paper audit, not a geopolitical veto. Suspending transfers will fragment patient care across Europe within a fortnight — the Court should weigh lives, not letters of the law.",
+        "interlocutoryAttackTheme": "Standing of the cooperative; the sufficiency of contractual verification; the proportionality of a total transfer ban."
+      },
+      "closingPrompt": "The referral closes. Give the Court the precise test a thousand exporters will apply tomorrow morning."
+    },
+    {
+      "id": "thirty-month-trial",
+      "title": "The Thirty-Month Trial",
+      "clientName": "An accused whose trial clock ran well past every ceiling",
+      "bench": "Appellate chamber on an application for a stay for delay",
+      "jurisdiction": "CA",
+      "factualBackground": "The accused was charged with impaired driving causing bodily harm. The trial took 31 months to reach completion: 11 months of pre-commitment scheduling failures, 9 months consumed by a duplicate disclosure exercise, and two adjournments attributed to court-availability. The Crown concedes the arithmetic but attributes 14 months to a province-wide judicial shortage it calls 'exceptional circumstances.'",
+      "coreDispute": "Whether the net delay presumptively violates the reasonable-time guarantee, whether the systemic-shortage exception applies, and what remedy follows.",
+      "initialJudicialFavor": 55,
+      "maxTurns": 5,
+      "precedentIds": ["jordan-delay", "stinchcombe-disclosure", "oakes-test", "van-der-peet", "maneka-gandhi"],
+      "statuteIds": ["charter-canada"],
+      "opposingCounselPersona": {
+        "name": "Crown Appellate Counsel",
+        "style": "Constitutional_Statist",
+        "initialOpeningStatement": "My Lords, the framework was never meant to release every case that brushes a ceiling. The accused contributed no pushback, the delay was largely institutional, and the transitional exception exists precisely for this: a court system in crisis cannot be permitted to become a get-out-of-jail instrument. Society's interest in adjudication on the merits must count for something.",
+        "interlocutoryAttackTheme": "Clear-case exception; the accused's failure to raise delay earlier; the societal-interest balancing."
+      },
+      "closingPrompt": "The application closes. Articulate the rule the trial courts of this province will pin above their calendars."
+    },
+    {
+      "id": "bottle-on-the-shelf",
+      "title": "The Bottle on the Shelf",
+      "clientName": "A supermarket chain prosecuted for a self-service restricted sale",
+      "bench": "Court of Appeal on a case stated from a magistrates' conviction",
+      "jurisdiction": "UK",
+      "factualBackground": "A statutory-restricted medicine was displayed on an open self-service shelf. A customer selected a box, walked to the till, and the assistant — a trainee on her second shift — rang it up without asking for the supervising pharmacist. The enforcement authority prosecuted the store for contravening the sale restriction. The magistrates convicted, reasoning that the store 'offered' the product the moment it hit the shelf.",
+      "coreDispute": "Where a self-service sale legally concludes — at shelf or at till — and whether the store's display can constitute the prohibited 'sale' at all.",
+      "initialJudicialFavor": 50,
+      "maxTurns": 5,
+      "precedentIds": ["boots-display", "carlill-carbolic", "donoghue-stevenson", "felthouse-bindley", "cundy-lindsay"],
+      "statuteIds": ["uk-human-rights-act"],
+      "opposingCounselPersona": {
+        "name": "Counsel for the Enforcement Authority",
+        "style": "Aggressive",
+        "initialOpeningStatement": "My Lords, the store engineered the shelf to make the customer's hand the shop's hand. Every retail-chain format in the country funnels goods to a till; if that is not an offer of the product, supervision dies at the stockroom door. The conviction should stand to keep every restricted sale in the country under a pharmacist's eye.",
+        "interlocutoryAttackTheme": "The statutory purpose of supervision; 'sale' construed broadly; the store's operational control over the display."
+      },
+      "closingPrompt": "Final submission. Decide where the law of the shop floor ends and the law of the contract begins."
+    },
+    {
+      "id": "lands-that-never-emptied",
+      "title": "The Lands That Never Emptied",
+      "clientName": "Traditional owners of the granite-river country",
+      "bench": "Full-court native title determination hearing",
+      "jurisdiction": "AU",
+      "factualBackground": "Three pastoral leases were granted over granite-river country between 1915 and 1963. The claimant group has maintained continuous ceremonial and foraging connection; the leases were never fenced, never resided on by lessees, and were used exclusively for incidental grazing. The State contends any grant extinguished traditional rights absolutely; the pastoralists concede non-exclusive use but claim primacy in any conflict.",
+      "coreDispute": "Whether historical pastoral leases extinguished native title absolutely, or whether the two systems of rights can coexist with the lease prevailing only on inconsistency.",
+      "initialJudicialFavor": 50,
+      "maxTurns": 5,
+      "precedentIds": ["mabo-queensland", "wik-pastoral", "van-der-peet", "oakes-test", "entick-carrington"],
+      "statuteIds": ["native-title-act"],
+      "opposingCounselPersona": {
+        "name": "Counsel for the State and the Pastoral Interests",
+        "style": "Constitutional_Statist",
+        "initialOpeningStatement": "Your Honours, the grants created estates in land of a known quality; the law of real property does not do partial extinguishment. Every subsequent development — mortgages, water licences, the lot — presumes exclusivity. To find coexistence now is to inject uncertainty into every leasehold in the State and unsettle the registered assumptions of a century.",
+        "interlocutoryAttackTheme": "Certainty of title; the legal character of pastoral leases; the continuity of traditional connection evidence."
+      },
+      "closingPrompt": "The determination awaits. Close on what the common law owes to a system of law it once refused to see."
     }
   ]
 }

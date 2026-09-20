@@ -1,0 +1,17 @@
+{
+  "$schema": "./flags.schema.json",
+  "flags": {
+    "freeformMotion": {
+      "enabled": true,
+      "description": "Allow counsel to file freeform motions instead of only playing precedent cards."
+    },
+    "bossBounties": {
+      "enabled": true,
+      "description": "Grant chip bounties when a static matter's boss target is cleared."
+    },
+    "sparringBench": {
+      "enabled": true,
+      "description": "Local offline sparring resolution for generated matters without a live opponent."
+    }
+  }
+}

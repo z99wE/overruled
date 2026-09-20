@@ -3,9 +3,9 @@ import { favorColor, lerpColor } from '../components/FavorMeter';
 
 describe('favorColor', () => {
   it('interpolates through the danger → amber → gold ramp across 0–100', () => {
-    expect(favorColor(0)).toBe('rgb(225, 29, 72)');
-    expect(favorColor(50)).toBe('rgb(245, 158, 11)');
-    expect(favorColor(100)).toBe('rgb(250, 204, 21)');
+    expect(favorColor(0)).toBe('rgb(208, 48, 48)');
+    expect(favorColor(50)).toBe('rgb(232, 131, 58)');
+    expect(favorColor(100)).toBe('rgb(244, 180, 27)');
   });
 
   it('moves monotonically toward gold as favor rises', () => {

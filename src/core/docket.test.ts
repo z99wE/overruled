@@ -6,7 +6,7 @@ import type { LegalCorpus, ScenarioManifest, TurnRecord } from '../types/legal';
 import { buildSessionSummary, fallbackConsultationQuestions, serializeDocketMarkdown } from './docket';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const corpus = JSON.parse(readFileSync(join(__dirname, '../../public/data/indian_cases.json'), 'utf-8')) as LegalCorpus;
+const corpus = JSON.parse(readFileSync(join(__dirname, '../../public/data/global_cases.json'), 'utf-8')) as LegalCorpus;
 const manifests = JSON.parse(readFileSync(join(__dirname, '../../public/data/scenarios.json'), 'utf-8')) as { scenarios: ScenarioManifest[] };
 
 function scenarioFor(id: string) {
@@ -16,6 +16,7 @@ function scenarioFor(id: string) {
     title: m.title,
     clientName: m.clientName,
     bench: m.bench,
+    jurisdiction: m.jurisdiction,
     factualBackground: m.factualBackground,
     coreDispute: m.coreDispute,
     initialJudicialFavor: m.initialJudicialFavor,
@@ -33,7 +34,7 @@ function scenarioFor(id: string) {
 }
 
 describe('buildSessionSummary', () => {
-  const scenario = scenarioFor('sacred-ridge');
+  const scenario = scenarioFor('midnight-sweep');
   const card = corpus.cases[0];
 
   const sustained: TurnRecord = {
@@ -83,7 +84,7 @@ describe('buildSessionSummary', () => {
     expect(md).toContain('Admitted Legal Precedents');
     expect(md).toContain('Identified Exposure Points');
     expect(md).toContain('Actionable Advocate Consultation Questions');
-    expect(md).toContain('Information Technology Act, 2000');
+    expect(md).toContain('published judgments');
     expect(md).toContain(card.citation);
     expect(md.length).toBeGreaterThan(400);
   });
@@ -95,7 +96,7 @@ describe('buildSessionSummary', () => {
 });
 
 describe('buildSessionSummary edge cases', () => {
-  const scenario = scenarioFor('sacred-ridge');
+  const scenario = scenarioFor('midnight-sweep');
   const card = corpus.cases[0];
 
   function rec(over: Partial<TurnRecord['resolution']>): TurnRecord {

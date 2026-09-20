@@ -1,31 +1,38 @@
-export type Court =
-  | 'Supreme Court of India'
-  | 'High Court'
-  | 'National Green Tribunal';
+export type Jurisdiction = 'US' | 'UK' | 'EU' | 'CA' | 'AU' | 'ZA' | 'IN';
 
 export type Domain =
   | 'Environmental'
   | 'Constitutional'
   | 'Digital_Rights'
   | 'Labor'
-  | 'Tenancy';
+  | 'Tenancy'
+  | 'Criminal'
+  | 'Administrative'
+  | 'Property'
+  | 'Tort'
+  | 'Contract'
+  | 'Indigenous';
 
 export interface PrecedentCard {
   id: string;
   citation: string;
   caseName: string;
   year: number;
-  court: Court;
+  court: string;
+  jurisdiction?: Jurisdiction;
   ratioDecidendi: string;
   statutoryProvisions: string[];
   keyTags: string[];
   domain: Domain;
+  /** Free full-text source for the real judgment (Justia, BAILII, EUR-Lex, CanLII, AustLII, SafLII, Indian Kanoon). */
+  sourceUrl?: string;
 }
 
 export type OpposingStyle =
   | 'Aggressive'
   | 'Technical_Procedural'
-  | 'Constitutional_Statist';
+  | 'Constitutional_Statist'
+  | (string & {});
 
 export interface OpposingCounsel {
   name: string;
@@ -34,11 +41,32 @@ export interface OpposingCounsel {
   interlocutoryAttackTheme?: string;
 }
 
+/** A precedent card the opposing side plays back at the lawyer. */
+export interface OpponentPlayedCard {
+  citation: string;
+  caseName: string;
+  year: number;
+  court: string;
+  jurisdiction?: Jurisdiction;
+  ratio: string;
+}
+
+/** Output of the independent opposing-counsel agent for one turn. */
+export interface OpposingBrief {
+  strike: string;
+  raw: string;
+  /** 'agent' = live LLM opponent, 'sparring' = the local deterministic judge. */
+  origin?: 'agent' | 'sparring';
+  /** The counter-card opposing counsel put on the table this turn, if any. */
+  opponentCard?: OpponentPlayedCard | null;
+}
+
 export interface ScenarioCase {
   id: string;
   title: string;
   clientName: string;
   bench: string;
+  jurisdiction: Jurisdiction;
   factualBackground: string;
   coreDispute: string;
   initialJudicialFavor: number;
@@ -84,6 +112,7 @@ export interface TurnRecord {
   playerAction: PlayerAction;
   resolution: TurnResolution;
   citedPrecedent?: PrecedentCard;
+  opposingBrief?: OpposingBrief;
   rawModelOutput: string;
 }
 
@@ -91,6 +120,7 @@ export interface SessionSummary {
   caseTitle: string;
   clientName: string;
   bench: string;
+  jurisdiction?: Jurisdiction;
   turnRecords: TurnRecord[];
   finalFavor: number;
   admittedPrecedents: PrecedentCard[];
@@ -136,6 +166,7 @@ export interface ScenarioManifest {
   title: string;
   clientName: string;
   bench: string;
+  jurisdiction: Jurisdiction;
   factualBackground: string;
   coreDispute: string;
   initialJudicialFavor: number;
@@ -170,4 +201,4 @@ export interface ValidationResult {
 }
 
 export const STATUTORY_NOTICE =
-  'Overrool is an educational legal literacy and strategic simulation tool under the Information Technology Act, 2000. It does not provide legal advice, does not establish an attorney-client relationship, and cannot replace a certified advocate registered under the Advocates Act, 1961. Simulated rulings reflect algorithmic evaluation of argumentative consistency and precedent alignment.';
+  'Overrool is an educational legal-strategy simulation built on real, published judgments from the United States, the United Kingdom, the European Union, Canada, Australia, South Africa and India. It does not provide legal advice, creates no attorney-client relationship, and cannot replace a qualified advocate, solicitor, or attorney admitted in your jurisdiction. Simulated rulings are algorithmic argument-evaluation, not judicial decisions. Verify every citation against certified law reports before relying on it.';

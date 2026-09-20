@@ -28,7 +28,7 @@ interface ChatOptions {
 }
 
 export async function postRaw(url: string, headers: Record<string, string>, body: unknown, provider: string): Promise<unknown> {
-  let origin = '';
+  let origin: string;
   try {
     origin = new URL(url).origin;
   } catch {

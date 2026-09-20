@@ -8,17 +8,24 @@ import type {
   ValidationResult,
 } from '../types/legal';
 
+// eslint-disable-next-line no-misleading-character-class -- Devanagari block must survive normalization
 const NORMALIZE_RE = /[^0-9a-z\u0900-\u097F]+/g;
 const STOP = new Set([
   'the', 'vs', 'v', 'vs.', 'in', 're', 'ltd', 'or', 'of', 'a', 'an',
   'uoi', 'union', 'state', 'india', 'supreme', 'court', 'corporation',
   'and', 'for', 'with', 'per', 'under', 'relies', 'rely', 'case', 'matter',
   'my', 'your', 'this', 'that', 'from', 'into', 'upon', 'section',
+  'queen', 'king', 'r', 'australia', 'south', 'africa', 'republic',
+  'minister', 'european', 'commissioners', 'another', 'ors', 'others',
 ]);
 
 const SCC_RE = /\((\d{4})\)\s+(\d+)\s*SCC\s+(\d+)/i;
-const SECTION_RE = /\b(?:§|(?:sec(?:tion)?\.?))\s*([0-9]{1,3}(?:\.[0-9]{1,2})?[A-Z]?(?:\([0-9ivx]+\))?)/i;
+const SECTION_RE = /\b(?:§|(?:sec(?:tion)?\.?)|(?:art(?:icle)?\.?)|(?:rule)|(?:r\.)|(?:s\.))\s*([0-9]{1,3}(?:\.[0-9]{1,2})?[A-Z]?(?:\([0-9a-z]+\))?)/i;
 const NON_ALNUM_RE = /[^0-9a-z]/g;
+
+function sectionCode(raw: string): string {
+  return raw.toLowerCase().replace(NON_ALNUM_RE, '').replace(/^[a-z]+/, '');
+}
 
 function tokens(text: string): string[] {
   return text
@@ -169,11 +176,9 @@ export class CitationIndex {
     );
 
     if (sectionMatch) {
-      const codeGroup = sectionMatch[1].toLowerCase().replace(NON_ALNUM_RE, '');
+      const codeGroup = sectionCode(sectionMatch[1]);
       for (const [s] of scoringStatutes) {
-        const sect = s.sections.find(
-          (x) => x.section.toLowerCase().replace(NON_ALNUM_RE, '') === codeGroup,
-        );
+        const sect = s.sections.find((x) => sectionCode(x.section) === codeGroup);
         if (sect) return { citedStatute: s, verified: true, suggestion: `${s.name} ${sect.section} — ${sect.title}` };
       }
     }
@@ -207,6 +212,7 @@ export class CitationIndex {
         caseName: c.caseName,
         year: c.year,
         court: c.court,
+        jurisdiction: c.jurisdiction,
         ratioDecidendi: c.ratioDecidendi,
         statutoryProvisions: c.statutoryProvisions,
         keyTags: c.keyTags,

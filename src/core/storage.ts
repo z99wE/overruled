@@ -117,7 +117,11 @@ export function createKeyManager(): KeyManager {
 
     async setPersist(persist) {
       try {
-        persist ? localStorage.setItem(KEY_PERSISTED, '1') : localStorage.removeItem(KEY_PERSISTED);
+        if (persist) {
+          localStorage.setItem(KEY_PERSISTED, '1');
+        } else {
+          localStorage.removeItem(KEY_PERSISTED);
+        }
       } catch {
         /* noop */
       }

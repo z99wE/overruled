@@ -1,14 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CitationIndex } from './core/searchIndex';
+import type { LibraryPayload, ScenarioBundle } from './types/legal';
 import { loadAllScenarios, loadLibrary, loadScenario } from './core/dataLoader';
+import { generateScenario, randomSeed } from './core/caseGenerator';
 import { createKeyManager } from './core/storage';
 import { initHaptics } from './core/haptics';
-import type { ScenarioBundle } from './types/legal';
+import { bootHealth } from './core/health';
+import { initErrorTracking } from './core/telemetry';
 import { CaseSelect } from './components/CaseSelect';
 import { CourtroomChamber } from './components/CourtroomChamber';
 import { KeySettings } from './components/KeySettings';
+import { Landing } from './components/Landing';
+import { ensureCaseOfDay, loadRun, saveRun, type RunState } from './game/runStore';
+import { ShopModal } from './game/ShopModal';
+import { DuelMode } from './game/DuelMode';
+import type { JokerId } from './game/jokers';
 
-type Screen = 'loading' | 'home' | 'trial';
+// The seven shipped matters are the boss benches of the run; generated
+// matters are free sparring. Prefixing keeps game logic (boss targets,
+// bounties, case-of-the-day) keyed to the static set.
+const STATIC_IDS = [
+  'india-midnight-sweep',
+  'us-interrogation-room',
+  'eu-frozen-transfers',
+  'canada-thirty-month-trial',
+  'uk-bottle-on-the-shelf',
+  'australia-lands-that-never-emptied',
+] as const;
+
+type Screen = 'loading' | 'landing' | 'home' | 'trial';
 
 export function App() {
   const [screen, setScreen] = useState<Screen>('loading');
@@ -18,6 +38,10 @@ export function App() {
   const [keysOpen, setKeysOpen] = useState(false);
   const [hasKey, setHasKey] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [run, setRun] = useState<RunState>(() => loadRun());
+  const [shopOpen, setShopOpen] = useState(false);
+  const [duelOpen, setDuelOpen] = useState(false);
+  const libraryRef = useRef<{ payload: LibraryPayload; index: CitationIndex } | null>(null);
 
   const refreshKeyState = async () => {
     const km = createKeyManager();
@@ -27,14 +51,17 @@ export function App() {
 
   useEffect(() => {
     let mounted = true;
+    initErrorTracking();
+    bootHealth();
     void (async () => {
       try {
-        const { index: idx } = await loadLibrary();
+        const lib = await loadLibrary();
         const all = await loadAllScenarios();
         if (!mounted) return;
-        setIndex(idx);
+        libraryRef.current = lib;
+        setIndex(lib.index);
         setScenarios(all);
-        setScreen('home');
+        setScreen('landing');
       } catch (err) {
         if (mounted) setLoadError(err instanceof Error ? err.message : String(err));
       }
@@ -46,9 +73,20 @@ export function App() {
     };
   }, []);
 
-  const openTrial = async (id: string) => {
+  const openTrial = async (rawId: string) => {
+    // Static ids are game-prefixed ('static-') for boss/scoring logic; the
+    // loader knows them by their bare manifest id.
+    const bareId = rawId.startsWith('static-') ? rawId.slice('static-'.length) : rawId;
+    // Generated matters live only in component state — the corpus on disk
+    // doesn't know them. Serve those straight from state.
+    const inState = scenarios.find((s) => s.id === bareId || s.id === rawId);
+    if (inState) {
+      setActive(inState);
+      setScreen('trial');
+      return;
+    }
     try {
-      const bundle = await loadScenario(id);
+      const bundle = await loadScenario(bareId);
       if (!bundle) return;
       setActive(bundle);
       setScreen('trial');
@@ -58,6 +96,36 @@ export function App() {
     }
   };
 
+  // Sync by construction: the home screen only renders after loadLibrary has
+  // resolved, so the ref is guaranteed populated when this can be clicked.
+  const handleGenerate = (): string | null => {
+    const lib = libraryRef.current;
+    if (!lib) return null;
+    const seed = randomSeed();
+    const matter = generateScenario(lib.payload.corpus, seed, {
+      extraDeckCards: run.jokers.includes('bar-expansion') ? 2 : 0,
+    });
+    setIndex(lib.index);
+    setScenarios((prev) => [matter, ...prev.filter((s) => s.id !== matter.id)]);
+    return matter.id;
+  };
+
+  // Run ids the game layer consumes: static matters carry the boss prefix.
+  const runScenarioIds = useMemo(
+    () => [...STATIC_IDS.map((id) => `static-${id}`), ...scenarios.map((s) => s.id)],
+    [scenarios],
+  );
+  const caseOfDayId = useMemo(
+    () => ensureCaseOfDay(run, new Date().toISOString().slice(0, 10), runScenarioIds),
+     
+    [runScenarioIds],
+  );
+
+  const updateRun = (next: RunState) => {
+    saveRun(next);
+    setRun(next);
+  };
+
   const handleExitTrial = () => {
     setActive(null);
     setScreen('home');
@@ -65,30 +133,47 @@ export function App() {
 
   if (screen === 'loading') {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-4 bg-noir-950">
-        <div className="flex h-16 w-16 animate-[pulse_1.5s_ease-in-out_infinite] items-center justify-center rounded-2xl border border-gold/40 bg-gold/10 font-serif text-3xl font-bold text-gold">
-          §
-        </div>
-        <p className="font-serif text-sm italic text-cream/60">Compiling the public record…</p>
-        {loadError && <p className="max-w-sm px-6 text-center text-[12px] text-crimson">{loadError}</p>}
+      <div className="felt-bg flex h-full flex-col items-center justify-center gap-5">
+        <h1
+          className="anim-slam font-display text-5xl text-cream"
+          style={{ textShadow: '0 4px 0 var(--color-poker-red-deep), 0 6px 0 var(--color-ink)' }}
+        >
+          OVERROOL
+        </h1>
+        <p className="anim-float font-mono text-xs uppercase tracking-widest text-cream/60">Shuffling the world's judgments…</p>
+        {loadError && <p className="max-w-sm px-6 text-center text-[12px] text-poker-red">{loadError}</p>}
       </div>
     );
   }
 
   return (
-    <div className="h-full bg-noir-950">
+    <div className="felt-bg h-full">
+      {screen === 'landing' && (
+        <Landing
+          cases={libraryRef.current?.payload.corpus.cases ?? []}
+          onPlay={() => setScreen('home')}
+        />
+      )}
       {screen === 'home' && (
         <CaseSelect
           scenarios={scenarios}
           hasKey={hasKey}
+          run={run}
+          caseOfDayId={caseOfDayId}
+          onRunChange={updateRun}
+          onOpenShop={() => setShopOpen(true)}
+          onOpenDuel={() => setDuelOpen(true)}
           onSelect={(id) => void openTrial(id)}
           onOpenKeys={() => setKeysOpen(true)}
+          onGenerate={handleGenerate}
+          onOpenHowItWorks={() => setScreen('landing')}
         />
       )}
       {screen === 'trial' && active && index && (
         <CourtroomChamber
           scenario={active}
           index={index}
+          gameScenarioId={active.manifesto.id.startsWith('generated-') ? active.manifesto.id : `static-${active.manifesto.id}`}
           onExit={handleExitTrial}
           onOpenKeys={() => setKeysOpen(true)}
         />
@@ -99,6 +184,22 @@ export function App() {
             setKeysOpen(false);
             void refreshKeyState();
           }}
+        />
+      )}
+      {shopOpen && (
+        <ShopModal
+          chips={run.chips}
+          owned={run.jokers}
+          onBuy={(id, cost) => {
+            updateRun({ ...run, chips: run.chips - cost, jokers: [...run.jokers, id as JokerId] });
+          }}
+          onClose={() => setShopOpen(false)}
+        />
+      )}
+      {duelOpen && libraryRef.current && (
+        <DuelMode
+          deck={libraryRef.current.payload.corpus.cases.slice(0, 12)}
+          onClose={() => setDuelOpen(false)}
         />
       )}
     </div>

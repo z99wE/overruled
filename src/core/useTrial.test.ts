@@ -7,6 +7,7 @@ const scenario: ScenarioBundle = {
   title: 'Some Matter',
   clientName: 'Client',
   bench: 'High Court',
+  jurisdiction: 'CA',
   factualBackground: 'Facts.',
   coreDispute: 'Dispute.',
   initialJudicialFavor: 42,
@@ -24,6 +25,7 @@ const scenario: ScenarioBundle = {
     title: 'Some Matter',
     clientName: 'Client',
     bench: 'High Court',
+    jurisdiction: 'CA',
     factualBackground: 'Facts.',
     coreDispute: 'Dispute.',
     initialJudicialFavor: 42,
@@ -62,9 +64,9 @@ function started(): TrialState {
 }
 
 describe('trialReducer', () => {
-  it('START initialises the case posture', () => {
+  it('START initialises the case posture, landing immediately in awaiting', () => {
     const s = started();
-    expect(s.phase).toBe('opening');
+    expect(s.phase).toBe('awaiting');
     expect(s.favor).toBe(42);
     expect(s.turn).toBe(1);
     expect(s.history).toEqual([]);
@@ -126,6 +128,29 @@ describe('trialReducer', () => {
     const resolving = trialReducer(started(), { type: 'RESOLVING' });
     const reverted = trialReducer(resolving, { type: 'REVERT' });
     expect(reverted.phase).toBe('awaiting');
+  });
+
+  it('VERDICT moves a played precedent card into reducer-owned exhaustion', () => {
+    const cardRecord: TurnRecord = {
+      ...record(5),
+      playerAction: { kind: 'precedent_card', precedentCardId: 'miranda-arizona', rawText: 'Apply Miranda.' },
+    };
+    const after = trialReducer(started(), { type: 'VERDICT', scenario, record: cardRecord });
+    expect(after.playedCardIds).toEqual(['miranda-arizona']);
+  });
+
+  it('played cards survive REVERT and a turn advance, and only START re-deals', () => {
+    const cardRecord: TurnRecord = {
+      ...record(5),
+      playerAction: { kind: 'precedent_card', precedentCardId: 'miranda-arizona', rawText: 'Apply Miranda.' },
+    };
+    const afterVerdict = trialReducer(started(), { type: 'VERDICT', scenario, record: cardRecord });
+    const reverted = trialReducer(afterVerdict, { type: 'REVERT' });
+    expect(reverted.playedCardIds).toEqual(['miranda-arizona']);
+    const nextTurn = trialReducer(afterVerdict, { type: 'NEXT_TURN', scenario });
+    expect(nextTurn.playedCardIds).toEqual(['miranda-arizona']);
+    const restarted = trialReducer(afterVerdict, { type: 'START', scenario });
+    expect(restarted.playedCardIds).toEqual([]);
   });
 
   it('END_TRIAL flushes a session summary', () => {
