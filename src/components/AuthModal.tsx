@@ -67,7 +67,7 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                   <Mail className="h-3.5 w-3.5" /> {user.email}
                 </p>
                 <p className="mt-1 text-[11px] text-cream/60">
-                  Game progress syncs to this account; your LLM keys stay on this device.
+                  Game progress syncs to this account; your LLM keys stay on this device and are scoped to this account — another user who signs in here never sees them.
                 </p>
               </div>
               <button

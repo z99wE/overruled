@@ -18,7 +18,13 @@ Keep a Changelog conventions; version numbers follow SemVer.
 
 ### Changed
 - `LLMProvider` gains `hosted`; `GET /api/auth/me` returns `user.role`.
-- README/CONTRIBUTING test counts updated (181 tests across 21 suites).
+- **BYOK keys are now identity-scoped** (`storage.ts`): each signed-in account
+  reads/writes its own device-local key slot (hashed by email), and a signed-in
+  user can never see, load, or bill another account's key on the same device.
+  Signed-out sessions use the `anonymous` device scope; one legacy pre-scoping
+  key is migrated into that scope exactly once. Auth (`/api/auth/me`, signup,
+  login, logout) switches the active scope.
+- README/CONTRIBUTING test counts updated (185 tests across 21 suites).
 
 ## [2.0.0] - 2026-09-20
 

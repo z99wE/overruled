@@ -48,7 +48,7 @@ overrool/
 │   │   ├── searchIndex.ts             ← MiniSearch citation index + validateCitation (precedent/statute)
 │   │   ├── storage.ts                 ← KeyManager (BYOK): Capacitor SecureStorage (native) or localStorage/sessionStorage (web)
 │   │   └── useTrial.ts                ← reducer-based trial state machine (favor, phase, turn, log)
-│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (21 files, 181 tests)
+│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (21 files, 185 tests)
 │   ├── types/
 │   │   └── legal.ts                   ← all shared TS interfaces + constants (STATUTORY_NOTICE, VERDICT_TAGS, MODEL_DEFAULTS usage)
 │   ├── App.tsx                        ← screen shell (loading / home / trial) + key-vault modal + error fallbacks
@@ -182,7 +182,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 | `npm run preview` | Serve production build locally |
 | `npm run typecheck` | `tsc --noEmit` (app) + `tsc -p tsconfig.workers.json` (Pages Functions) |
 | `npm run lint` | ESLint over `src`, `functions`, `scripts` |
-| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 181 tests) |
+| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 185 tests) |
 | `npm run test:coverage` | Vitest with v8 coverage report + thresholds |
 | `npm run icons` | Regenerate `public/icons/*.png` from `public/icon.svg` (needs `sharp`) |
 | `npm run cf:dev` | `wrangler pages dev` — static shell + Functions + local D1 |
@@ -199,7 +199,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 - **LLM keys never leave the device.** All LLM calls are made client-side by `providerCall.ts` directly to the four allowlisted provider origins. There is no LLM proxy. Error reporting is opt-in: `@sentry/react` is wired but stays dormant unless `VITE_SENTRY_DSN` is set (see `src/core/telemetry.ts`).
 - **Origin allowlist.** `providerCall.ts` enforces a `PROVIDER_ORIGINS` allowlist (Gemini, OpenAI, Anthropic, Groq) before any network call — an SSRF-style guard against malformed or hostile URLs. A 90-second `AbortSignal` timeout applies to every request.
 - **Gemini keys** are transmitted in the `x-goog-api-key` header, never in the URL query string.
-- **Storage.** On Capacitor (iOS/Android) keys live in the native Keychain via `@aparajita/capacitor-secure-storage`. On web they are kept under the `overrool.byok.*` namespace in `localStorage` when persistence is on, otherwise `sessionStorage` (single copy, alternate store is cleaned). **Keys are never sent to Overrool's servers.** The only things that may be hosted server-side are *optional* account credentials and game-progress saves when the player signs in (see [Deployment → Cloudflare Pages](#deployment)); that traffic never includes API keys.
+- **Storage.** On Capacitor (iOS/Android) keys live in the native Keychain via `@aparajita/capacitor-secure-storage`. On web they are kept under the `overrool.byok.*` namespace in `localStorage` when persistence is on, otherwise `sessionStorage` (single copy, alternate store is cleaned). **Keys are never sent to Overrool's servers.** The only things that may be hosted server-side are *optional* account credentials and game-progress saves when the player signs in (see [Deployment → Cloudflare Pages](#deployment)); that traffic never includes API keys. BYOK configs are **identity-scoped** (`storage.ts`): a key armed under account A can never be read or billed by account B on the same device.
 - **Hosted inference exception (admin only).** The workspace administrator (single `role='admin'` account) can enable **Hosted (Cloudflare)** in the Key Vault — the only server-side LLM path. It calls the same-origin `POST /api/llm` function, which requires a session **and** the admin role and proxy the admin's turn to the `AI` binding (Workers AI). No Workers AI credential ever appears in the UI, the admin email is never exposed — only the `role` flag — and everyone else stays on BYOK. See [`AUTH.md`](AUTH.md) for the role-grant runbook and quota handling.
 - Default provider models are listed in `storage.ts` (`MODEL_DEFAULTS`) and are model-overridable per provider. Providers: `gemini`, `openai`, `anthropic`, `groq` (plus `hosted` for the admin).
 - For production hardening on Tauri desktop, wire `tauri-plugin-store` or Tauri's `safeStorage` in place of the in-memory fallback.

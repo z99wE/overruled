@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { RunState } from '../game/runStore';
+import { byokScope, setByokScope } from './storage';
 
 export interface AuthUser {
   email: string;
@@ -41,8 +42,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await fetch('/api/auth/me', { headers: { accept: 'application/json' } });
       const data = (await res.json().catch(() => ({}))) as { user?: AuthUser | null };
       setUser(data.user ?? null);
+      setByokScope(data.user ? byokScope(data.user.email) : byokScope(null));
     } catch {
       setUser(null);
+      setByokScope(byokScope(null));
     } finally {
       setStatus('ready');
     }
@@ -58,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const result = await postJson('/api/auth/signup', { email: CANON(email), password });
     if (!result.user) throw new Error(result.error ?? 'Could not create account.');
     setUser(result.user);
+    setByokScope(byokScope(result.user.email));
     return result.user;
   }, []);
 
@@ -65,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const result = await postJson('/api/auth/login', { email: CANON(email), password });
     if (!result.user) throw new Error(result.error ?? 'Sign-in failed.');
     setUser(result.user);
+    setByokScope(byokScope(result.user.email));
     return result.user;
   }, []);
 
@@ -75,6 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       /* best effort — clear locally regardless */
     }
     setUser(null);
+    setByokScope(byokScope(null));
   }, []);
 
   return (

@@ -260,7 +260,7 @@ export function KeySettings({ onClose }: KeySettingsProps) {
               <p className="text-[10px] leading-relaxed text-cream/50">
                 {isHostedProvider(provider)
                   ? 'Hosted inference runs on the Overrool server via Cloudflare Workers AI — no key on this device. The workspace administrator can reach the model anywhere without a billing card; everyone else brings their own key.'
-                  : `Your key never leaves this device. Simulated trials call ${provider === 'gemini' ? 'Google Gemini' : provider.toUpperCase()} directly over HTTPS from your client. No chat history or case details are transmitted to any intermediary server. On the web your key rests unencrypted in browser storage — anyone using this device can read it; clear it when you're done.`}
+                  : `Your key never leaves this device. Simulated trials call ${provider === 'gemini' ? 'Google Gemini' : provider.toUpperCase()} directly over HTTPS from your client. No chat history or case details are transmitted to any intermediary server. On the web your key rests unencrypted in browser storage — anyone using this device can read it; clear it when you're done. Keys are scoped to your signed-in account; when you are signed out they belong to this device.`}
               </p>
             </>
           )}

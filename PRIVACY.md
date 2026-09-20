@@ -10,7 +10,10 @@ does not collect, and how you can control it.
   It is stored only on your device (and, when you opt in, in browser storage on
   that same device) and sent directly from your browser to the provider you
   chose. No chat history or case details from simulated trials are transmitted
-  to our servers for BYOK trials.
+  to our servers for BYOK trials. Keys are **scoped per identity**: a key armed
+  while signed in to one account can never be read or billed by a different
+  account signing in on the same device — signed-out users share only the
+  unsigned-in "device" scope, never each other's keys.
 - **Accounts.** If you create an account, we store your normalized email
   address, a salted PBKDF2 password hash, a created-at timestamp, and your
   game-progress saves. That is all.

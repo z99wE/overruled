@@ -18,7 +18,7 @@ npm install
 npm run dev        # start the Vite app
 npm run typecheck  # strict tsc over src/ (app) + functions/ (Cloudflare Pages Functions)
 npm run lint       # ESLint 9 flat config over src, functions, scripts
-npm test           # vitest — 181 assertions across 21 suites (app + functions handlers)
+npm test           # vitest — 185 assertions across 21 suites (app + functions handlers)
 ```
 
 Run all three checks green before opening a PR.

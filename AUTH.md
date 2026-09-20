@@ -84,6 +84,11 @@ end-to-end against an in-memory fake D1 (`functions/api/integration.test.ts`).
 - Login rotates the account's session (single active session).
 - `/api/run` requires a valid session, validates payload shape + size (413 on
   oversize), and stores only game-progress JSON.
+- **BYOK isolation:** on-device LLM configs are scoped by identity
+  (`storage.ts`). A key armed while signed in to account A is stored under a
+  hash of A's email and is never read, shown, or billed by account B signing in
+  on the same device. Signed-out sessions share only the `anonymous` device
+  scope, and a single pre-scoping legacy key is migrated once into that scope.
 - `/api/llm` requires a valid session **and** `role = 'admin'` (403 otherwise).
   It is the only server component that touches an LLM; the `model` and prompts
   come from the admin's client, and the `AI` binding (Workers AI free tier,
