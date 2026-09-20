@@ -12,6 +12,11 @@ export interface D1Database {
   prepare(sql: string): D1PreparedStatement;
 }
 
+export interface AiLike {
+  run(model: string, input: unknown): Promise<unknown>;
+}
+
 export interface AppEnv {
   DB: D1Database;
+  AI?: AiLike;
 }

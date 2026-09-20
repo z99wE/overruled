@@ -1,0 +1,36 @@
+# Overrool
+
+> Roll for precedent. Object to hearsay. Win with the law.
+
+Overrool is an adversarial legal strategy courtroom card game. Players pick a
+side, spend strategy tokens, deploy precedent cards, cite statutes, and push
+the Judge's Favor Meter to 0 (dismissal) or 100 (victory). It embeds a global
+corpus of real, published landmark judgments from the United States, the
+United Kingdom, the European Union, Canada, Australia, South Africa, and India,
+with client-side factual citation verification and a single multi-role LLM
+turn. It is an educational simulation, not legal advice.
+
+## Documentation
+
+- [README](https://github.com/z99wE/overruled#readme): overview, architecture, and quick start.
+- [AUTH](https://github.com/z99wE/overruled/blob/main/AUTH.md): Cloudflare accounts, deployment, hosted inference runbook.
+- [PRIVACY](https://github.com/z99wE/overruled/blob/main/PRIVACY.md): what the app stores and never stores.
+- [DISCLAIMER](https://github.com/z99wE/overruled/blob/main/DISCLAIMER.md): not legal advice.
+- [SECURITY](https://github.com/z99wE/overruled/blob/main/SECURITY.md): vulnerability reporting and posture.
+- [CONTRIBUTING](https://github.com/z99wE/overruled/blob/main/CONTRIBUTING.md): how to contribute.
+
+## How it works
+
+- **Bring your own key.** Trials run a single structured LLM pass (Presiding
+  Judge, Opposing Senior Advocate, Co-Counsel) directly from your browser to
+  your own provider key — Gemini, OpenAI, Anthropic, or Groq. No keys, prompts,
+  or case text reach an intermediary server.
+- **Factual grounding.** Citations are verified against an embedded corpus;
+  unverifiable authority is flagged as exposure.
+- **Account sync.** Optional Cloudflare account syncs game progress across
+  devices (and, for the workspace administrator, into server-side hosted
+  inference on Workers AI).
+
+## Licensing and status
+
+Open source. See the repository for license, contribution, and release notes.

@@ -6,6 +6,7 @@ export interface UserRow {
   pw_hash: string;
   pw_salt: string;
   iterations: number;
+  role: string;
   created_at: string;
 }
 
@@ -25,26 +26,31 @@ const NOW = () => new Date().toISOString();
 
 export async function findUserByEmail(db: D1Database, email: string): Promise<UserRow | null> {
   return db
-    .prepare('SELECT id, email, pw_hash, pw_salt, iterations, created_at FROM users WHERE email = ?')
+    .prepare('SELECT id, email, pw_hash, pw_salt, iterations, role, created_at FROM users WHERE email = ?')
     .bind(email)
     .first<UserRow>();
 }
 
 export async function findUserById(db: D1Database, id: string): Promise<UserRow | null> {
   return db
-    .prepare('SELECT id, email, pw_hash, pw_salt, iterations, created_at FROM users WHERE id = ?')
+    .prepare('SELECT id, email, pw_hash, pw_salt, iterations, role, created_at FROM users WHERE id = ?')
     .bind(id)
     .first<UserRow>();
 }
 
 export async function createUser(
   db: D1Database,
-  user: { id: string; email: string; pwHash: string; pwSalt: string; iterations: number },
+  user: { id: string; email: string; pwHash: string; pwSalt: string; iterations: number; role?: string },
 ): Promise<boolean> {
   const res = await db
-    .prepare('INSERT INTO users (id, email, pw_hash, pw_salt, iterations, created_at) VALUES (?, ?, ?, ?, ?, ?)')
-    .bind(user.id, user.email, user.pwHash, user.pwSalt, user.iterations, NOW())
+    .prepare('INSERT INTO users (id, email, pw_hash, pw_salt, iterations, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    .bind(user.id, user.email, user.pwHash, user.pwSalt, user.iterations, user.role ?? 'user', NOW())
     .run();
+  return res.meta.changes === 1;
+}
+
+export async function setUserRole(db: D1Database, email: string, role: 'admin' | 'user'): Promise<boolean> {
+  const res = await db.prepare('UPDATE users SET role = ? WHERE email = ?').bind(role, email).run();
   return res.meta.changes === 1;
 }
 
@@ -70,7 +76,7 @@ export async function deleteSession(db: D1Database, tokenHash: string): Promise<
 export async function getUserForSession(db: D1Database, tokenHash: string): Promise<UserRow | null> {
   const row = await db
     .prepare(
-      `SELECT u.id, u.email, u.pw_hash, u.pw_salt, u.iterations, u.created_at
+      `SELECT u.id, u.email, u.pw_hash, u.pw_salt, u.iterations, u.role, u.created_at
          FROM sessions s
          JOIN users u ON u.id = s.user_id
         WHERE s.token_hash = ? AND s.expires_at > ?`,

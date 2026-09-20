@@ -3,6 +3,23 @@
 All notable changes to overrruled are documented here. This project follows
 Keep a Changelog conventions; version numbers follow SemVer.
 
+## [Unreleased]
+
+### Added
+- Server-side **hosted inference** for the workspace administrator: `users.role`
+  column, `POST /api/llm` (admin-only, Workers AI `AI` binding), and the
+  **Hosted (Cloudflare)** option in the Key Vault — shown only to the `admin`
+  account, with no API-key field and quota/fallback messaging. Everyone else
+  keeps zero-knowledge BYOK, and the admin email is never exposed (only `role`).
+- Privacy notice (`PRIVACY.md`) and a link section in the README.
+- Findability materials: `public/robots.txt`, `public/llms.txt`,
+  `public/sitemap.xml`, and OpenGraph / Twitter / canonical meta tags in
+  `index.html`.
+
+### Changed
+- `LLMProvider` gains `hosted`; `GET /api/auth/me` returns `user.role`.
+- README/CONTRIBUTING test counts updated (181 tests across 21 suites).
+
 ## [2.0.0] - 2026-09-20
 
 ### Added

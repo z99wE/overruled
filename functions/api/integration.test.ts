@@ -7,10 +7,12 @@ import * as loginModule from '../api/auth/login';
 import * as meModule from '../api/auth/me';
 import * as logoutModule from '../api/auth/logout';
 import * as runModule from '../api/run';
+import * as llmModule from '../api/llm';
+import { setUserRole } from '../lib/db';
 
-function makeEnv(): AppEnv {
+function makeEnv(ai?: AppEnv['AI']): AppEnv {
   const { db } = makeFakeDb();
-  return { DB: db };
+  return { DB: db, AI: ai };
 }
 
 const dispatch = async (env: AppEnv, path: string, init: RequestInit = {}): Promise<Response> => {
@@ -30,6 +32,8 @@ const dispatch = async (env: AppEnv, path: string, init: RequestInit = {}): Prom
       if (req.method === 'PUT') return runModule.onRequestPut(ctx);
       return new Response('nope', { status: 405 });
     }
+    case '/api/llm':
+      return llmModule.onRequestPost(ctx);
     default:
       return new Response('nope', { status: 404 });
   }
@@ -113,5 +117,82 @@ describe('auth + run API integration', () => {
     expect(res.status).toBe(200);
     res = await dispatch(env, '/api/auth/me', { headers: { cookie: `__Host-overrool_session=${token2}` } });
     expect((await res.json()).user).toBeNull();
+  });
+});
+
+describe('hosted inference (/api/llm)', () => {
+  const llmPost = (body: unknown, cookie?: string): RequestInit => ({
+    method: 'POST',
+    headers: { 'content-type': 'application/json', ...(cookie ? { cookie: `__Host-overrool_session=${cookie}` } : {}) },
+    body: JSON.stringify(body),
+  });
+
+  const signupAndPromote = async (
+    env: AppEnv,
+    email: string,
+    password: string,
+    role: 'admin' | 'user',
+  ): Promise<string> => {
+    await dispatch(env, '/api/auth/signup', post({ email, password }));
+    await setUserRole(env.DB, email, role);
+    const res = await dispatch(env, '/api/auth/login', post({ email, password }));
+    return (res.headers.get('set-cookie') ?? '').split(';')[0].split('=')[1];
+  };
+
+  it('rejects anonymous and non-admin callers', async () => {
+    const env = makeEnv({ run: async () => ({ response: 'ok' }) });
+    const cookie = await signupAndPromote(env, 'counsel@example.com', GOOD_PW, 'user');
+
+    const anon = await dispatch(env, '/api/llm', llmPost({ system: 's', user: 'u' }));
+    expect(anon.status).toBe(401);
+
+    const regular = await dispatch(env, '/api/llm', llmPost({ system: 's', user: 'u' }, cookie));
+    expect(regular.status).toBe(403);
+  });
+
+  it('routes admin calls through the Workers AI binding and returns text', async () => {
+    let seenModel = '';
+    let seenInput: unknown;
+    const ai: AppEnv['AI'] = {
+      async run(model, input) {
+        seenModel = String(model);
+        seenInput = input;
+        return { response: '{"bench":"SUSTAINED"}' };
+      },
+    };
+    const env = makeEnv(ai);
+    const cookie = await signupAndPromote(env, 'counsel@example.com', GOOD_PW, 'admin');
+
+    const res = await dispatch(env, '/api/llm', llmPost({ system: 'sys', user: 'usr', jsonSchema: true }, cookie));
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as { text: string }).text).toBe('{"bench":"SUSTAINED"}');
+    expect(seenModel).toBe(llmModule.HOSTED_MODEL);
+    const input = seenInput as { messages: Array<{ role: string; content: string }> };
+    expect(input.messages[0]).toEqual({ role: 'system', content: 'sys' });
+    expect(input.messages[1].content).toContain('Respond ONLY with a single JSON object.');
+  });
+
+  it('reports cleared-user role on /me and 503 when the AI binding is missing', async () => {
+    const env = makeEnv();
+    const cookie = await signupAndPromote(env, 'counsel@example.com', GOOD_PW, 'admin');
+    const me = await dispatch(env, '/api/auth/me', { headers: { cookie: `__Host-overrool_session=${cookie}` } });
+    expect(((await me.json()) as { user: { role: string } }).user.role).toBe('admin');
+
+    const res = await dispatch(env, '/api/llm', llmPost({ system: 's', user: 'u' }, cookie));
+    expect(res.status).toBe(503);
+    expect(((await res.json()) as { error: { code: string } }).error.code).toBe('hosted_unconfigured');
+  });
+
+  it('maps quota/billing failures to 429 so users can fall back to BYO keys', async () => {
+    const ai: AppEnv['AI'] = {
+      async run() {
+        throw new Error('AI gateway error 1003: Usage Limit Reached for this account');
+      },
+    };
+    const env = makeEnv(ai);
+    const cookie = await signupAndPromote(env, 'counsel@example.com', GOOD_PW, 'admin');
+    const res = await dispatch(env, '/api/llm', llmPost({ system: 's', user: 'u' }, cookie));
+    expect(res.status).toBe(429);
+    expect(((await res.json()) as { error: { code: string } }).error.code).toBe('hosted_quota');
   });
 });

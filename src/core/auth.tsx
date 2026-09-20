@@ -4,6 +4,7 @@ import type { RunState } from '../game/runStore';
 export interface AuthUser {
   email: string;
   createdAt?: string;
+  role?: 'admin' | 'user';
 }
 
 type AuthStatus = 'loading' | 'ready';

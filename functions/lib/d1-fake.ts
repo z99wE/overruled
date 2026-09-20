@@ -6,6 +6,7 @@ interface UserRow {
   pw_hash: string;
   pw_salt: string;
   iterations: number;
+  role: string;
   created_at: string;
 }
 
@@ -55,15 +56,23 @@ export function makeFakeDb() {
         },
         async run(): Promise<D1Result> {
           if (sql.startsWith('INSERT INTO users')) {
-            const [id, email, pwHash, pwSalt, iterations, createdAt] = bound;
+            const [id, email, pwHash, pwSalt, iterations, role, createdAt] = bound;
             users.push({
               id: String(id),
               email: String(email),
               pw_hash: String(pwHash),
               pw_salt: String(pwSalt),
               iterations: Number(iterations),
+              role: String(role),
               created_at: String(createdAt),
             });
+            return { meta: { changes: 1 } };
+          }
+          if (sql.startsWith('UPDATE users SET role')) {
+            const [role, email] = bound;
+            const u = users.find((x) => x.email === email);
+            if (!u) return { meta: { changes: 0 } };
+            u.role = String(role);
             return { meta: { changes: 1 } };
           }
           if (sql.startsWith('DELETE FROM sessions WHERE user_id')) {

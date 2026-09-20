@@ -12,7 +12,7 @@ Practising courtroom strategy — framing motions, anticipating a bench's reason
 
 Overrool addresses three concrete gaps:
 
-1. **Zero-cost practice.** No ecosystem token budget, no server-side API keys, no third-party proxy. Every LLM call runs directly from the player's browser to the player's own provider account using the key they supply under their own quota (Gemini, OpenAI, Anthropic, or Groq).
+1. **Zero-cost practice.** No ecosystem token budget, no server-side API keys, no third-party proxy. Every LLM call runs directly from the player's browser to the player's own provider account using the key they supply under their own quota (Gemini, OpenAI, Anthropic, or Groq). Google's **Gemini API free tier** (key from Google AI Studio) is a natural no-card starting point, and the account administrator can host serverside inference on Cloudflare's free Workers AI tier for their own trials.
 2. **Factual grounding.** The engine refuses to reward fabricated law. Writer-side citations are checked against an embedded 43-case / 10-statute global corpus; unverifiable authority is flagged as exposure in the docket and the bench responds accordingly.
 3. **Accountable, exportable outcomes.** Each turn is resolved in a single structured LLM pass and captured as a typed `TurnRecord`, and the session is rendered into an Advocate Consultation Docket — admitted precedents, identified exposure points, and actionable consultation questions — that is downloadable, printable, and shareable.
 
@@ -48,7 +48,7 @@ overrool/
 │   │   ├── searchIndex.ts             ← MiniSearch citation index + validateCitation (precedent/statute)
 │   │   ├── storage.ts                 ← KeyManager (BYOK): Capacitor SecureStorage (native) or localStorage/sessionStorage (web)
 │   │   └── useTrial.ts                ← reducer-based trial state machine (favor, phase, turn, log)
-│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (21 files, 177 tests)
+│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (21 files, 181 tests)
 │   ├── types/
 │   │   └── legal.ts                   ← all shared TS interfaces + constants (STATUTORY_NOTICE, VERDICT_TAGS, MODEL_DEFAULTS usage)
 │   ├── App.tsx                        ← screen shell (loading / home / trial) + key-vault modal + error fallbacks
@@ -182,7 +182,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 | `npm run preview` | Serve production build locally |
 | `npm run typecheck` | `tsc --noEmit` (app) + `tsc -p tsconfig.workers.json` (Pages Functions) |
 | `npm run lint` | ESLint over `src`, `functions`, `scripts` |
-| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 177 tests) |
+| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 181 tests) |
 | `npm run test:coverage` | Vitest with v8 coverage report + thresholds |
 | `npm run icons` | Regenerate `public/icons/*.png` from `public/icon.svg` (needs `sharp`) |
 | `npm run cf:dev` | `wrangler pages dev` — static shell + Functions + local D1 |
@@ -200,7 +200,8 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 - **Origin allowlist.** `providerCall.ts` enforces a `PROVIDER_ORIGINS` allowlist (Gemini, OpenAI, Anthropic, Groq) before any network call — an SSRF-style guard against malformed or hostile URLs. A 90-second `AbortSignal` timeout applies to every request.
 - **Gemini keys** are transmitted in the `x-goog-api-key` header, never in the URL query string.
 - **Storage.** On Capacitor (iOS/Android) keys live in the native Keychain via `@aparajita/capacitor-secure-storage`. On web they are kept under the `overrool.byok.*` namespace in `localStorage` when persistence is on, otherwise `sessionStorage` (single copy, alternate store is cleaned). **Keys are never sent to Overrool's servers.** The only things that may be hosted server-side are *optional* account credentials and game-progress saves when the player signs in (see [Deployment → Cloudflare Pages](#deployment)); that traffic never includes API keys.
-- Default provider models are listed in `storage.ts` (`MODEL_DEFAULTS`) and are model-overridable per provider. Providers: `gemini`, `openai`, `anthropic`, `groq`.
+- **Hosted inference exception (admin only).** The workspace administrator (single `role='admin'` account) can enable **Hosted (Cloudflare)** in the Key Vault — the only server-side LLM path. It calls the same-origin `POST /api/llm` function, which requires a session **and** the admin role and proxy the admin's turn to the `AI` binding (Workers AI). No Workers AI credential ever appears in the UI, the admin email is never exposed — only the `role` flag — and everyone else stays on BYOK. See [`AUTH.md`](AUTH.md) for the role-grant runbook and quota handling.
+- Default provider models are listed in `storage.ts` (`MODEL_DEFAULTS`) and are model-overridable per provider. Providers: `gemini`, `openai`, `anthropic`, `groq` (plus `hosted` for the admin).
 - For production hardening on Tauri desktop, wire `tauri-plugin-store` or Tauri's `safeStorage` in place of the in-memory fallback.
 
 ---
@@ -336,6 +337,7 @@ What the API does (`functions/api/`):
 
 - `POST /api/auth/signup` · `POST /api/auth/login` · `POST /api/auth/logout` · `GET /api/auth/me` — email + password accounts. Passwords are stored as **salted PBKDF2-SHA256** hashes (210k iterations); sessions are opaque 32-byte tokens whose SHA-256 digest is stored, delivered as `HttpOnly; Secure; SameSite=Strict` cookies (`__Host-overrool_session`). One active session per account (login rotates).
 - `GET/PUT /api/run` — account-scoped game-progress save (chips, XP, jokers, bosses). Signed-in players sync automatically; signed-out play is 100% device-local.
+- `POST /api/llm` — admin-only hosted inference proxy to the Workers AI `AI` binding (free tier). See `AUTH.md` §7.
 
 Declared account gaps (see `AUTH.md`): no email verification (there is no transactional email on Pages), no per-account rate limiting, and sessions are single-bearer-token (no refresh rotation beyond login).
 
@@ -386,6 +388,16 @@ The Tauri window CSP is locked to the four BYOK provider origins (`generativelan
 
 - `.gitignore` excludes `node_modules/`, `dist/`, native build outputs (`ios/`, `android/`, `src-tauri/target/`, `src-tauri/gen/`), env files, and tooling state (`.freebuff/`).
 - No API keys, tokens, or secrets are checked in — KEYS ARE ALWAYS PLAYER-SUPPLIED AT RUNTIME. Scan before any push: `rg -i "sk-[A-Za-z0-9]{20}|AIza[0-9A-Za-z_-]{20}" .`
+
+---
+
+## See also
+
+- [**PRIVACY.md**](PRIVACY.md) — what the app stores and never stores (keys, cookies, hosted-inference path).
+- [**DISCLAIMER.md**](DISCLAIMER.md) — educational simulation; not legal advice.
+- [**SECURITY.md**](SECURITY.md) — security model and vulnerability reporting.
+- [**AUTH.md**](AUTH.md) — Cloudflare deployment runbook incl. the hosted-inference role grant.
+- [**CONTRIBUTING.md**](CONTRIBUTING.md) — how to build, test, and contribute.
 
 ---
 

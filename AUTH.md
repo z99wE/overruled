@@ -1,8 +1,10 @@
 # Overrool Cloudflare accounts — deployment runbook
 
 Overrool uses **Cloudflare Pages** for the static PWA and **Pages Functions +
-D1** for accounts and game-progress sync. No LLM key ever reaches this stack:
-BYOK calls go straight from the player's browser to their provider.
+D1** for accounts and game-progress sync. BYOK calls go straight from the
+player's browser to their provider. Server-side **hosted inference** for the
+workspace administrator (one account) runs on the free **Workers AI** tier —
+no admin API key is ever shown in the UI.
 
 ## 1. Prerequisites
 
@@ -28,6 +30,10 @@ npm run d1:create
 
 # Create the tables (users, sessions, runs)
 npm run d1:migrate
+
+# Grant the workspace administrator the 'admin' role so they alone get the
+# server-side Hosted (Cloudflare) inference option in the Key Vault.
+npx wrangler d1 execute overrool --remote --command="UPDATE users SET role='admin' WHERE email='<admin-email>'"
 ```
 
 `schema.sql` is idempotent; re-running it is safe.
@@ -57,8 +63,9 @@ npm run cf:dev         # serves dist/ + Functions and connects to your D1 bindin
 | `functions/api/auth/signup.ts` | `POST /api/auth/signup` |
 | `functions/api/auth/login.ts` | `POST /api/auth/login` |
 | `functions/api/auth/logout.ts` | `POST /api/auth/logout` |
-| `functions/api/auth/me.ts` | `GET /api/auth/me` |
+| `functions/api/auth/me.ts` | `GET /api/auth/me` (returns `user.role`) |
 | `functions/api/run.ts` | `GET/PUT /api/run` (account-scoped save) |
+| `functions/api/llm.ts` | `POST /api/llm` (admin-only hosted inference via the `AI` binding) |
 | `functions/lib/*` | D1 access, PBKDF2 + sessions, HTTP helpers |
 | `d1/schema.sql` | DDL for `users`, `sessions`, `runs` |
 | `public/_redirects` | `/* → /index.html 200` SPA fallback |
@@ -77,6 +84,32 @@ end-to-end against an in-memory fake D1 (`functions/api/integration.test.ts`).
 - Login rotates the account's session (single active session).
 - `/api/run` requires a valid session, validates payload shape + size (413 on
   oversize), and stores only game-progress JSON.
+- `/api/llm` requires a valid session **and** `role = 'admin'` (403 otherwise).
+  It is the only server component that touches an LLM; the `model` and prompts
+  come from the admin's client, and the `AI` binding (Workers AI free tier,
+  `@cf/meta/llama-3.1-8b-instruct` by default) routes via Cloudflare. The admin
+  email is never returned by any endpoint — only the `role` flag — so a
+  specific administrator account can't be inferred from the UI.
+
+## 7. Hosted inference (admin only)
+
+Every account provides its own key by default. One account — the workspace
+administrator — can instead enable **Hosted (Cloudflare)** in the Key Vault,
+which calls `/api/llm` on this same origin, so no Workers AI credential ever
+reaches the browser. Setup:
+
+1. Deploy with the `[ai]` binding enabled in `wrangler.toml`.
+2. Sign up / sign in with the admin account and grant the role:
+   `UPDATE users SET role='admin' WHERE email='<admin-email>'`.
+3. In the Key Vault choose **Hosted (Cloudflare)** (visible only to the admin
+   account) and Enable. No key field is shown or required.
+4. Admin quotas: Workers AI has a daily free allocation; when it is exhausted
+   `/api/llm` responds `429 hosted_quota` and the Key Vault Test button tells
+   the admin to switch back to a BYO key or add a Cloudflare billing method.
+
+The hosted path only sends the current turn's system/user text, temperature,
+token cap, and JSON-schema flag. It is a convenience for the administrator —
+all other accounts keep the zero-knowledge BYOK route.
 
 ## 7. Accepted gaps / next steps
 

@@ -150,6 +150,7 @@ const MODEL_DEFAULTS: Record<LLMProvider, string> = {
   openai: 'gpt-4o-mini',
   anthropic: 'claude-3-5-haiku-latest',
   groq: 'llama-3.3-70b-versatile',
+  hosted: '@cf/meta/llama-3.1-8b-instruct',
 };
 
 export const PROVIDERS: Array<{ id: LLMProvider; label: string; envHint: string }> = [
@@ -158,6 +159,14 @@ export const PROVIDERS: Array<{ id: LLMProvider; label: string; envHint: string 
   { id: 'anthropic', label: 'Anthropic Claude', envHint: 'ANTHROPIC_API_KEY' },
   { id: 'groq', label: 'Groq', envHint: 'GROQ_API_KEY' },
 ];
+
+/** Same-origin server inference (Cloudflare Workers AI). Shown only to the admin. */
+export const HOSTED_ENTRY = { id: 'hosted', label: 'Hosted (Cloudflare)', envHint: 'Server-side · no key needed' } as const;
+
+/** True when the given provider never needs a local API key. */
+export function isHostedProvider(provider: LLMProvider): boolean {
+  return provider === 'hosted';
+}
 
 export function defaultModel(provider: LLMProvider): string {
   return MODEL_DEFAULTS[provider];

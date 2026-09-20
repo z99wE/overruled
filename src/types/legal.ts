@@ -99,7 +99,7 @@ export interface PlayerAction {
   rawText: string;
 }
 
-export type LLMProvider = 'gemini' | 'openai' | 'anthropic' | 'groq';
+export type LLMProvider = 'gemini' | 'openai' | 'anthropic' | 'groq' | 'hosted';
 
 export interface LLMConfig {
   provider: LLMProvider;

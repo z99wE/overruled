@@ -8,3 +8,8 @@ pages_build_output_dir = "dist"
 binding = "DB"
 database_name = "overrool"
 database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+# Hosted inference for the workspace administrator (free-tier Workers AI).
+# Remove this block if you do not want the admin-only /api/llm route.
+[ai]
+binding = "AI"

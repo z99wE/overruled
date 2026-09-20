@@ -15,12 +15,17 @@ for a fix.
 ## Supported runtime profile
 
 The game shell is a fully local, client-side application. LLM calls go
-directly from the player's browser to the provider they chose — no LLM proxy.
+directly from the player's browser to the provider they chose. The one
+exception is the admin-only hosted path (`/api/llm`), which proxies the
+workspace administrator's turn to Cloudflare's Workers AI `AI` binding — it
+carries no secret, never serves the admin email (only `role`), and rejects
+non-admin sessions with 403.
 
 The only server component is the **optional accounts API**, deployed on
-Cloudflare Pages Functions backed by D1. It is reachable only at `/api/auth/*`
-and `/api/run`. It exists solely to let players sign in and sync game progress;
-it never receives LLM API keys.
+Cloudflare Pages Functions backed by D1. It is reachable only at `/api/auth/*`,
+`/api/run`, and `/api/llm`. It exists to let players sign in, sync game
+progress, and (for the admin) reach the hosted model; it never receives LLM
+API keys.
 
 ## Security model
 

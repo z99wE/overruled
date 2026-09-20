@@ -157,6 +157,44 @@ export async function requestChat(opts: ChatOptions): Promise<string> {
       return content;
     }
 
+    case 'hosted': {
+      const res = await fetch('/api/llm', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(
+          compactRecord({
+            system: opts.system,
+            user: opts.user,
+            temperature,
+            maxTokens: opts.maxTokens,
+            jsonSchema: opts.jsonSchema,
+            model: config.model,
+          }),
+        ),
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      });
+      const data = (await res.json().catch(() => ({}))) as { text?: string; error?: { code?: string; message?: string } };
+      if (!res.ok) {
+        const code = data.error?.code;
+        const fallback = data.error?.message ?? `Hosted inference failed (${res.status}).`;
+        const friendly =
+          code === 'unauthorized'
+            ? 'Sign in to use hosted inference.'
+            : code === 'forbidden'
+              ? 'Hosted inference is reserved for the workspace administrator. Supply your own key instead.'
+              : code === 'hosted_quota'
+                ? 'Hosted inference quota is exhausted. Contact the administrator or use your own key.'
+                : code === 'hosted_unconfigured'
+                  ? 'Hosted inference is not configured on this deployment yet. Use your own key.'
+                  : fallback;
+        throw new LLMOrchestratorError(friendly, 'hosted', res.status);
+      }
+      const text = data.text;
+      if (!text) throw new LLMOrchestratorError('Hosted inference returned an empty response.', 'hosted');
+      return text;
+    }
+
     default:
       throw new LLMOrchestratorError(`Unsupported provider: ${String(config.provider)}`, String(config.provider));
   }

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
   pw_hash     TEXT NOT NULL,
   pw_salt     TEXT NOT NULL,
   iterations  INTEGER NOT NULL,
+  role        TEXT NOT NULL DEFAULT 'user',
   created_at  TEXT NOT NULL
 );
 
