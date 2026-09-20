@@ -23,10 +23,10 @@ const AuthContext = createContext<AuthValue | null>(null);
 
 const JSON_HEADERS = { 'content-type': 'application/json' };
 
-async function postJson(path: string, body: unknown): Promise<{ user?: AuthUser; error?: string }> {
+async function postJson(path: string, body: unknown): Promise<{ user?: AuthUser; error?: string; retryAfterSeconds?: number }> {
   const res = await fetch(path, { method: 'POST', headers: JSON_HEADERS, body: JSON.stringify(body) });
-  const data = (await res.json().catch(() => ({}))) as { user?: AuthUser; error?: string };
-  if (!res.ok) return { error: data.error ?? `Request failed (${res.status}).` };
+  const data = (await res.json().catch(() => ({}))) as { user?: AuthUser; error?: string; retryAfterSeconds?: number };
+  if (!res.ok) return { error: data.error ?? `Request failed (${res.status}).`, retryAfterSeconds: data.retryAfterSeconds };
   return { user: data.user };
 }
 
@@ -67,7 +67,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string): Promise<AuthUser> => {
     const result = await postJson('/api/auth/login', { email: CANON(email), password });
-    if (!result.user) throw new Error(result.error ?? 'Sign-in failed.');
+    if (!result.user) {
+      const retry = result.retryAfterSeconds ? `Try again in ${result.retryAfterSeconds}s.` : '';
+      throw new Error(result.error ? `${result.error}${retry ? ` ${retry}` : ''}` : 'Sign-in failed.');
+    }
     setUser(result.user);
     setByokScope(byokScope(result.user.email));
     return result.user;

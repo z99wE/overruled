@@ -17,6 +17,11 @@ interface SessionRow {
   expires_at: string;
 }
 
+interface LoginAttemptRow {
+  email: string;
+  attempted_at: string;
+}
+
 /**
  * A tiny in-memory D1 stand-in that understands exactly the queries in db.ts.
  * Good enough to exercise the auth/run handlers end-to-end in tests.
@@ -25,6 +30,7 @@ export function makeFakeDb() {
   const users: UserRow[] = [];
   const sessions: SessionRow[] = [];
   const runs = new Map<string, { data: string; updated_at: string }>();
+  const loginAttempts: LoginAttemptRow[] = [];
 
   const db: D1Database = {
     prepare(sql: string): D1PreparedStatement {
@@ -53,6 +59,17 @@ export function makeFakeDb() {
             return r ? ({ user_id: bound[0], data: r.data, updated_at: r.updated_at } as T) : (null as T | null);
           }
           return null as T | null;
+        },
+        async all<T>() {
+          if (sql.includes('FROM login_attempts')) {
+            const [email, cutoff] = bound;
+            const rows = loginAttempts
+              .filter((x) => x.email === email && x.attempted_at > String(cutoff))
+              .sort((a, b) => (a.attempted_at < b.attempted_at ? -1 : 1))
+              .map((x) => ({ attempted_at: x.attempted_at }));
+            return { results: rows as T[], success: true };
+          }
+          return { results: [] as T[], success: true };
         },
         async run(): Promise<D1Result> {
           if (sql.startsWith('INSERT INTO users')) {
@@ -102,6 +119,27 @@ export function makeFakeDb() {
             runs.set(String(userId), { data: String(data), updated_at: String(updatedAt) });
             return { meta: { changes: 1 } };
           }
+          if (sql.startsWith('INSERT INTO login_attempts')) {
+            const [email, attemptedAt] = bound;
+            loginAttempts.push({ email: String(email), attempted_at: String(attemptedAt) });
+            return { meta: { changes: 1 } };
+          }
+          if (sql.startsWith('DELETE FROM login_attempts WHERE attempted_at')) {
+            const [cutoff] = bound;
+            const before = loginAttempts.length;
+            for (let i = loginAttempts.length - 1; i >= 0; i--) {
+              if (loginAttempts[i].attempted_at < String(cutoff)) loginAttempts.splice(i, 1);
+            }
+            return { meta: { changes: before - loginAttempts.length } };
+          }
+          if (sql.startsWith('DELETE FROM login_attempts WHERE email = ?')) {
+            const [email] = bound;
+            const before = loginAttempts.length;
+            for (let i = loginAttempts.length - 1; i >= 0; i--) {
+              if (loginAttempts[i].email === String(email)) loginAttempts.splice(i, 1);
+            }
+            return { meta: { changes: before - loginAttempts.length } };
+          }
           return { meta: { changes: 0 } };
         },
       };
@@ -109,7 +147,7 @@ export function makeFakeDb() {
     },
   };
 
-  const counts = () => ({ users: users.length, sessions: sessions.length, runs: runs.size });
+  const counts = () => ({ users: users.length, sessions: sessions.length, runs: runs.size, loginAttempts: loginAttempts.length });
   return { db, counts };
 }
 

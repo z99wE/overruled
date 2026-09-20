@@ -1,61 +1,56 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
 import { makeFakeDb } from './d1-fake';
-import {
-  createSession,
-  createUser,
-  deleteSession,
-  deleteSessionsForUser,
-  findUserByEmail,
-  getUserForSession,
-  putRun,
-  getRun,
-} from './db';
+import { clearFailedLogins, loginLock, LOGIN_WINDOW_MINUTES, recordFailedLogin } from './db';
 
-const USER = {
-  id: 'u-1',
-  email: 'counsel@example.com',
-  pwHash: '0'.repeat(64),
-  pwSalt: '1'.repeat(32),
-  iterations: 210_000,
-};
+const EMAIL = 'deputy@example.com';
+const MIN = 60 * 1000;
 
-describe('db layer', () => {
-  it('creates users and finds them by email', async () => {
+describe('login backoff helpers', () => {
+  it('starts unlocked and records attempts', async () => {
     const { db } = makeFakeDb();
-    await createUser(db, USER);
-    expect((await findUserByEmail(db, 'counsel@example.com'))?.id).toBe('u-1');
-    expect(await findUserByEmail(db, 'missing@example.com')).toBeNull();
+    expect(await loginLock(db, EMAIL)).toEqual({ locked: false, retryAfterSeconds: 0 });
+    await recordFailedLogin(db, EMAIL);
+    await recordFailedLogin(db, EMAIL);
+    const lock = await loginLock(db, EMAIL);
+    expect(lock.locked).toBe(false);
   });
 
-  it('creates, reads, rotates, and invalidates sessions', async () => {
-    const { db, counts } = makeFakeDb();
-    await createUser(db, USER);
-    await createSession(db, { tokenHash: 'h1', userId: 'u-1', expiresAt: '2999-01-01T00:00:00Z' });
-    expect(await getUserForSession(db, 'h1')).toMatchObject({ email: 'counsel@example.com' });
-
-    await deleteSessionsForUser(db, 'u-1');
-    expect(counts().sessions).toBe(0);
-
-    await createSession(db, { tokenHash: 'h2', userId: 'u-1', expiresAt: '2999-01-01T00:00:00Z' });
-    await deleteSession(db, 'h2');
-    expect(await getUserForSession(db, 'h2')).toBeNull();
-  });
-
-  it('rejects expired sessions', async () => {
+  it('locks once LOGIN_MAX_FAILURES attempts land inside the window', async () => {
     const { db } = makeFakeDb();
-    await createUser(db, USER);
-    await createSession(db, { tokenHash: 'expired', userId: 'u-1', expiresAt: '2000-01-01T00:00:00Z' });
-    expect(await getUserForSession(db, 'expired')).toBeNull();
+    const recent = new Date(Date.now() - 1 * MIN).toISOString();
+    // Seed one under the threshold.
+    for (let i = 0; i < 9; i++) {
+      await db.prepare('INSERT INTO login_attempts (email, attempted_at) VALUES (?, ?)').bind(EMAIL, recent).run();
+    }
+    expect(await loginLock(db, EMAIL)).toEqual({ locked: false, retryAfterSeconds: 0 });
+
+    // Tenth lands at the threshold → locked until the first attempt ages out.
+    await db.prepare('INSERT INTO login_attempts (email, attempted_at) VALUES (?, ?)').bind(EMAIL, recent).run();
+    const lock = await loginLock(db, EMAIL);
+    expect(lock.locked).toBe(true);
+    // Oldest attempt is ~1min old, window is LOGIN_WINDOW_MINUTES → roughly (window-1) minutes remain.
+    expect(lock.retryAfterSeconds).toBeGreaterThan(LOGIN_WINDOW_MINUTES * 60 - 120);
+    expect(lock.retryAfterSeconds).toBeLessThanOrEqual(LOGIN_WINDOW_MINUTES * 60);
   });
 
-  it('upserts and reads account runs', async () => {
-    const { db, counts } = makeFakeDb();
-    await putRun(db, 'u-1', '{"chips": 5}');
-    expect((await getRun(db, 'u-1'))?.data).toBe('{"chips": 5}');
-    await putRun(db, 'u-1', '{"chips": 9}');
-    expect((await getRun(db, 'u-1'))?.data).toBe('{"chips": 9}');
-    expect(counts().runs).toBe(1);
-    expect(await getRun(db, 'nobody')).toBeNull();
+  it('ignores attempts older than the window', async () => {
+    const { db } = makeFakeDb();
+    const old = new Date(Date.now() - (LOGIN_WINDOW_MINUTES + 5) * MIN).toISOString();
+    for (let i = 0; i < 12; i++) {
+      await db.prepare('INSERT INTO login_attempts (email, attempted_at) VALUES (?, ?)').bind(EMAIL, old).run();
+    }
+    expect(await loginLock(db, EMAIL)).toEqual({ locked: false, retryAfterSeconds: 0 });
+  });
+
+  it('clearFailedLogins resets the counter', async () => {
+    const { db } = makeFakeDb();
+    const recent = new Date(Date.now() - 1 * MIN).toISOString();
+    for (let i = 0; i < 10; i++) {
+      await db.prepare('INSERT INTO login_attempts (email, attempted_at) VALUES (?, ?)').bind(EMAIL, recent).run();
+    }
+    expect((await loginLock(db, EMAIL)).locked).toBe(true);
+    await clearFailedLogins(db, EMAIL);
+    expect(await loginLock(db, EMAIL)).toEqual({ locked: false, retryAfterSeconds: 0 });
   });
 });

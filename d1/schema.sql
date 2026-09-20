@@ -24,3 +24,11 @@ CREATE TABLE IF NOT EXISTS runs (
   data        TEXT NOT NULL,
   updated_at  TEXT NOT NULL
 );
+
+-- Failed-login backoff (see functions/lib/db.ts loginLock).
+-- Rows are pruned opportunistically on each failed attempt.
+CREATE TABLE IF NOT EXISTS login_attempts (
+  email        TEXT NOT NULL COLLATE NOCASE,
+  attempted_at TEXT NOT NULL,
+  PRIMARY KEY (email, attempted_at)
+);

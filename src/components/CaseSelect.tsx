@@ -77,16 +77,16 @@ export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, o
             <ShoppingBag className="h-4 w-4" /> 🪙 {run.chips}
           </button>
           <button
-          aria-label={hasKey ? 'Open key vault' : 'Open key vault to arm your key'}
+          aria-label={hasKey ? 'Open key vault' : 'Open key vault to see key options'}
             type="button"
             onClick={onOpenKeys}
 
             className={`btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink px-3 py-2 font-display text-[11px] uppercase tracking-wider ${
-              hasKey ? 'bg-felt-600 text-cream' : 'bg-poker-red text-cream anim-float'
+              hasKey ? 'bg-felt-600 text-cream' : 'bg-felt-700 text-cream/80'
             }`}
           >
             {hasKey ? <ShieldCheck className="h-4 w-4" /> : <KeyRound className="h-4 w-4" />}
-            {hasKey ? 'Key Armed' : 'Arm Your Key'}
+            {hasKey ? 'Key Armed' : 'No Key'}
           </button>
         </div>
       </header>
@@ -103,14 +103,15 @@ export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, o
         </div>
 
         {!hasKey && (
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-ink bg-poker-red-deep/40 p-4">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-ink bg-felt-700/40 p-4">
             <div>
               <p className="font-display text-sm uppercase tracking-wider text-cream">
-                The bench is ready. Your key is not.
+                Playing with the local bench
               </p>
               <p className="mt-0.5 text-[12px] text-cream/70">
-                Overrool is BYOK: bring one API key (Gemini, OpenAI, Anthropic or Groq). It is kept
-                on this device in browser storage — not encrypted — and is sent nowhere but the provider.
+                No key? Every case still plays: the rules-only Bench resolves turns instantly.
+                Add a Gemini, OpenAI, Anthropic or Groq key (kept on this device, scoped to your
+                account) to call live multi-role models instead. Your trial never needs a key.
               </p>
             </div>
             <button

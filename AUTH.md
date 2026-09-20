@@ -89,6 +89,13 @@ end-to-end against an in-memory fake D1 (`functions/api/integration.test.ts`).
   hash of A's email and is never read, shown, or billed by account B signing in
   on the same device. Signed-out sessions share only the `anonymous` device
   scope, and a single pre-scoping legacy key is migrated once into that scope.
+- **Failed-login backoff:** `/api/auth/login` records each failure in D1
+  (`login_attempts`) and refuses sign-in with `429 login_locked` once 10
+  failures for an email land inside a 15-minute window (including unknown
+  emails, and the correct password stays blocked until the window slides — no
+  lock-bypass). A successful sign-in clears the counter. Requires the
+  `login_attempts` table from `d1/schema.sql` (re-run `npm run d1:migrate` on
+  an existing deployment).
 - `/api/llm` requires a valid session **and** `role = 'admin'` (403 otherwise).
   It is the only server component that touches an LLM; the `model` and prompts
   come from the admin's client, and the `AI` binding (Workers AI free tier,

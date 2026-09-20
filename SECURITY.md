@@ -44,6 +44,10 @@ API keys.
   shape and size and require a valid session.
 - **Prompt isolation:** provider conversations are built per-request; the system
   never concatenates user-authored text into an executable context.
+- **Sign-in backoff:** failed logins are recorded in D1 (`login_attempts`) and a
+  per-email lock (`429 login_locked`) engages after 10 failures inside 15
+  minutes. It covers unknown emails too and won't be bypassed by the correct
+  password while locked; a successful sign-in clears the counter.
 - **DOM hygiene:** user-authored text is rendered as text, never injected as
   markup; no `dangerouslySetInnerHTML` is used.
 
@@ -51,8 +55,8 @@ API keys.
 
 - No email verification (Cloudflare Pages has no outbound email; a provider
   such as Resend is the intended retrofit).
-- No login rate limiting / lockout at this layer (Cloudflare's WAF/rate rules
-  can be layered onto the deployment).
+- Application-layer backoff is per-email; a Cloudflare WAF/rate rule can still
+  be layered onto `/api/auth/*` for IP-level aggregate limits.
 - Sessions are a single bearer cookie rotated on login; there is no refresh-token
   rotation after that.
 - The auth HTTP layer is a small custom implementation, not a managed IdP.

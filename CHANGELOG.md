@@ -24,7 +24,10 @@ Keep a Changelog conventions; version numbers follow SemVer.
   Signed-out sessions use the `anonymous` device scope; one legacy pre-scoping
   key is migrated into that scope exactly once. Auth (`/api/auth/me`, signup,
   login, logout) switches the active scope.
-- README/CONTRIBUTING test counts updated (185 tests across 21 suites).
+- **Keyless copy softened:** the case list no longer scolds keyless players with
+  a red "Arm Your Key" nudge; the chip is a muted "No Key" and the banner now
+  explains that every case still plays via the rules-only local Bench.
+- README/CONTRIBUTING test counts updated (187 tests across 21 suites).
 
 ## [2.0.0] - 2026-09-20
 

@@ -8,7 +8,7 @@ import * as meModule from '../api/auth/me';
 import * as logoutModule from '../api/auth/logout';
 import * as runModule from '../api/run';
 import * as llmModule from '../api/llm';
-import { setUserRole } from '../lib/db';
+import { setUserRole, LOGIN_MAX_FAILURES } from '../lib/db';
 
 function makeEnv(ai?: AppEnv['AI']): AppEnv {
   const { db } = makeFakeDb();
@@ -117,6 +117,42 @@ describe('auth + run API integration', () => {
     expect(res.status).toBe(200);
     res = await dispatch(env, '/api/auth/me', { headers: { cookie: `__Host-overrool_session=${token2}` } });
     expect((await res.json()).user).toBeNull();
+  });
+
+  it('locks sign-in after repeated failures and blocks the correct password too', async () => {
+    const env = makeEnv();
+    await dispatch(env, '/api/auth/signup', post({ email: EMAIL, password: GOOD_PW }));
+
+    for (let i = 0; i < LOGIN_MAX_FAILURES; i++) {
+      const res = await dispatch(env, '/api/auth/login', post({ email: EMAIL, password: WRONG_PW }));
+      expect(res.status).toBe(401);
+    }
+
+    const locked = await dispatch(env, '/api/auth/login', post({ email: EMAIL, password: WRONG_PW }));
+    expect(locked.status).toBe(429);
+    const body = (await locked.json()) as { code: string; retryAfterSeconds: number };
+    expect(body.code).toBe('login_locked');
+    expect(body.retryAfterSeconds).toBeGreaterThan(0);
+
+    // Anti-lock-bypass: the real password is still refused while locked.
+    const correctWhileLocked = await dispatch(env, '/api/auth/login', post({ email: EMAIL, password: GOOD_PW }));
+    expect(correctWhileLocked.status).toBe(429);
+  });
+
+  it('a successful sign-in resets the failure counter', async () => {
+    const env = makeEnv();
+    await dispatch(env, '/api/auth/signup', post({ email: EMAIL, password: GOOD_PW }));
+    for (let i = 0; i < 3; i++) {
+      await dispatch(env, '/api/auth/login', post({ email: EMAIL, password: WRONG_PW }));
+    }
+    const ok = await dispatch(env, '/api/auth/login', post({ email: EMAIL, password: GOOD_PW }));
+    expect(ok.status).toBe(200);
+
+    // Post-reset: 9 more failures is still short of the 10-attempt threshold.
+    for (let i = 0; i < LOGIN_MAX_FAILURES - 1; i++) {
+      const res = await dispatch(env, '/api/auth/login', post({ email: EMAIL, password: WRONG_PW }));
+      expect(res.status).toBe(401);
+    }
   });
 });
 

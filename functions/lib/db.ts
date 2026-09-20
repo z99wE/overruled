@@ -106,3 +106,42 @@ export async function putRun(
     .bind(userId, data, NOW())
     .run();
 }
+
+export const LOGIN_WINDOW_MINUTES = 15;
+export const LOGIN_MAX_FAILURES = 10;
+
+export interface LoginLock {
+  locked: boolean;
+  retryAfterSeconds: number;
+}
+
+/**
+ * Failed-login backoff: once LOGIN_MAX_FAILURES attempts for an email have
+ * landed inside the rolling LOGIN_WINDOW_MINUTES, sign-in is refused until
+ * that first attempt ages out of the window. Anti-enumeration friendly: it
+ * works for unknown emails too, and a locked account stays locked even with
+ * the correct password until the window slides.
+ */
+export async function loginLock(db: D1Database, email: string): Promise<LoginLock> {
+  const cutoff = new Date(Date.now() - LOGIN_WINDOW_MINUTES * 60 * 1000).toISOString();
+  const res = await db
+    .prepare('SELECT attempted_at FROM login_attempts WHERE email = ? AND attempted_at > ? ORDER BY attempted_at ASC')
+    .bind(email, cutoff)
+    .all<{ attempted_at: string }>();
+  const attempts = res.results ?? [];
+  if (attempts.length < LOGIN_MAX_FAILURES) return { locked: false, retryAfterSeconds: 0 };
+  const firstAt = new Date(attempts[0].attempted_at).getTime();
+  const lockUntil = firstAt + LOGIN_WINDOW_MINUTES * 60 * 1000;
+  return { locked: true, retryAfterSeconds: Math.max(0, Math.ceil((lockUntil - Date.now()) / 1000)) };
+}
+
+export async function recordFailedLogin(db: D1Database, email: string): Promise<void> {
+  await db.prepare('INSERT INTO login_attempts (email, attempted_at) VALUES (?, ?)').bind(email, NOW()).run();
+  // Opportunistic pruning keeps the table lean (one-hour retention).
+  const cutoff = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  await db.prepare('DELETE FROM login_attempts WHERE attempted_at < ?').bind(cutoff).run();
+}
+
+export async function clearFailedLogins(db: D1Database, email: string): Promise<void> {
+  await db.prepare('DELETE FROM login_attempts WHERE email = ?').bind(email).run();
+}
