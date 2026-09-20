@@ -16,6 +16,8 @@ interface CaseSelectProps {
   onOpenDuel: () => void;
   onSelect: (id: string) => void;
   onOpenKeys: () => void;
+  onOpenAccount: () => void;
+  accountEmail: string | null;
   onGenerate?: () => string | null;
   onOpenHowItWorks?: () => void;
 }
@@ -30,7 +32,7 @@ const JURISDICTION_LABEL: Record<Jurisdiction, string> = {
   IN: 'India',
 };
 
-export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, onOpenShop, onOpenDuel, onSelect, onOpenKeys, onGenerate, onOpenHowItWorks }: CaseSelectProps) {
+export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, onOpenShop, onOpenDuel, onSelect, onOpenKeys, onOpenAccount, accountEmail, onGenerate, onOpenHowItWorks }: CaseSelectProps) {
   const [genOpen, setGenOpen] = useState(false);
   const [generated, setGenerated] = useState<ScenarioBundle | null>(null);
 
@@ -57,6 +59,14 @@ export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, o
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            aria-label={accountEmail ? `Account for ${accountEmail}` : 'Sign up or log in to sync your progress'}
+            type="button"
+            onClick={onOpenAccount}
+            className="hidden items-center gap-1.5 rounded-lg border border-cream/25 px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-cream/70 transition hover:border-chip-gold/50 hover:text-chip-gold sm:inline-flex"
+          >
+            <ShieldCheck className="h-3.5 w-3.5" /> {accountEmail ? accountEmail : 'Sign up'}
+          </button>
           <button
           aria-label="Open shop"
             type="button"

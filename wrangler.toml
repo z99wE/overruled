@@ -1,0 +1,10 @@
+name = "overrool"
+compatibility_date = "2026-09-20"
+pages_build_output_dir = "dist"
+
+# Create the database once (see d1/schema.sql), then paste its id here:
+#   npx wrangler d1 create overrool
+[[d1_databases]]
+binding = "DB"
+database_name = "overrool"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"

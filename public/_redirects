@@ -1,0 +1,4 @@
+# SPA fallback: Cloudflare Pages serves existing static files first; anything
+# else re-serves the client-side shell so refresh / direct links keep working.
+# /api/* requests are handled by Pages Functions and never reach this rule.
+/*    /index.html   200

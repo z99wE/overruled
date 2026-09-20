@@ -15,7 +15,7 @@ export interface RunState {
 }
 
 export const RUN_STORAGE_KEY = 'overrool.run.v2';
-const LEGACY_V1_KEY = 'overrool.run.v1';
+export const LEGACY_V1_KEY = 'overrool.run.v1';
 
 /** v1 flat perks, retired — holders get their money back as chips. */
 const V1_PERK_REFUND: Record<string, number> = {
@@ -33,17 +33,21 @@ export function blankRun(): RunState {
   return { chips: 0, xp: 0, bestStreak: 0, bossesDefeated: [], jokers: [], matterChips: {}, caseOfDay: null };
 }
 
+/** Coerce an untrusted run payload (localStorage or remote sync) into a valid shape. */
+export function normalizeRun(parsed: Partial<RunState>): RunState {
+  return {
+    ...blankRun(),
+    ...parsed,
+    jokers: Array.isArray(parsed.jokers) ? (parsed.jokers as JokerId[]) : [],
+    matterChips: parsed.matterChips ?? {},
+  };
+}
+
 export function loadRun(): RunState {
   try {
     const raw = localStorage.getItem(RUN_STORAGE_KEY);
     if (raw) {
-      const parsed = JSON.parse(raw) as Partial<RunState>;
-      return {
-        ...blankRun(),
-        ...parsed,
-        jokers: Array.isArray(parsed.jokers) ? (parsed.jokers as JokerId[]) : [],
-        matterChips: parsed.matterChips ?? {},
-      };
+      return normalizeRun(JSON.parse(raw) as Partial<RunState>);
     }
     // v1 → v2 migration: refund retired flat perks as chips, keep progress.
     const legacy = localStorage.getItem(LEGACY_V1_KEY);

@@ -5,6 +5,8 @@ import type { Jurisdiction, PrecedentCard } from '../types/legal';
 interface LandingProps {
   cases: PrecedentCard[];
   onPlay: () => void;
+  accountEmail: string | null;
+  onOpenAccount: () => void;
 }
 
 function scrollTo(id: string) {
@@ -84,7 +86,7 @@ const JURISDICTION_LABEL: Record<Jurisdiction, string> = {
   IN: 'India',
 };
 
-export function Landing({ cases, onPlay }: LandingProps) {
+export function Landing({ cases, onPlay, accountEmail, onOpenAccount }: LandingProps) {
   const caseCount = cases.length;
   const { jurisdictionCounts, domainCounts } = useMemo(() => {
     const j = new Map<string, number>();
@@ -117,6 +119,14 @@ export function Landing({ cases, onPlay }: LandingProps) {
           <NavLink label="What it's worth" target="value" />
           <NavLink label="FAQ" target="faq" />
         </div>
+        <button
+          aria-label={accountEmail ? `Signed in as ${accountEmail}` : 'Sign in or create an account'}
+          type="button"
+          onClick={onOpenAccount}
+          className="hidden rounded-lg border border-cream/25 px-3 py-2 font-mono text-[11px] uppercase tracking-widest text-cream/70 transition hover:border-chip-gold/50 hover:text-chip-gold sm:block"
+        >
+          {accountEmail ? accountEmail : 'Sign up · free'}
+        </button>
         <button
           aria-label="Deal me in and start playing"
           type="button"

@@ -48,7 +48,7 @@ overrool/
 │   │   ├── searchIndex.ts             ← MiniSearch citation index + validateCitation (precedent/statute)
 │   │   ├── storage.ts                 ← KeyManager (BYOK): Capacitor SecureStorage (native) or localStorage/sessionStorage (web)
 │   │   └── useTrial.ts                ← reducer-based trial state machine (favor, phase, turn, log)
-│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (17 files, 150 tests)
+│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (21 files, 177 tests)
 │   ├── types/
 │   │   └── legal.ts                   ← all shared TS interfaces + constants (STATUTORY_NOTICE, VERDICT_TAGS, MODEL_DEFAULTS usage)
 │   ├── App.tsx                        ← screen shell (loading / home / trial) + key-vault modal + error fallbacks
@@ -180,9 +180,15 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 | `npm run dev` | Vite dev server with HMR |
 | `npm run build` | `tsc --noEmit` + Vite production build → `dist/` |
 | `npm run preview` | Serve production build locally |
-| `npm run typecheck` | Type-check only (no emit) |
-| `npm run test` | Vitest run (all `src/**/*.test.ts`, 150 tests) |
+| `npm run typecheck` | `tsc --noEmit` (app) + `tsc -p tsconfig.workers.json` (Pages Functions) |
+| `npm run lint` | ESLint over `src`, `functions`, `scripts` |
+| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 177 tests) |
 | `npm run test:coverage` | Vitest with v8 coverage report + thresholds |
+| `npm run icons` | Regenerate `public/icons/*.png` from `public/icon.svg` (needs `sharp`) |
+| `npm run cf:dev` | `wrangler pages dev` — static shell + Functions + local D1 |
+| `npm run cf:deploy` | Build + `wrangler pages deploy` to Cloudflare Pages |
+| `npm run d1:create` | Create the D1 database (once, then paste its id into `wrangler.toml`) |
+| `npm run d1:migrate` | Apply `d1/schema.sql` to remote D1 |
 | `npm run cap:sync` | Sync web assets to iOS/Android (requires Capacitor CLI + Xcode/Android Studio) |
 | `npm run tauri` | Tauri desktop dev/build (requires Rust toolchain + Tauri CLI) |
 
@@ -190,10 +196,10 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 
 ## BYOK storage security
 
-- **Keys never leave the device.** All LLM calls are made client-side by `providerCall.ts`. There is no server, proxy, or analytics endpoint. Error reporting is opt-in: `@sentry/react` is wired but stays dormant unless `VITE_SENTRY_DSN` is set (see `src/core/telemetry.ts`).
+- **LLM keys never leave the device.** All LLM calls are made client-side by `providerCall.ts` directly to the four allowlisted provider origins. There is no LLM proxy. Error reporting is opt-in: `@sentry/react` is wired but stays dormant unless `VITE_SENTRY_DSN` is set (see `src/core/telemetry.ts`).
 - **Origin allowlist.** `providerCall.ts` enforces a `PROVIDER_ORIGINS` allowlist (Gemini, OpenAI, Anthropic, Groq) before any network call — an SSRF-style guard against malformed or hostile URLs. A 90-second `AbortSignal` timeout applies to every request.
 - **Gemini keys** are transmitted in the `x-goog-api-key` header, never in the URL query string.
-- **Storage.** On Capacitor (iOS/Android) keys live in the native Keychain via `@aparajita/capacitor-secure-storage`. On web they are kept under the `overrool.byok.*` namespace in `localStorage` when persistence is on, otherwise `sessionStorage` (single copy, alternate store is cleaned). No player data is hosted server-side.
+- **Storage.** On Capacitor (iOS/Android) keys live in the native Keychain via `@aparajita/capacitor-secure-storage`. On web they are kept under the `overrool.byok.*` namespace in `localStorage` when persistence is on, otherwise `sessionStorage` (single copy, alternate store is cleaned). **Keys are never sent to Overrool's servers.** The only things that may be hosted server-side are *optional* account credentials and game-progress saves when the player signs in (see [Deployment → Cloudflare Pages](#deployment)); that traffic never includes API keys.
 - Default provider models are listed in `storage.ts` (`MODEL_DEFAULTS`) and are model-overridable per provider. Providers: `gemini`, `openai`, `anthropic`, `groq`.
 - For production hardening on Tauri desktop, wire `tauri-plugin-store` or Tauri's `safeStorage` in place of the in-memory fallback.
 
@@ -311,14 +317,38 @@ Known gaps — declared honestly:
 
 ## Deployment
 
-### PWA (Cloudflare Pages / Vercel / static host)
+### Cloudflare Pages (recommended — includes accounts)
+
+The app ships as a static PWA **plus** an accounts API. Accounts and game-progress sync live entirely on Cloudflare: **Pages Functions** (the `/api/auth/*` and `/api/run` endpoints) backed by **D1** (SQLite). LLM keys never touch this stack — they stay in the player's browser and talk to the provider directly.
+
+Provision once (see [`AUTH.md`](AUTH.md) for the full runbook):
 
 ```bash
-npm run build          # dist/ is a fully static PWA
-# deploy dist/ to your host
+npm run d1:create                          # creates the D1 database, prints its id
+# paste the printed database_id into wrangler.toml
+npm run d1:migrate                         # apply d1/schema.sql (users, sessions, runs)
+npm run cf:deploy                          # build + wrangler pages deploy dist
 ```
 
-`public/sw.js` (`overrool-v3`) is a cache-first service worker. It caches only Vite-built `/assets/` and `/data/` resources on `res.ok`, and falls back to the document only for `navigate` requests — BYOK network traffic is never intercepted.
+Local, full-stack dev is `npm run cf:dev` (serves `dist/` with Functions against your D1 binding).
+
+What the API does (`functions/api/`):
+
+- `POST /api/auth/signup` · `POST /api/auth/login` · `POST /api/auth/logout` · `GET /api/auth/me` — email + password accounts. Passwords are stored as **salted PBKDF2-SHA256** hashes (210k iterations); sessions are opaque 32-byte tokens whose SHA-256 digest is stored, delivered as `HttpOnly; Secure; SameSite=Strict` cookies (`__Host-overrool_session`). One active session per account (login rotates).
+- `GET/PUT /api/run` — account-scoped game-progress save (chips, XP, jokers, bosses). Signed-in players sync automatically; signed-out play is 100% device-local.
+
+Declared account gaps (see `AUTH.md`): no email verification (there is no transactional email on Pages), no per-account rate limiting, and sessions are single-bearer-token (no refresh rotation beyond login).
+
+Known static-host notes:
+
+- `public/_redirects` re-serves the SPA shell (`/* → /index.html 200`) so refresh/direct links work; `/api/*` is handled by Functions first.
+- `public/_headers` ships security headers incl. a CSP whose `connect-src` allowlists the four LLM providers.
+- Assets are hashed and cached immutable for 1 year; icons are real 192/512 PNG + maskable (regenerate with `npm run icons`).
+- Deploy at a domain root (Vite uses absolute base paths).
+
+### Any static host (no accounts)
+
+If you don't want the Cloudflare Functions layer, deploy `dist/` anywhere; the auth UI degrades to a friendly "account API not reachable" error and the game remains fully playable keyless or BYOK. `public/sw.js` (`overrool-v10`) is a cache-first service worker that caches `/assets/` + `/data/` and never intercepts BYOK traffic.
 
 ### iOS / Android (Capacitor)
 

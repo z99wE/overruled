@@ -16,9 +16,9 @@ how contributions land.
 ```sh
 npm install
 npm run dev        # start the Vite app
-npm run typecheck  # strict tsc, no emit
-npm run lint       # ESLint 9 flat config
-npm test           # vitest, 150+ assertions
+npm run typecheck  # strict tsc over src/ (app) + functions/ (Cloudflare Pages Functions)
+npm run lint       # ESLint 9 flat config over src, functions, scripts
+npm test           # vitest — 177 assertions across 21 suites (app + functions handlers)
 ```
 
 Run all three checks green before opening a PR.

@@ -1,0 +1,107 @@
+import type { D1Database, D1PreparedStatement, D1Result } from './d1';
+
+interface UserRow {
+  id: string;
+  email: string;
+  pw_hash: string;
+  pw_salt: string;
+  iterations: number;
+  created_at: string;
+}
+
+interface SessionRow {
+  token_hash: string;
+  user_id: string;
+  created_at: string;
+  expires_at: string;
+}
+
+/**
+ * A tiny in-memory D1 stand-in that understands exactly the queries in db.ts.
+ * Good enough to exercise the auth/run handlers end-to-end in tests.
+ */
+export function makeFakeDb() {
+  const users: UserRow[] = [];
+  const sessions: SessionRow[] = [];
+  const runs = new Map<string, { data: string; updated_at: string }>();
+
+  const db: D1Database = {
+    prepare(sql: string): D1PreparedStatement {
+      let bound: unknown[] = [];
+      const stmt: D1PreparedStatement = {
+        bind(...values: unknown[]) {
+          bound = values;
+          return stmt;
+        },
+        async first<T>() {
+          if (sql.includes('sessions s') && sql.includes('JOIN users')) {
+            const [tokenHash, now] = bound;
+            const s = sessions.find((x) => x.token_hash === tokenHash && x.expires_at > String(now));
+            if (!s) return null;
+            const u = users.find((x) => x.id === s.user_id);
+            return (u ?? null) as T | null;
+          }
+          if (sql.includes('FROM users WHERE email = ?')) {
+            return (users.find((u) => u.email === bound[0]) ?? null) as T | null;
+          }
+          if (sql.includes('FROM users WHERE id = ?')) {
+            return (users.find((u) => u.id === bound[0]) ?? null) as T | null;
+          }
+          if (sql.includes('FROM runs WHERE user_id = ?')) {
+            const r = runs.get(String(bound[0]));
+            return r ? ({ user_id: bound[0], data: r.data, updated_at: r.updated_at } as T) : (null as T | null);
+          }
+          return null as T | null;
+        },
+        async run(): Promise<D1Result> {
+          if (sql.startsWith('INSERT INTO users')) {
+            const [id, email, pwHash, pwSalt, iterations, createdAt] = bound;
+            users.push({
+              id: String(id),
+              email: String(email),
+              pw_hash: String(pwHash),
+              pw_salt: String(pwSalt),
+              iterations: Number(iterations),
+              created_at: String(createdAt),
+            });
+            return { meta: { changes: 1 } };
+          }
+          if (sql.startsWith('DELETE FROM sessions WHERE user_id')) {
+            const before = sessions.length;
+            const id = String(bound[0]);
+            for (let i = sessions.length - 1; i >= 0; i--) if (sessions[i].user_id === id) sessions.splice(i, 1);
+            return { meta: { changes: before - sessions.length } };
+          }
+          if (sql.startsWith('INSERT INTO sessions')) {
+            const [tokenHash, userId, createdAt, expiresAt] = bound;
+            sessions.push({
+              token_hash: String(tokenHash),
+              user_id: String(userId),
+              created_at: String(createdAt),
+              expires_at: String(expiresAt),
+            });
+            return { meta: { changes: 1 } };
+          }
+          if (sql.startsWith('DELETE FROM sessions WHERE token_hash')) {
+            const before = sessions.length;
+            const h = String(bound[0]);
+            for (let i = sessions.length - 1; i >= 0; i--) if (sessions[i].token_hash === h) sessions.splice(i, 1);
+            return { meta: { changes: before - sessions.length } };
+          }
+          if (sql.includes('INSERT INTO runs')) {
+            const [userId, data, updatedAt] = bound;
+            runs.set(String(userId), { data: String(data), updated_at: String(updatedAt) });
+            return { meta: { changes: 1 } };
+          }
+          return { meta: { changes: 0 } };
+        },
+      };
+      return stmt;
+    },
+  };
+
+  const counts = () => ({ users: users.length, sessions: sessions.length, runs: runs.size });
+  return { db, counts };
+}
+
+export type FakeDb = ReturnType<typeof makeFakeDb>;

@@ -7,11 +7,13 @@ import { createKeyManager } from './core/storage';
 import { initHaptics } from './core/haptics';
 import { bootHealth } from './core/health';
 import { initErrorTracking } from './core/telemetry';
+import { useAuth, pullRemoteRun, enqueueRemoteSave } from './core/auth';
 import { CaseSelect } from './components/CaseSelect';
 import { CourtroomChamber } from './components/CourtroomChamber';
 import { KeySettings } from './components/KeySettings';
 import { Landing } from './components/Landing';
-import { ensureCaseOfDay, loadRun, saveRun, type RunState } from './game/runStore';
+import { AuthModal } from './components/AuthModal';
+import { ensureCaseOfDay, loadRun, normalizeRun, saveRun, type RunState } from './game/runStore';
 import { ShopModal } from './game/ShopModal';
 import { DuelMode } from './game/DuelMode';
 import type { JokerId } from './game/jokers';
@@ -31,17 +33,22 @@ const STATIC_IDS = [
 type Screen = 'loading' | 'landing' | 'home' | 'trial';
 
 export function App() {
+  const { user } = useAuth();
   const [screen, setScreen] = useState<Screen>('loading');
   const [scenarios, setScenarios] = useState<ScenarioBundle[]>([]);
   const [index, setIndex] = useState<CitationIndex | null>(null);
   const [active, setActive] = useState<ScenarioBundle | null>(null);
   const [keysOpen, setKeysOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'signup' | 'login'>('signup');
   const [hasKey, setHasKey] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [run, setRun] = useState<RunState>(() => loadRun());
   const [shopOpen, setShopOpen] = useState(false);
   const [duelOpen, setDuelOpen] = useState(false);
   const libraryRef = useRef<{ payload: LibraryPayload; index: CitationIndex } | null>(null);
+  const runRef = useRef(run);
+  const pulledAccount = useRef<string | null>(null);
 
   const refreshKeyState = async () => {
     const km = createKeyManager();
@@ -122,8 +129,34 @@ export function App() {
   );
 
   const updateRun = (next: RunState) => {
+    runRef.current = next;
     saveRun(next);
     setRun(next);
+    if (user) enqueueRemoteSave(next);
+  };
+
+  // Account sync: on first sight of a signed-in user, pull the cloud run.
+  // Remote wins on a fresh device; a new/sans-save account seeds from local.
+  useEffect(() => {
+    if (!user) return;
+    if (pulledAccount.current === user.email) return;
+    pulledAccount.current = user.email;
+    void (async () => {
+      const remote = await pullRemoteRun();
+      if (remote) {
+        const normalized = normalizeRun(remote);
+        runRef.current = normalized;
+        saveRun(normalized);
+        setRun(normalized);
+      } else {
+        enqueueRemoteSave(runRef.current);
+      }
+    })();
+  }, [user]);
+
+  const openAccount = (mode: 'signup' | 'login') => {
+    setAuthMode(mode);
+    setAuthOpen(true);
   };
 
   const handleExitTrial = () => {
@@ -152,6 +185,8 @@ export function App() {
         <Landing
           cases={libraryRef.current?.payload.corpus.cases ?? []}
           onPlay={() => setScreen('home')}
+          accountEmail={user?.email ?? null}
+          onOpenAccount={() => openAccount('signup')}
         />
       )}
       {screen === 'home' && (
@@ -165,6 +200,8 @@ export function App() {
           onOpenDuel={() => setDuelOpen(true)}
           onSelect={(id) => void openTrial(id)}
           onOpenKeys={() => setKeysOpen(true)}
+          onOpenAccount={() => openAccount(user ? 'login' : 'signup')}
+          accountEmail={user?.email ?? null}
           onGenerate={handleGenerate}
           onOpenHowItWorks={() => setScreen('landing')}
         />
@@ -186,6 +223,7 @@ export function App() {
           }}
         />
       )}
+      {authOpen && <AuthModal mode={authMode} onClose={() => setAuthOpen(false)} />}
       {shopOpen && (
         <ShopModal
           chips={run.chips}
