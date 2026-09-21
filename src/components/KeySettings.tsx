@@ -153,7 +153,12 @@ export function KeySettings({ onClose }: KeySettingsProps) {
                         provider === p.id ? 'border-chip-gold bg-chip-gold/10' : 'border-ink hover:border-cream/30'
                       }`}
                     >
-                      <span className={`block text-[12px] font-semibold ${provider === p.id ? 'text-chip-gold' : 'text-cream/80'}`}>{p.label}</span>
+                      <span className={`block text-[12px] font-semibold ${provider === p.id ? 'text-chip-gold' : 'text-cream/80'}`}>
+                        {p.label}
+                        {p.id === 'gemini' && (
+                          <span className="ml-1.5 align-middle rounded bg-chip-gold/15 px-1 py-0.5 font-mono text-[8px] uppercase tracking-wider text-chip-gold">Free tier</span>
+                        )}
+                      </span>
                       <span className="block font-mono text-[9px] text-cream/50">{p.envHint}</span>
                     </button>
                   ))}
@@ -161,6 +166,11 @@ export function KeySettings({ onClose }: KeySettingsProps) {
                 {!admin && (
                   <p className="mt-1.5 text-[10px] text-cream/50">Hosted inference is available to the workspace administrator — everyone else brings their own key.</p>
                 )}
+                <p className="mt-1.5 text-[10px] leading-relaxed text-cream/50">
+                  Accounts are unlimited — there is no per-user cost on this platform. Your cheapest, fully free path:
+                  Gemini via <span className="text-chip-gold/80">Google AI Studio</span>{' '}
+                  (generativelanguage.googleapis.com). Your key calls Google directly from this browser; Overrool is never in the loop.
+                </p>
               </div>
 
               <div className="flex gap-3">

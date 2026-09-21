@@ -193,16 +193,33 @@ export function downloadText(filename: string, content: string, mime = 'text/mar
   URL.revokeObjectURL(url);
 }
 
-export async function shareText(title: string, text: string): Promise<void> {
+export async function shareText(title: string, text: string): Promise<'shared' | 'copied' | 'failed'> {
   try {
     const { Capacitor } = await import('@capacitor/core');
     if (Capacitor.isNativePlatform()) {
       const { Share } = await import('@capacitor/share');
       await Share.share({ title, text });
-      return;
+      return 'shared';
     }
   } catch {
-    /* fall through to clipboard + no-op on unsupported */
+    /* fall through to clipboard on native share failure */
   }
-  await navigator.clipboard?.writeText(text).catch(() => undefined);
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return 'copied';
+    }
+    // Non-secure-context fallback: hidden textarea + execCommand.
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok ? 'copied' : 'failed';
+  } catch {
+    return 'failed';
+  }
 }

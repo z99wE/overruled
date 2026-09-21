@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, MessageSquareQuote, RotateCcw } from 'lucide-react';
+import { ArrowRight, BookOpen, Loader2, MessageSquareQuote, RotateCcw } from 'lucide-react';
 import type { ScenarioBundle } from '../../types/legal';
 import { PrecedentCard } from '../PrecedentCard';
 import type { TrialState } from '../../core/useTrial';
@@ -127,6 +127,10 @@ export function ChamberActionBar({
             >
               Continue <ArrowRight className="h-3.5 w-3.5" />
             </button>
+          </div>
+        ) : state.phase === 'resolving' ? (
+          <div className="flex items-center justify-center gap-2 py-2 font-display text-xs uppercase tracking-wider text-cream/60">
+            <Loader2 className="h-4 w-4 animate-spin text-chip-gold" /> The bench is deliberating…
           </div>
         ) : (
           <div className="flex items-center justify-center gap-4 py-2">

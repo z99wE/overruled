@@ -10,11 +10,12 @@ Overrool is an adversarial legal strategy courtroom card game built with React 1
 
 Practising courtroom strategy — framing motions, anticipating a bench's reasoning, distinguishing hostile precedent, and knowing when a citation is real — is a high-cost, high-stakes skill with no safe, free way to train alone. Legal AI assistants are either expensive subscriptions, opaque black-boxes that fabricate authority, or both.
 
-Overrool addresses three concrete gaps:
+Overrool addresses four concrete gaps:
 
-1. **Zero-cost practice.** No ecosystem token budget, no server-side API keys, no third-party proxy. Every LLM call runs directly from the player's browser to the player's own provider account using the key they supply under their own quota (Gemini, OpenAI, Anthropic, or Groq). Google's **Gemini API free tier** (key from Google AI Studio) is a natural no-card starting point, and the account administrator can host serverside inference on Cloudflare's free Workers AI tier for their own trials.
-2. **Factual grounding.** The engine refuses to reward fabricated law. Writer-side citations are checked against an embedded 43-case / 10-statute global corpus; unverifiable authority is flagged as exposure in the docket and the bench responds accordingly.
-3. **Accountable, exportable outcomes.** Each turn is resolved in a single structured LLM pass and captured as a typed `TurnRecord`, and the session is rendered into an Advocate Consultation Docket — admitted precedents, identified exposure points, and actionable consultation questions — that is downloadable, printable, and shareable.
+1. **Open by default — unlimited accounts.** No per-seat cost. The platform runs on Cloudflare's free tiers (Pages, D1, Workers AI); signups are unlimited and the only server-side AI path (Workers AI) is reserved for the single administrator's own trials. Everyone else plays on BYOK, which for most players means Google's free Gemini tier at zero cost forever.
+2. **Zero-cost practice.** No ecosystem token budget, no server-side API keys, no third-party proxy (Google Fonts are likewise self-hosted). Every LLM call runs directly from the player's browser to the player's own provider account using the key they supply under their own quota (Gemini, OpenAI, Anthropic, or Groq). Google's **Gemini API free tier** (key from Google AI Studio) is a natural no-card starting point, and the account administrator can host serverside inference on Cloudflare's free Workers AI tier for their own trials.
+3. **Factual grounding.** The engine refuses to reward fabricated law. Writer-side citations are checked against an embedded 43-case / 10-statute global corpus; unverifiable authority is flagged as exposure in the docket and the bench responds accordingly.
+4. **Accountable, exportable outcomes.** Each turn is resolved in a single structured LLM pass and captured as a typed `TurnRecord`, and the session is rendered into an Advocate Consultation Docket — admitted precedents, identified exposure points, and actionable consultation questions — that is downloadable, printable, and shareable.
 
 **Constraint.** Overrool is an educational legal-literacy and strategic-simulation tool under the Information Technology Act, 2000. It does not provide legal advice and cannot replace a certified advocate registered under the Advocates Act, 1961. Users must verify all citations against certified law reports.
 
@@ -48,7 +49,7 @@ overrool/
 │   │   ├── searchIndex.ts             ← MiniSearch citation index + validateCitation (precedent/statute)
 │   │   ├── storage.ts                 ← KeyManager (BYOK): Capacitor SecureStorage (native) or localStorage/sessionStorage (web)
 │   │   └── useTrial.ts                ← reducer-based trial state machine (favor, phase, turn, log)
-│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (21 files, 187 tests)
+│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (21 files, 194 tests)
 │   ├── types/
 │   │   └── legal.ts                   ← all shared TS interfaces + constants (STATUTORY_NOTICE, VERDICT_TAGS, MODEL_DEFAULTS usage)
 │   ├── App.tsx                        ← screen shell (loading / home / trial) + key-vault modal + error fallbacks
@@ -182,7 +183,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 | `npm run preview` | Serve production build locally |
 | `npm run typecheck` | `tsc --noEmit` (app) + `tsc -p tsconfig.workers.json` (Pages Functions) |
 | `npm run lint` | ESLint over `src`, `functions`, `scripts` |
-| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 187 tests) |
+| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 194 tests) |
 | `npm run test:coverage` | Vitest with v8 coverage report + thresholds |
 | `npm run icons` | Regenerate `public/icons/*.png` from `public/icon.svg` (needs `sharp`) |
 | `npm run cf:dev` | `wrangler pages dev` — static shell + Functions + local D1 |

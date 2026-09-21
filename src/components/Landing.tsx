@@ -101,7 +101,7 @@ export function Landing({ cases, onPlay, accountEmail, onOpenAccount }: LandingP
     };
   }, [cases]);
   return (
-    <div className="felt-bg min-h-full">
+    <div className="felt-bg felt-noise min-h-full">
       <nav className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b-2 border-ink bg-felt-950/90 px-5 py-3 backdrop-blur lg:px-10">
         <button
           aria-label="Back to top"
@@ -139,13 +139,28 @@ export function Landing({ cases, onPlay, accountEmail, onOpenAccount }: LandingP
       </nav>
 
       <header id="top" className="mx-auto w-full max-w-5xl px-5 pb-16 pt-16 text-center sm:pt-24">
+        <div className="mb-6 flex items-center justify-center gap-2" aria-hidden>
+          {[
+            { c: 'bg-chip-gold', d: '0s' },
+            { c: 'bg-poker-red', d: '0.35s' },
+            { c: 'bg-poker-blue', d: '0.7s' },
+          ].map((chip, i) => (
+            <span
+              key={i}
+              className={`anim-float inline-block h-9 w-9 rounded-full border-2 border-ink ${chip.c}`}
+              style={{ boxShadow: 'inset 0 0 0 2px rgba(253,246,227,0.4), 0 4px 0 0 var(--color-ink)', animationDelay: chip.d }}
+            />
+          ))}
+        </div>
         <h1
           className="font-display text-5xl leading-[0.95] text-cream sm:text-7xl"
           style={{ textShadow: '0 4px 0 var(--color-poker-red-deep), 0 7px 0 var(--color-ink)' }}
         >
-          REAL LAW.
+          REAL LAW,
           <br />
-          PLAYED LIKE A GAME.
+          PLAYED LIKE
+          <br />
+          A HIGH-STAKES HAND.
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-cream/80">
           Take a live matter. Argue it with real judgments — <em>Kesavananda</em> to <em>Miranda</em>,{' '}
@@ -153,15 +168,14 @@ export function Landing({ cases, onPlay, accountEmail, onOpenAccount }: LandingP
           deck is invented.
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-          <button
+<button
           aria-label="Deal me in, it is free"
-            type="button"
-            onClick={onPlay}
-
-            className="rounded-xl border-2 border-ink bg-poker-red px-7 py-3.5 font-display text-base uppercase tracking-wide text-cream shadow-[0_5px_0_var(--color-ink)] transition active:translate-y-[3px] active:shadow-none"
-          >
-            Deal me in — it's free
-          </button>
+          type="button"
+          onClick={onPlay}
+          className="btn-gold-glow rounded-xl border-2 border-ink bg-poker-red px-7 py-3.5 font-display text-base uppercase tracking-wide text-cream"
+        >
+          Deal me in — it's free
+        </button>
           <button
           aria-label="How it works"
             type="button"

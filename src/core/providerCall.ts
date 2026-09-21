@@ -17,6 +17,13 @@ export const PROVIDER_ORIGINS: ReadonlySet<string> = new Set([
 
 const REQUEST_TIMEOUT_MS = 90_000;
 
+/** Signal that aborts after a hard timeout — no dependency on `AbortSignal.timeout` (older Safari/Firefox lack it). */
+function timeoutSignal(ms: number): { signal: AbortSignal; clear: () => void } {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return { signal: ctrl.signal, clear: () => clearTimeout(timer) };
+}
+
 interface ChatOptions {
   config: LLMConfig;
   system: string;
@@ -39,14 +46,16 @@ export async function postRaw(url: string, headers: Record<string, string>, body
   }
   let res: Response;
   try {
+    const { signal, clear } = timeoutSignal(REQUEST_TIMEOUT_MS);
     res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      signal,
     });
+    clear();
   } catch (err) {
-    if (err instanceof DOMException && err.name === 'TimeoutError') {
+    if (err instanceof DOMException && err.name === 'AbortError') {
       throw new LLMOrchestratorError(`Provider timed out after ${REQUEST_TIMEOUT_MS / 1000}s.`, provider);
     }
     throw new LLMOrchestratorError(`Network failure reaching ${provider}: ${err instanceof Error ? err.message : String(err)}`, provider);
@@ -158,22 +167,33 @@ export async function requestChat(opts: ChatOptions): Promise<string> {
     }
 
     case 'hosted': {
-      const res = await fetch('/api/llm', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(
-          compactRecord({
-            system: opts.system,
-            user: opts.user,
-            temperature,
-            maxTokens: opts.maxTokens,
-            jsonSchema: opts.jsonSchema,
-            model: config.model,
-          }),
-        ),
-        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      });
+      const { signal, clear } = timeoutSignal(REQUEST_TIMEOUT_MS);
+      let res: Response;
+      try {
+        res = await fetch('/api/llm', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(
+            compactRecord({
+              system: opts.system,
+              user: opts.user,
+              temperature,
+              maxTokens: opts.maxTokens,
+              jsonSchema: opts.jsonSchema,
+              model: config.model,
+            }),
+          ),
+          signal,
+        });
+      } catch (err) {
+        if (signal.aborted) {
+          throw new LLMOrchestratorError(`Hosted inference timed out after ${REQUEST_TIMEOUT_MS / 1000}s.`, 'hosted');
+        }
+        throw new LLMOrchestratorError(`Network failure: ${err instanceof Error ? err.message : String(err)}`, 'hosted');
+      } finally {
+        clear();
+      }
       const data = (await res.json().catch(() => ({}))) as { text?: string; error?: { code?: string; message?: string } };
       if (!res.ok) {
         const code = data.error?.code;

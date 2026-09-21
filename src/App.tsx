@@ -170,7 +170,7 @@ export function App() {
 
   if (screen === 'loading') {
     return (
-      <div className="felt-bg flex h-full flex-col items-center justify-center gap-5">
+      <div className="felt-bg felt-noise flex h-full flex-col items-center justify-center gap-5">
         <h1
           className="anim-slam font-display text-5xl text-cream"
           style={{ textShadow: '0 4px 0 var(--color-poker-red-deep), 0 6px 0 var(--color-ink)' }}
@@ -184,7 +184,7 @@ export function App() {
   }
 
   return (
-    <div className="felt-bg h-full">
+    <div className="felt-bg felt-noise h-full">
       {screen === 'landing' && (
         <Landing
           cases={libraryRef.current?.payload.corpus.cases ?? []}

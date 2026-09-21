@@ -41,6 +41,26 @@ interface PhysCard {
 
 const TAU = Math.PI * 2;
 
+/** roundRect fallback for browsers without CanvasRenderingContext2D.roundRect (older Safari). */
+function rr(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(x, y, w, h, r);
+    return;
+  }
+  const rad = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + rad, y);
+  ctx.lineTo(x + w - rad, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + rad);
+  ctx.lineTo(x + w, y + h - rad);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - rad, y + h);
+  ctx.lineTo(x + rad, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - rad);
+  ctx.lineTo(x, y + rad);
+  ctx.quadraticCurveTo(x, y, x + rad, y);
+  ctx.closePath();
+}
+
 function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const words = text.split(/\s+/);
   const lines: string[] = [];
@@ -124,8 +144,7 @@ export function CardTableCanvas({
       grad.addColorStop(0, '#1b6b4a');
       grad.addColorStop(1, '#0a2e1f');
       ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.roundRect(0, 0, width, height, 14);
+      rr(ctx, 0, 0, width, height, 14);
       ctx.fill();
 
       for (const c of cardsRef.current) {
@@ -172,8 +191,7 @@ export function CardTableCanvas({
         ctx.fillStyle = c.color;
         ctx.strokeStyle = c.border;
         ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.roundRect(-w / 2, -h / 2, w, h, 10);
+        rr(ctx, -w / 2, -h / 2, w, h, 10);
         ctx.fill();
         ctx.stroke();
 
@@ -196,8 +214,7 @@ export function CardTableCanvas({
         if (c.glow > 0.05) {
           ctx.strokeStyle = c.side === 'player' ? 'rgba(230,185,92,0.9)' : 'rgba(224,82,82,0.9)';
           ctx.lineWidth = 2.5;
-          ctx.beginPath();
-          ctx.roundRect(-w / 2 - 4, -h / 2 - 4, w + 8, h + 8, 12);
+          rr(ctx, -w / 2 - 4, -h / 2 - 4, w + 8, h + 8, 12);
           ctx.stroke();
         }
         ctx.restore();

@@ -162,7 +162,7 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
   const verdictFlashVisible = state.phase === 'verdict' && !!state.last;
 
   return (
-    <div className={`felt-bg flex h-full flex-col ${shake ? 'screen-shake' : ''}`}>
+    <div className={`felt-bg felt-noise flex h-full flex-col ${shake ? 'screen-shake' : ''}`}>
       <ChamberHeader scenario={scenario} state={state} onExit={onExit} />
 
       {boss && (
@@ -212,7 +212,7 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
             {fileOpen ? 'Close case file' : 'Open case file & precedent deck'}
           </button>
 
-          <div ref={transcriptRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 lg:px-8">
+          <div ref={transcriptRef} className="rail-panel min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 lg:px-8">
             <OpponentMessage
               from={scenario.opposingCounselPersona.name ?? 'Opposing Senior Advocate'}
               text={scenario.opposingCounselPersona.initialOpeningStatement}

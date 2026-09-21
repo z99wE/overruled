@@ -27,6 +27,7 @@ interface DocketExportModalProps {
 export function DocketExportModal({ scenario, summary, onClose, onRestart }: DocketExportModalProps) {
   const [enriching, setEnriching] = useState(false);
   const [enrichError, setEnrichError] = useState<string | null>(null);
+  const [printBlocked, setPrintBlocked] = useState(false);
   const [copied, setCopied] = useState(false);
   const [questions, setQuestions] = useState<string[]>(summary.consultationQuestions);
   const viewRef = useRef<HTMLDivElement>(null);
@@ -54,6 +55,7 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
       const enriched = await enrichConsultationQuestions(config, summary, scenario);
       setQuestions(enriched);
       setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
     } catch (err) {
       setEnrichError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -72,17 +74,23 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
       downloadText(`${base}.html`, html(), 'text/html');
     } else {
       const win = window.open('', '_blank');
-      if (!win) return;
+      if (!win) {
+        setPrintBlocked(true);
+        return;
+      }
       win.document.write(html());
       win.document.close();
       win.focus();
       win.print();
+      setPrintBlocked(false);
     }
   };
 
   const share = async () => {
     const text = md();
-    await shareText(`Overrool Docket — ${scenario.title}`, text);
+    const result = await shareText(`Overrool Docket — ${scenario.title}`, text);
+    setCopied(result === 'shared' || result === 'copied');
+    if (result === 'shared' || result === 'copied') setTimeout(() => setCopied(false), 3000);
   };
 
   return (
@@ -229,6 +237,16 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
             <button type="button" onClick={() => void share()} aria-label="Share docket" className="inline-flex items-center gap-1.5 rounded-lg border border-cream/30 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-cream/70 hover:border-cream/30">
               <Share2 className="h-3.5 w-3.5" /> Share
             </button>
+            {printBlocked && (
+              <span className="text-[10px] text-poker-red" role="status">
+                Pop-up blocked — allow pop-ups to use Print / PDF.
+              </span>
+            )}
+            {copied && (
+              <span className="text-[10px] text-chip-gold" role="status">
+                Copied to clipboard.
+              </span>
+            )}
           </div>
           <button type="button" onClick={onRestart} aria-label="Retry proceedings" className="inline-flex items-center gap-1.5 rounded-lg bg-chip-gold px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-ink hover:brightness-110">
             <RefreshCw className="h-3.5 w-3.5" /> Retry proceedings

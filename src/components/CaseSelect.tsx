@@ -45,7 +45,7 @@ export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, o
   };
 
   return (
-    <div className="felt-bg flex min-h-full flex-col">
+    <div className="felt-bg felt-noise flex min-h-full flex-col">
       <header className="flex items-center justify-between gap-4 px-5 pb-2 pt-6 lg:px-10">
         <div className="flex items-baseline gap-2">
           <h1
@@ -193,13 +193,31 @@ export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, o
             const isCaseOfDay = `static-${s.id}` === caseOfDayId;
             return (
               <button
-          aria-label={`Play ${s.title}
+                aria-label={`Play ${s.title}`}
                 key={s.id}
                 type="button"
                 onClick={() => onSelect(s.id)}
-`}
-                className="card-3d group relative overflow-hidden rounded-2xl border-2 border-ink bg-felt-800 text-left"
+                className="card-3d group relative overflow-hidden rounded-2xl border-2 border-ink bg-gradient-to-b from-felt-700/70 via-felt-800 to-felt-900 text-left focus-visible:border-chip-gold hover:border-chip-gold"
               >
+                {/* Playing-card corner pips */}
+                <span className="pointer-events-none absolute left-2.5 top-2.5 font-mono text-[13px] font-bold text-chip-gold">
+                  {s.jurisdiction}
+                </span>
+                <span className="pointer-events-none absolute left-2.5 top-7 font-mono text-[9px] uppercase tracking-widest text-chip-gold/70">
+                  {s.bench.slice(0, 6)}
+                </span>
+                <span className="pointer-events-none absolute bottom-2.5 right-2.5 rotate-180 font-mono text-[13px] font-bold text-chip-gold">
+                  {s.jurisdiction}
+                </span>
+
+                {/* Faint watermark mark */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -right-5 top-1/2 -translate-y-1/2 select-none font-display text-[7rem] leading-none text-cream/[0.05]"
+                >
+                  {s.jurisdiction}
+                </span>
+
                 {isGenerated && (
                   <div className="pointer-events-none absolute right-0 top-0 h-0 w-0 border-l-[46px] border-t-[46px] border-l-transparent border-t-chip-gold">
                     <Sparkles className="absolute -right-[44px] top-[6px] h-3.5 w-3.5 text-ink" />
@@ -210,7 +228,7 @@ export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, o
                     <Skull className="absolute -left-[44px] top-[6px] h-3.5 w-3.5 text-cream" />
                   </div>
                 )}
-                <div className="space-y-3 p-5">
+                <div className="relative space-y-3 p-5 pl-9 pt-8">
                   <div className="flex items-center justify-between">
                     <span className="rounded border-2 border-ink bg-poker-red px-2 py-0.5 font-display text-[10px] tracking-wider text-cream">
                       {JURISDICTION_LABEL[s.jurisdiction] ?? 'GLOBAL'}

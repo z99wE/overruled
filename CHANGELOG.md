@@ -6,6 +6,15 @@ Keep a Changelog conventions; version numbers follow SemVer.
 ## [Unreleased]
 
 ### Added
+- **High-stakes card-table restyle:** felt screens get a fine grain overlay
+  (`felt-noise`), the trial transcript sits in a green cushioned table rail
+  (`rail-panel`), hero chips float under a new tagline, and case tiles are now
+  playing cards — gradient faces, gold corner pips (jurisdiction + court code),
+  a faint watermark suit, and a gold edge on hover.
+- **Gemini free-tier signal in the Key Vault:** the Gemini provider tile shows a
+  "Free tier" badge and the vault copy states that accounts are unlimited, that
+  Gemini calls Google directly from the browser (Overrool never in the loop),
+  and that the free path is Google AI Studio + `generativelanguage.googleapis.com`.
 - **Password recovery** (fully Cloudflare-native): single-use 30-minute reset
   tokens (`password_resets` table; only SHA-256 of the token is stored), wired
   through `POST /api/auth/forgot` + `POST /api/auth/reset`, delivered by email
@@ -48,6 +57,24 @@ Keep a Changelog conventions; version numbers follow SemVer.
   a red "Arm Your Key" nudge; the chip is a muted "No Key" and the banner now
   explains that every case still plays via the rules-only local Bench.
 - README/CONTRIBUTING test counts updated (194 tests across 21 suites).
+- README now leads with the access model: unlimited free accounts on Cloudflare's
+  free tiers, and the four gaps reframed (unlimited accounts → zero-cost practice →
+  factual grounding → accountable dockets).
+
+### Fixed
+- **CaseSelect dead tiles:** the matter-card buttons had `key`, `type`, and
+  `onClick` swallowed inside the `aria-label` string literal, so clicking a
+  matter did nothing. Handlers are back on real props.
+- `providerCall` no longer relies on `AbortSignal.timeout` (was throwing on
+  older Safari/WebKit shells) — a manual abort-timer (`timeoutSignal`) guards
+  every request.
+- `CardTableCanvas` adds a canvas `roundRect` polyfill (`rr()`) so seating rails
+  render on Safari 15-/older WebViews.
+- Export modal reports a blocked pop-up with an actionable status ("allow pop-ups
+  to use Print / PDF") instead of silently failing, and copy-to-clipboard now
+  shows a transient confirmation.
+- The action bar no longer offers "Retry trial" during a resolving turn — a
+  disabled "The bench is deliberating…" spinner shows instead.
 
 ## [2.0.0] - 2026-09-20
 
