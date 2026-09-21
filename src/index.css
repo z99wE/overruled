@@ -108,6 +108,51 @@ body {
   to { opacity: 1; }
 }
 
+/* ── Card-table showdown animations ─────────────────────────────── */
+
+@keyframes tblDealOpp {
+  from { transform: translateX(-50%) translateY(-95px) rotate(-8deg); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0) rotate(0deg); opacity: 1; }
+}
+@keyframes tblDealSelf {
+  from { transform: translateX(-50%) translateY(150px) rotate(10deg); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0) rotate(0deg); opacity: 1; }
+}
+.tbl-deal-opp { animation: tblDealOpp 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.tbl-deal-self { animation: tblDealSelf 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@keyframes tblFlipIn {
+  from { transform: rotateY(92deg); }
+  to { transform: rotateY(0deg); }
+}
+.tbl-flip-in { animation: tblFlipIn 0.45s ease-out both; transform-style: preserve-3d; }
+
+@keyframes tblGlowGold {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(244, 180, 27, 0.9), 0 0 16px rgba(244, 180, 27, 0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(244, 180, 27, 1), 0 0 28px rgba(244, 180, 27, 0.85); }
+}
+@keyframes tblGlowRed {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(224, 82, 82, 0.9), 0 0 16px rgba(224, 82, 82, 0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(224, 82, 82, 1), 0 0 28px rgba(224, 82, 82, 0.85); }
+}
+.tbl-player-win { animation: tblGlowGold 1.15s ease-in-out 0.55s infinite; }
+.tbl-opp-win { animation: tblGlowRed 1.15s ease-in-out 0.55s infinite; }
+
+@keyframes tblBurnSelf {
+  to { transform: translateY(110px) rotate(14deg) scale(0.65); opacity: 0; }
+}
+@keyframes tblBurnOpp {
+  to { transform: translateY(-110px) rotate(-14deg) scale(0.65); opacity: 0; }
+}
+.tbl-player-lose { animation: tblBurnSelf 0.8s ease-in 0.95s forwards; }
+.tbl-opp-lose { animation: tblBurnOpp 0.8s ease-in 0.95s forwards; }
+
+/* Hand deal-in: each card rises from the rail into its fanned slot. */
+@keyframes handDeal {
+  from { transform: translateX(-50%) translateY(26px) rotate(0deg); opacity: 0; }
+  to { transform: var(--hand-slot); opacity: var(--hand-op); }
+}
+
 @keyframes slamIn {
   0% { transform: scale(2.6) rotate(-6deg); opacity: 0; }
   55% { transform: scale(0.92) rotate(1deg); opacity: 1; }

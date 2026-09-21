@@ -1,19 +1,15 @@
 import { ArrowRight, BookOpen, Loader2, MessageSquareQuote, RotateCcw } from 'lucide-react';
-import type { ScenarioBundle } from '../../types/legal';
-import { PrecedentCard } from '../PrecedentCard';
 import type { TrialState } from '../../core/useTrial';
 
 interface ChamberActionBarProps {
-  scenario: ScenarioBundle;
   state: TrialState;
   mode: 'cards' | 'freeform';
   allowFreeform: boolean;
-  selectedCardId: string | null;
   motion: string;
   canSubmit: boolean;
   isFinalTurn: boolean;
+  handLeft: number;
   onSetMode: (mode: 'cards' | 'freeform') => void;
-  onSelectCard: (cardId: string) => void;
   onMotionChange: (text: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   onSubmit: () => void;
@@ -22,16 +18,14 @@ interface ChamberActionBarProps {
 }
 
 export function ChamberActionBar({
-  scenario,
   state,
   mode,
   allowFreeform,
-  selectedCardId,
   motion,
   canSubmit,
   isFinalTurn,
+  handLeft,
   onSetMode,
-  onSelectCard,
   onMotionChange,
   onKeyDown,
   onSubmit,
@@ -39,20 +33,20 @@ export function ChamberActionBar({
   onRetry,
 }: ChamberActionBarProps) {
   return (
-    <div className="sticky bottom-0 border-t-2 border-ink bg-felt-950/95 p-3 backdrop-blur lg:p-4">
+    <div className="shrink-0 border-t-2 border-ink bg-felt-950/95 p-3 backdrop-blur lg:p-4">
       <div className="mx-auto max-w-3xl space-y-3">
         {state.phase === 'awaiting' ? (
           <>
             <div className="flex gap-2">
               <button
-                aria-label="Play a precedent card"
+                aria-label="Play a precedent card from your hand"
                 type="button"
                 onClick={() => onSetMode('cards')}
                 className={`btn-3d flex flex-1 items-center justify-center gap-1.5 rounded-lg border-2 border-ink px-2 py-2 font-display text-[11px] uppercase tracking-wider ${
                   mode === 'cards' ? 'bg-chip-gold text-ink' : 'bg-felt-800 text-cream/70'
                 }`}
               >
-                <BookOpen className="h-3.5 w-3.5" /> Precedent Card
+                <BookOpen className="h-3.5 w-3.5" /> Play Card · {handLeft} in hand
               </button>
               {allowFreeform && (
                 <button
@@ -69,24 +63,15 @@ export function ChamberActionBar({
             </div>
 
             {mode === 'cards' ? (
-              <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-                {scenario.availablePrecedents.map((c) => (
-                  <PrecedentCard
-                    key={c.id}
-                    card={c}
-                    selected={selectedCardId === c.id}
-                    exhausted={state.playedCardIds.includes(c.id)}
-                    disabled={state.playedCardIds.includes(c.id)}
-                    onSelect={() => onSelectCard(c.id)}
-                  />
-                ))}
-              </div>
+              <p className="text-center font-mono text-[10px] text-cream/45">
+                Tap a card from your hand — the Bench reads the record, opposing counsel answers with a counter-card.
+              </p>
             ) : (
               <textarea
                 value={motion}
                 onChange={(e) => onMotionChange(e.target.value)}
                 onKeyDown={onKeyDown}
-                placeholder={`Compose a motion for ${scenario.clientName}. Anchor it in authorities already on record — e.g. "Miranda v. Arizona requires suppression of the statement..."`}
+                placeholder={`Compose a motion for the record. Anchor it in authorities on this table — e.g. "Miranda v. Arizona requires suppression of the statement..."`}
                 rows={3}
                 className="w-full resize-none rounded-xl border-2 border-ink bg-felt-800 p-3 text-[13px] leading-relaxed text-cream outline-none placeholder:text-cream/35 focus:border-chip-gold"
               />
@@ -101,7 +86,7 @@ export function ChamberActionBar({
                 {mode === 'freeform' && <kbd className="rounded border border-ink bg-felt-800 px-1 py-0.5">⌘/Ctrl+Enter</kbd>}
               </p>
               <button
-                aria-label={isFinalTurn ? 'Submit final submission' : 'Address the bench'}
+                aria-label={isFinalTurn ? 'Submit final submission' : 'Play the hand and address the bench'}
                 type="button"
                 onClick={onSubmit}
                 disabled={!canSubmit}
@@ -110,14 +95,14 @@ export function ChamberActionBar({
                   canSubmit ? 'bg-poker-red text-cream' : 'cursor-not-allowed bg-felt-800 text-cream/30',
                 ].join(' ')}
               >
-                {isFinalTurn ? 'Final Submission' : 'Address the Bench'} <ArrowRight className="h-3.5 w-3.5" />
+                {isFinalTurn ? 'Final Submission' : 'Play the hand'} <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </>
         ) : state.phase === 'verdict' && state.last ? (
           <div className="flex items-center justify-between gap-3">
             <p className="font-mono text-[11px] text-cream/60">
-              {state.turn >= state.maxTurns ? 'Final turn recorded.' : 'Advancing docket…'}
+              {state.turn >= state.maxTurns ? 'Final turn recorded. The Clerk will read the verdict.' : 'The Bench has ruled on the record.'}
             </p>
             <button
               aria-label="Continue to next turn"
@@ -130,7 +115,7 @@ export function ChamberActionBar({
           </div>
         ) : state.phase === 'resolving' ? (
           <div className="flex items-center justify-center gap-2 py-2 font-display text-xs uppercase tracking-wider text-cream/60">
-            <Loader2 className="h-4 w-4 animate-spin text-chip-gold" /> The bench is deliberating…
+            <Loader2 className="h-4 w-4 animate-spin text-chip-gold" /> Opposing counsel answers · the Bench deliberates…
           </div>
         ) : (
           <div className="flex items-center justify-center gap-4 py-2">

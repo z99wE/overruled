@@ -93,9 +93,13 @@ export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, o
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-5 pb-10 pt-4 lg:px-10">
         <p className="mb-6 max-w-2xl text-[15px] leading-relaxed text-cream/85">
-          Real judgments. Seven legal systems. One hostile bench.
-          Play verified precedent cards or file freeform motions — an opposing-counsel agent reads your
-          deck and strikes back every turn, and the record ships out as a consultation docket.
+          <strong className="text-chip-gold">Your problem:</strong> you cannot practise adversarial argument safely or free — and most
+          legal AI just fabricates cases.
+          <br className="hidden sm:block" />
+          <strong className="text-chip-gold">Your hand:</strong> every matter deals you five{' '}
+          <em className="text-cream">verified, real judgments</em> as playing cards. Play one each turn — the opposing-counsel
+          agent reads your deck and strikes back with a counter-card, and the Bench rewards verified authority. Invented law is exposure on
+          the record, which ships home as a consultation docket.
         </p>
 
         <div className="mb-6">

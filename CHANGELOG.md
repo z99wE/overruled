@@ -5,6 +5,28 @@ Keep a Changelog conventions; version numbers follow SemVer.
 
 ## [Unreleased]
 
+### Changed — the case table (full card-game rebuild)
+- **Your Hand.** Every matter now *deals* its five verified precedents out as a
+  fanned hand of playing cards along the bottom of the table (deterministic
+  seeded order in `cardMeta.dealHand`, stable across turns/remounts/restarts).
+  Cards deal in one-by-one, dead cards flip to their back ("SPENT"), the
+  selected card lifts for the table, and the Clerk reads the pot and streak.
+- **Centre-table showdown.** A new felt pit (`CardTable`) replaces the tucked-away
+  after-the-fact canvas: the opposing-counsel agent's counter-card drops in
+  face-down, your card deals up from the defence rail, the Bench reveals at the
+  verdict — the winning card glows gold/red and the loser is burned off the
+  table — all **live**, during deliberation, not after.
+- **Chamber reads as a table, not a document.** Opposing counsel's persona sits
+  on the court rail, the pit occupies centre stage, the transcript flows
+  beneath it, and the case file moved to a slide-in drawer with a full
+  authority board. The old in-bar card grid is gone — you play from the hand.
+- **New building blocks** with full coverage: `cardMeta.ts` (seeded hand deal,
+  authority weight, domain suits, turn winner), `GameCard.tsx` (shared playing
+  card face), `CardTable.tsx` (phase-driven showdown), `HandFan.tsx`.
+- Copy insists on the problem→hand loop ("your problem / your hand") on the
+  matter gallery; Bench/opponent/Clerk labels make the agent roster legible.
+- Test suite now **210 tests across 22 files**.
+
 ### Added
 - **High-stakes card-table restyle:** felt screens get a fine grain overlay
   (`felt-noise`), the trial transcript sits in a green cushioned table rail

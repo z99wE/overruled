@@ -49,7 +49,7 @@ overrool/
 │   │   ├── searchIndex.ts             ← MiniSearch citation index + validateCitation (precedent/statute)
 │   │   ├── storage.ts                 ← KeyManager (BYOK): Capacitor SecureStorage (native) or localStorage/sessionStorage (web)
 │   │   └── useTrial.ts                ← reducer-based trial state machine (favor, phase, turn, log)
-│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (21 files, 194 tests)
+│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (22 files, 210 tests)
 │   ├── types/
 │   │   └── legal.ts                   ← all shared TS interfaces + constants (STATUTORY_NOTICE, VERDICT_TAGS, MODEL_DEFAULTS usage)
 │   ├── App.tsx                        ← screen shell (loading / home / trial) + key-vault modal + error fallbacks
@@ -183,7 +183,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 | `npm run preview` | Serve production build locally |
 | `npm run typecheck` | `tsc --noEmit` (app) + `tsc -p tsconfig.workers.json` (Pages Functions) |
 | `npm run lint` | ESLint over `src`, `functions`, `scripts` |
-| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 194 tests) |
+| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 210 tests) |
 | `npm run test:coverage` | Vitest with v8 coverage report + thresholds |
 | `npm run icons` | Regenerate `public/icons/*.png` from `public/icon.svg` (needs `sharp`) |
 | `npm run cf:dev` | `wrangler pages dev` — static shell + Functions + local D1 |

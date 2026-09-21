@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, Gavel, KeyRound } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FileText, Gavel, KeyRound, X } from 'lucide-react';
 import type { ScenarioBundle } from '../types/legal';
 import type { CitationIndex } from '../core/searchIndex';
 import { useTrial } from '../core/useTrial';
@@ -17,6 +17,9 @@ import { VerdictFlash, JudgeMessage, OpponentMessage, PlayerMessage } from './ch
 import { ResolutionBlock } from './chamber/ResolutionBlock';
 import { ChamberSidebar } from './chamber/ChamberSidebar';
 import { ChamberActionBar } from './chamber/ChamberActionBar';
+import { HandFan } from '../game/HandFan';
+import { CardTable } from '../game/CardTable';
+import { computeWinner, dealHand } from '../game/cardMeta';
 
 interface CourtroomChamberProps {
   scenario: ScenarioBundle;
@@ -31,10 +34,9 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
   const { state, submitAction, advance, endTrial, restart, error, clearError } = useTrial(scenario, index);
   const [mode, setMode] = useState<'cards' | 'freeform'>('cards');
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [pendingCardId, setPendingCardId] = useState<string | null>(null);
   const [motion, setMotion] = useState('');
   const [fileOpen, setFileOpen] = useState(false);
-  // Deck exhaustion is reducer-owned (state.playedCardIds): it survives REVERT,
-  // turn advances and remounts, and only a full restart re-deals the deck.
   const [run, setRun] = useState<RunState>(() => loadRun());
   const [turnGame, setTurnGame] = useState<ReturnType<typeof applyTurnScore> | null>(null);
   const [payout, setPayout] = useState<MatterPayout | null>(null);
@@ -48,9 +50,15 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
   const boss = isStaticMatter ? bossForJurisdiction(scenario.jurisdiction) : null;
   const transcriptRef = useRef<HTMLDivElement>(null);
 
+  // The matter's verified deck is dealt as a fanned hand, in seeded order —
+  // stable across turns, remounts and restarts of the same matter.
+  const hand = useMemo(() => dealHand(scenario.availablePrecedents, scenario.id), [scenario]);
+  const playedIds = useMemo(() => new Set(state.playedCardIds), [state.playedCardIds]);
+
   useEffect(() => {
     if (state.phase === 'awaiting' && state.turn === 1 && state.history.length === 0) {
       setSelectedCardId(null);
+      setPendingCardId(null);
       setMotion('');
       setMode('cards');
       setTurnGame(null);
@@ -109,12 +117,18 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
     transcriptRef.current?.scrollTo({ top: transcriptRef.current.scrollHeight, behavior: 'smooth' });
   }, [state.history.length, state.phase, state.last?.rawModelOutput]);
 
+  const handleAdvance = useCallback(() => {
+    setPendingCardId(null);
+    setSelectedCardId(null);
+    advance();
+  }, [advance]);
+
   useEffect(() => {
     if (state.phase === 'verdict' && state.last) {
-      const t = window.setTimeout(() => advance(), 2600);
+      const t = window.setTimeout(() => handleAdvance(), 2600);
       return () => window.clearTimeout(t);
     }
-  }, [state.phase, state.last?.rawModelOutput, advance]);
+  }, [state.phase, state.last?.rawModelOutput, handleAdvance]);
 
   const selectedCard = useMemo(
     () => scenario.availablePrecedents.find((c) => c.id === selectedCardId),
@@ -136,14 +150,13 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
       actionText = motion.trim();
     }
     const cardId = mode === 'cards' && card ? card.id : undefined;
+    setPendingCardId(cardId ?? null);
     await submitAction({
       kind: cardId ? 'precedent_card' : 'freeform_motion',
       precedentCardId: cardId,
       freeformText: actionText,
       rawText: actionText,
     });
-    setSelectedCardId(null);
-    setMotion('');
   };
 
   const handleCardSelect = (cardId: string) => {
@@ -161,6 +174,17 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
   const isFinalTurn = state.turn >= state.maxTurns;
   const verdictFlashVisible = state.phase === 'verdict' && !!state.last;
 
+  // Table choreography.
+  const tableCardId = pendingCardId ?? state.last?.playerAction.precedentCardId ?? null;
+  const tablePlayerCard = tableCardId
+    ? (scenario.availablePrecedents.find((p) => p.id === tableCardId) ?? null)
+    : null;
+  const tableOpponentCard = state.last?.opposingBrief?.opponentCard ?? null;
+  const tableStage: 'idle' | 'resolving' | 'verdict' =
+    state.phase === 'verdict' ? 'verdict' : state.phase === 'resolving' ? 'resolving' : 'idle';
+  const tableWinner = state.phase === 'verdict' && state.last ? computeWinner(state.last) : 'none';
+  const tableReplayKey = `${state.turn}-${tableCardId ?? 'motion'}`;
+
   return (
     <div className={`felt-bg felt-noise flex h-full flex-col ${shake ? 'screen-shake' : ''}`}>
       <ChamberHeader scenario={scenario} state={state} onExit={onExit} />
@@ -174,20 +198,46 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
         </div>
       )}
 
-      <main className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        <ChamberSidebar
-          scenario={scenario}
-          fileOpen={fileOpen}
-          mode={mode}
-          selectedCardId={selectedCardId}
-          phase={state.phase}
-          playedCardIds={state.playedCardIds}
-          onSelectCard={handleCardSelect}
-        />
+      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:overflow-hidden">
+        {/* ── The table strip ─────────────────────────────────────── */}
+        <div className="shrink-0 space-y-2.5 px-3 pt-3 lg:px-6">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-poker-red-deep font-display text-[11px] text-cream">
+                {scenario.opposingCounselPersona.name.slice(0, 2).toUpperCase()}
+              </span>
+              <div className="min-w-0">
+                <p className="truncate font-display text-[11px] uppercase tracking-wider text-poker-red">
+                  {scenario.opposingCounselPersona.name}
+                </p>
+                <p className="truncate font-mono text-[9px] uppercase tracking-widest text-cream/45">
+                  Style · {scenario.opposingCounselPersona.style.replace(/_/g, ' ')}
+                  {scenario.opposingCounselPersona.interlocutoryAttackTheme
+                    ? ` · hits at ${scenario.opposingCounselPersona.interlocutoryAttackTheme}`
+                    : ''}
+                </p>
+              </div>
+            </div>
+            <span className="rounded border border-cream/20 bg-ink/40 px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-cream/55">
+              {scenario.bench}
+            </span>
+          </div>
 
-        <section className="flex min-h-0 flex-1 flex-col">
+          <CardTable
+            stage={tableStage}
+            playerCard={tablePlayerCard}
+            opponentCard={tableOpponentCard}
+            winner={tableWinner}
+            record={state.last}
+            clientName={scenario.clientName}
+            replayKey={tableReplayKey}
+          />
+        </div>
+
+        {/* ── Case file toggle + trial transcript ─────────────────── */}
+        <div className="shrink-0 px-3 pt-3 lg:px-6">
           {error && (
-            <div className="sticky top-0 z-30 mx-4 mt-3 flex items-start gap-3 rounded-xl border-2 border-ink bg-poker-red p-3 shadow-[0_4px_0_0_var(--color-ink)]">
+            <div className="mb-3 flex items-start gap-3 rounded-xl border-2 border-ink bg-poker-red p-3 shadow-[0_4px_0_0_var(--color-ink)]">
               <div className="flex-1 text-[12px] leading-relaxed text-cream">
                 <strong className="font-display uppercase">Argue failed:</strong> {error}
               </div>
@@ -201,81 +251,114 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
               </div>
             </div>
           )}
-
           <button
-            aria-label={fileOpen ? 'Close case file' : 'Open case file and precedent deck'}
+            aria-label={fileOpen ? 'Close the case file' : 'Open the case file and authority board'}
             type="button"
             onClick={() => { void notifyTap(); setFileOpen((v) => !v); }}
-            className="btn-3d mx-4 mt-3 flex items-center justify-center gap-2 rounded-lg border-2 border-ink bg-felt-800 py-2 font-display text-[11px] uppercase tracking-wider text-chip-gold lg:hidden"
+            className="btn-3d flex items-center justify-center gap-2 rounded-lg border-2 border-ink bg-felt-800 py-2 font-display text-[10px] uppercase tracking-wider text-chip-gold"
           >
-            <ChevronDown className={`h-3.5 w-3.5 transition-transform ${fileOpen ? 'rotate-180' : ''}`} />
-            {fileOpen ? 'Close case file' : 'Open case file & precedent deck'}
+            <FileText className="h-3.5 w-3.5" /> {fileOpen ? 'Close the case file' : 'Open the case file'}
           </button>
+        </div>
 
-          <div ref={transcriptRef} className="rail-panel min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 lg:px-8">
-            <OpponentMessage
-              from={scenario.opposingCounselPersona.name ?? 'Opposing Senior Advocate'}
-              text={scenario.opposingCounselPersona.initialOpeningStatement}
-              style={scenario.opposingCounselPersona.style}
-              attack={scenario.opposingCounselPersona.interlocutoryAttackTheme}
-            />
-            <JudgeMessage meta="Preliminary direction" text={`The Bench has taken up the matter. The record before us establishes standing; we shall hear ${scenario.clientName} on the core dispute. On the record so far, this Court is neutral as to the eventual disposition. Counsel, you have ${state.maxTurns} opportunities to move this Bench. Begin.`} />
-
-            {state.history.map((rec) => (
-              <PlayerMessage
-                key={`p-${rec.turnNumber}`}
-                text={rec.playerAction.rawText}
-                verified={rec.resolution.citation_valid}
-                tag={scenario.clientName}
-              />
-            ))}
-
-            {state.phase !== 'verdict' ? (
-              state.history.map((rec) => <ResolutionBlock key={`r-${rec.turnNumber}`} record={rec} />)
-            ) : (
-              state.last && (
-                <div key={`r-live-${state.last.turnNumber}-${state.last.rawModelOutput.length}`} className="anim-deal">
-                  <ResolutionBlock record={state.last} />
-                </div>
-              )
-            )}
-
-            {state.phase === 'awaiting' && (
-              <JudgeMessage
-                meta={`Turn ${state.turn} of ${state.maxTurns}${isFinalTurn ? ' · final opportunity' : ''}`}
-                text={`Counsel for ${scenario.clientName}, the Bench awaits your ${isFinalTurn ? 'final' : 'next'} submission. Cite your authority with precision, or file a motion on the record. What is your position?`}
-              />
-            )}
-
-            {state.phase === 'resolving' && (
-              <div className="flex items-center gap-3 py-6">
-                <Gavel className="anim-float h-5 w-5 text-chip-gold" />
-                <span className="font-display text-sm uppercase tracking-widest text-cream/70">The Bench is deliberating…</span>
-              </div>
-            )}
-
-            <div className="h-2" />
-          </div>
-
-          <ChamberActionBar
-            scenario={scenario}
-            state={state}
-            mode={mode}
-            allowFreeform={isFlagEnabled('freeformMotion')}
-            selectedCardId={selectedCardId}
-            motion={motion}
-            canSubmit={canSubmit}
-            isFinalTurn={isFinalTurn}
-            onSetMode={setMode}
-            onSelectCard={handleCardSelect}
-            onMotionChange={setMotion}
-            onKeyDown={handleKeyDown}
-            onSubmit={() => void handleSubmittable()}
-            onContinue={advance}
-            onRetry={() => { void notifyTap(); restart(); }}
+        <div ref={transcriptRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-4 lg:px-6">
+          <OpponentMessage
+            from={scenario.opposingCounselPersona.name ?? 'Opposing Senior Advocate'}
+            text={scenario.opposingCounselPersona.initialOpeningStatement}
+            style={scenario.opposingCounselPersona.style}
+            attack={scenario.opposingCounselPersona.interlocutoryAttackTheme}
           />
-        </section>
+          <JudgeMessage meta="Preliminary direction" text={`The Bench has taken up the matter. The record before us establishes standing; we shall hear ${scenario.clientName} on the core dispute. On the record so far, this Court is neutral as to the eventual disposition. Counsel, you have ${state.maxTurns} opportunities to move this Bench. Begin.`} />
+
+          {state.history.map((rec) => (
+            <PlayerMessage
+              key={`p-${rec.turnNumber}`}
+              text={rec.playerAction.rawText}
+              verified={rec.resolution.citation_valid}
+              tag={scenario.clientName}
+            />
+          ))}
+
+          {state.phase !== 'verdict' ? (
+            state.history.map((rec) => <ResolutionBlock key={`r-${rec.turnNumber}`} record={rec} />)
+          ) : (
+            state.last && (
+              <div key={`r-live-${state.last.turnNumber}-${state.last.rawModelOutput.length}`} className="anim-deal">
+                <ResolutionBlock record={state.last} />
+              </div>
+            )
+          )}
+
+          {state.phase === 'awaiting' && (
+            <JudgeMessage
+              meta={`Turn ${state.turn} of ${state.maxTurns}${isFinalTurn ? ' · final opportunity' : ''}`}
+              text={`Counsel for ${scenario.clientName}, the Bench awaits your ${isFinalTurn ? 'final' : 'next'} submission. Play a precedent from your hand, or file a motion on the record. What is your position?`}
+            />
+          )}
+
+          {state.phase === 'resolving' && (
+            <div className="flex items-center gap-3 py-4">
+              <Gavel className="anim-float h-5 w-5 text-chip-gold" />
+              <span className="font-display text-sm uppercase tracking-widest text-cream/70">Clerk · the Bench is recording your authority…</span>
+            </div>
+          )}
+
+          <div className="h-2" />
+        </div>
+
+        {/* ── Your hand ───────────────────────────────────────────── */}
+        <HandFan
+          cards={hand}
+          playedIds={playedIds}
+          selectedId={selectedCardId}
+          active={mode === 'cards' && state.phase === 'awaiting'}
+          onSelect={handleCardSelect}
+          pot={state.pot}
+          streak={state.streak}
+          clientName={scenario.clientName}
+        />
+
+        <ChamberActionBar
+          state={state}
+          mode={mode}
+          allowFreeform={isFlagEnabled('freeformMotion')}
+          motion={motion}
+          canSubmit={canSubmit}
+          isFinalTurn={isFinalTurn}
+          handLeft={hand.length - state.playedCardIds.length}
+          onSetMode={(m) => { void notifyTap(); setMode(m); }}
+          onMotionChange={setMotion}
+          onKeyDown={handleKeyDown}
+          onSubmit={() => void handleSubmittable()}
+          onContinue={handleAdvance}
+          onRetry={() => { void notifyTap(); setPendingCardId(null); setSelectedCardId(null); restart(); }}
+        />
       </main>
+
+      {/* ── Case file drawer ──────────────────────────────────────── */}
+      <div className={`fixed inset-0 z-40 ${fileOpen ? '' : 'pointer-events-none'}`} aria-hidden={!fileOpen}>
+        <div
+          className={`absolute inset-0 bg-ink/70 transition-opacity ${fileOpen ? 'opacity-100' : 'opacity-0'}`}
+          onClick={() => setFileOpen(false)}
+          aria-hidden
+        />
+        <aside
+          className={`absolute right-0 top-0 flex h-full w-[min(92vw,380px)] flex-col border-l-2 border-ink bg-felt-900 shadow-2xl transition-transform duration-300 ${fileOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        >
+          <div className="flex items-center justify-between border-b-2 border-ink px-4 py-3">
+            <p className="font-display text-xs uppercase tracking-widest text-chip-gold">The Case File</p>
+            <button
+              type="button"
+              aria-label="Close the case file"
+              onClick={() => setFileOpen(false)}
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-ink text-cream/60 hover:text-cream"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <ChamberSidebar scenario={scenario} selectedCardId={selectedCardId} onSelectCard={handleCardSelect} />
+        </aside>
+      </div>
 
       {verdictFlashVisible && state.last && <VerdictFlash record={state.last} />}
       {verdictFlashVisible && turnGame && (

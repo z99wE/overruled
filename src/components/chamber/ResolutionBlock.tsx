@@ -1,19 +1,11 @@
 import type { TurnRecord } from '../../types/legal';
 import { isSparringBrief } from '../../game/localJudge';
-import { CardTableCanvas } from '../../game/CardTableCanvas';
 import { VERDICT_STYLE, JudgeMessage, OpponentMessage, CoCounselMessage } from './messages';
 
 export function ResolutionBlock({ record }: { record: TurnRecord }) {
   const style = VERDICT_STYLE[record.resolution.bench_verdict_tag];
   const r = record.resolution;
   const sparring = isSparringBrief(record.opposingBrief);
-  const oppCard = record.opposingBrief?.opponentCard ?? null;
-  const winner: 'player' | 'opponent' | 'none' =
-    r.bench_verdict_tag === 'SUSTAINED' || (r.judicial_favor_delta > 0 && r.citation_valid)
-      ? 'player'
-      : r.judicial_favor_delta < 0 && oppCard
-        ? 'opponent'
-        : 'none';
   return (
     <div className="space-y-3 border-l-4 border-ink/70 pl-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -36,12 +28,6 @@ export function ResolutionBlock({ record }: { record: TurnRecord }) {
           </span>
         )}
       </div>
-      <CardTableCanvas
-        dealKey={`${record.turnNumber}-${record.rawModelOutput.length}`}
-        playerCard={record.citedPrecedent ?? null}
-        opponentCard={oppCard}
-        winner={winner}
-      />
       {record.citedPrecedent?.sourceUrl && (
         <a
           href={record.citedPrecedent.sourceUrl}
