@@ -327,7 +327,7 @@ Provision once (see [`AUTH.md`](AUTH.md) for the full runbook):
 ```bash
 npm run d1:create                          # creates the D1 database, prints its id
 # paste the printed database_id into wrangler.toml
-npm run d1:migrate                         # apply d1/schema.sql (users, sessions, runs)
+npm run d1:migrate                         # apply d1/schema.sql (users, sessions, runs, login_attempts)
 npm run cf:deploy                          # build + wrangler pages deploy dist
 ```
 
@@ -339,7 +339,7 @@ What the API does (`functions/api/`):
 - `GET/PUT /api/run` — account-scoped game-progress save (chips, XP, jokers, bosses). Signed-in players sync automatically; signed-out play is 100% device-local.
 - `POST /api/llm` — admin-only hosted inference proxy to the Workers AI `AI` binding (free tier). See `AUTH.md` §7.
 
-Declared account gaps (see `AUTH.md`): no email verification (there is no transactional email on Pages), no per-account rate limiting, and sessions are single-bearer-token (no refresh rotation beyond login).
+Declared account gaps (see `AUTH.md`): no email verification (there is no transactional email on Pages), and sessions are single-bearer-token (no refresh rotation beyond login). Failed logins are rate-limited per email in-app (`429 login_locked` after 10 fails / 15 min); a Cloudflare WAF rate rule can still be layered onto `/api/auth/*` for IP-level aggregation.
 
 Known static-host notes:
 
