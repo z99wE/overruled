@@ -76,7 +76,7 @@ end-to-end against an in-memory fake D1 (`functions/api/integration.test.ts`).
 
 ## 6. Security posture
 
-- Passwords: salted PBKDF2-SHA256, 210k iterations, unique per-user salt; only
+- Passwords: salted PBKDF2-SHA256, 100k iterations (Workers crypto cap), unique per-user salt; only
   the digest is stored.
 - Sessions: opaque 32-byte tokens; D1 stores only `sha256(token)`. The cookie is
   `__Host-overrool_session`, `HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=30d`.

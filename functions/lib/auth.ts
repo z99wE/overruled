@@ -1,4 +1,7 @@
-const PBKDF2_ITERATIONS = 210_000;
+// Cloudflare Workers' crypto.subtle rejects PBKDF2 iteration counts above
+// 100_000 (NotSupportedError); this is the platform ceiling. OPWASH-adjacent
+// guidance wants far more, but the Workers cap is the hard limit here.
+const PBKDF2_ITERATIONS = 100_000;
 const KEY_LEN = 32;
 
 const enc = new TextEncoder();

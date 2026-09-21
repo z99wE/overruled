@@ -29,7 +29,7 @@ does not collect, and how you can control it.
 | Data | Where | Why |
 |------|-------|-----|
 | Email address (normalized to lowercase) | Cloudflare D1, `users.email` | Account identity |
-| Password hash (salted PBKDF2-SHA256, 210k iterations) | Cloudflare D1, `users.pw_hash` | Authentication — the plaintext password is never stored |
+| Password hash (salted PBKDF2-SHA256, 100k iterations (Workers crypto cap)) | Cloudflare D1, `users.pw_hash` | Authentication — the plaintext password is never stored |
 | Account role (`user` / `admin`) | Cloudflare D1, `users.role` | Gating server-side hosted inference |
 | Created-at timestamp | Cloudflare D1, `users.created_at` | Account metadata |
 | Session token (SHA-256 digest only) | Cloudflare D1, `sessions` | Remembering you while signed in |

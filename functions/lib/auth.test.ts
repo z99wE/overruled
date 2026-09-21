@@ -22,6 +22,13 @@ describe('password hashing', () => {
     expect(await verifyPassword('hunter2-hunter2', a.salt, a.iterations, a.hash)).toBe(true);
   });
 
+  it('stays within the Cloudflare Workers PBKDF2 iteration cap (100k)', async () => {
+    // crypto.subtle on the Workers runtime throws for >100k iterations.
+    const { iterations } = await hashPassword('platform cap check');
+    expect(iterations).toBeLessThanOrEqual(100_000);
+    expect(iterations).toBeGreaterThanOrEqual(100_000);
+  });
+
   it('rejects the wrong password and mutated salts', async () => {
     const { hash, salt, iterations } = await hashPassword('correct horse');
     expect(await verifyPassword('battery staple', salt, iterations, hash)).toBe(false);

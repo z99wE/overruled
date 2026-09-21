@@ -37,7 +37,7 @@ API keys.
 - **Origin locking:** outbound LLM calls are validated against an allowlist of
   known provider origins (`src/core/providerCall.ts`) and reject anything else.
 - **Accounts (`functions/`):** passwords are hashed with salted PBKDF2-SHA256
-  (210k iterations, unique per-user salt); only the digest is stored. Sessions
+  (100k iterations (Workers crypto cap), unique per-user salt); only the digest is stored. Sessions
   are opaque 32-byte tokens; the DB stores only their SHA-256, and the cookie
   is `__Host-`-prefixed, `HttpOnly`, `Secure`, `SameSite=Strict`, 30-day TTL.
   Login rotates the account's session. `GET/PUT /api/run` validate payload
