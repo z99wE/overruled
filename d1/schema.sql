@@ -32,3 +32,23 @@ CREATE TABLE IF NOT EXISTS login_attempts (
   attempted_at TEXT NOT NULL,
   PRIMARY KEY (email, attempted_at)
 );
+
+-- One-time recovery codes (password recovery without email). Only SHA-256
+-- digests are stored; the plaintext is shown once at creation.
+CREATE TABLE IF NOT EXISTS recovery_codes (
+  user_id   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  code_hash TEXT NOT NULL,
+  used_at   TEXT,
+  PRIMARY KEY (user_id, code_hash)
+);
+CREATE INDEX IF NOT EXISTS idx_recovery_user ON recovery_codes(user_id);
+
+-- Email password-reset tokens (single-use, 30-minute TTL, hash-only storage).
+CREATE TABLE IF NOT EXISTS password_resets (
+  token_hash TEXT PRIMARY KEY,
+  user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  used_at    TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_resets_user ON password_resets(user_id);

@@ -22,6 +22,20 @@ interface LoginAttemptRow {
   attempted_at: string;
 }
 
+interface RecoveryCodeRow {
+  user_id: string;
+  code_hash: string;
+  used_at: string | null;
+}
+
+interface PasswordResetRow {
+  token_hash: string;
+  user_id: string;
+  created_at: string;
+  expires_at: string;
+  used_at: string | null;
+}
+
 /**
  * A tiny in-memory D1 stand-in that understands exactly the queries in db.ts.
  * Good enough to exercise the auth/run handlers end-to-end in tests.
@@ -31,6 +45,8 @@ export function makeFakeDb() {
   const sessions: SessionRow[] = [];
   const runs = new Map<string, { data: string; updated_at: string }>();
   const loginAttempts: LoginAttemptRow[] = [];
+  const recoveryCodes: RecoveryCodeRow[] = [];
+  const passwordResets: PasswordResetRow[] = [];
 
   const db: D1Database = {
     prepare(sql: string): D1PreparedStatement {
@@ -57,6 +73,23 @@ export function makeFakeDb() {
           if (sql.includes('FROM runs WHERE user_id = ?')) {
             const r = runs.get(String(bound[0]));
             return r ? ({ user_id: bound[0], data: r.data, updated_at: r.updated_at } as T) : (null as T | null);
+          }
+          if (sql.includes('COUNT(*) AS n FROM recovery_codes')) {
+            const [userId] = bound;
+            const n = recoveryCodes.filter((c) => c.user_id === userId && !c.used_at).length;
+            return { n } as T;
+          }
+          if (sql.includes('FROM recovery_codes WHERE user_id') && sql.includes('code_hash')) {
+            const [userId, codeHash] = bound;
+            const row = recoveryCodes.find((c) => c.user_id === userId && c.code_hash === codeHash && !c.used_at);
+            return (row ? { user_id: row.user_id } : null) as T | null;
+          }
+          if (sql.includes('FROM password_resets r') && sql.includes('JOIN users')) {
+            const [tokenHash, now] = bound;
+            const r = passwordResets.find((x) => x.token_hash === tokenHash && !x.used_at && x.expires_at > String(now));
+            if (!r) return null;
+            const u = users.find((x) => x.id === r!.user_id);
+            return (u ?? null) as T | null;
           }
           return null as T | null;
         },
@@ -139,6 +172,61 @@ export function makeFakeDb() {
               if (loginAttempts[i].email === String(email)) loginAttempts.splice(i, 1);
             }
             return { meta: { changes: before - loginAttempts.length } };
+          }
+          if (sql.startsWith('INSERT INTO recovery_codes')) {
+            const [userId, codeHash] = bound;
+            recoveryCodes.push({ user_id: String(userId), code_hash: String(codeHash), used_at: null });
+            return { meta: { changes: 1 } };
+          }
+          if (sql.startsWith('DELETE FROM recovery_codes WHERE user_id')) {
+            const [userId] = bound;
+            const before = recoveryCodes.length;
+            for (let i = recoveryCodes.length - 1; i >= 0; i--) {
+              if (recoveryCodes[i].user_id === String(userId)) recoveryCodes.splice(i, 1);
+            }
+            return { meta: { changes: before - recoveryCodes.length } };
+          }
+          if (sql.startsWith('UPDATE recovery_codes SET used_at')) {
+            const [now, userId, codeHash] = bound;
+            const row = recoveryCodes.find((c) => c.user_id === String(userId) && c.code_hash === String(codeHash));
+            if (!row) return { meta: { changes: 0 } };
+            row.used_at = String(now);
+            return { meta: { changes: 1 } };
+          }
+          if (sql.startsWith('INSERT INTO password_resets')) {
+            const [tokenHash, userId, createdAt, expiresAt] = bound;
+            passwordResets.push({
+              token_hash: String(tokenHash),
+              user_id: String(userId),
+              created_at: String(createdAt),
+              expires_at: String(expiresAt),
+              used_at: null,
+            });
+            return { meta: { changes: 1 } };
+          }
+          if (sql.startsWith('DELETE FROM password_resets WHERE user_id')) {
+            const [userId] = bound;
+            const before = passwordResets.length;
+            for (let i = passwordResets.length - 1; i >= 0; i--) {
+              if (passwordResets[i].user_id === String(userId)) passwordResets.splice(i, 1);
+            }
+            return { meta: { changes: before - passwordResets.length } };
+          }
+          if (sql.startsWith('UPDATE password_resets SET used_at')) {
+            const [now, tokenHash] = bound;
+            const row = passwordResets.find((x) => x.token_hash === String(tokenHash));
+            if (!row) return { meta: { changes: 0 } };
+            row.used_at = String(now);
+            return { meta: { changes: 1 } };
+          }
+          if (sql.startsWith('UPDATE users SET pw_hash')) {
+            const [pwHash, pwSalt, iterations, userId] = bound;
+            const u = users.find((x) => x.id === String(userId));
+            if (!u) return { meta: { changes: 0 } };
+            u.pw_hash = String(pwHash);
+            u.pw_salt = String(pwSalt);
+            u.iterations = Number(iterations);
+            return { meta: { changes: 1 } };
           }
           return { meta: { changes: 0 } };
         },

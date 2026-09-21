@@ -145,3 +145,71 @@ export async function recordFailedLogin(db: D1Database, email: string): Promise<
 export async function clearFailedLogins(db: D1Database, email: string): Promise<void> {
   await db.prepare('DELETE FROM login_attempts WHERE email = ?').bind(email).run();
 }
+
+export async function updatePasswordHash(
+  db: D1Database,
+  userId: string,
+  pwHash: string,
+  pwSalt: string,
+  iterations: number,
+): Promise<void> {
+  await db
+    .prepare('UPDATE users SET pw_hash = ?, pw_salt = ?, iterations = ? WHERE id = ?')
+    .bind(pwHash, pwSalt, iterations, userId)
+    .run();
+}
+
+export async function insertRecoveryCode(db: D1Database, userId: string, codeHash: string): Promise<void> {
+  await db.prepare('INSERT INTO recovery_codes (user_id, code_hash, used_at) VALUES (?, ?, NULL)').bind(userId, codeHash).run();
+}
+
+export async function revokeRecoveryCodes(db: D1Database, userId: string): Promise<void> {
+  await db.prepare('DELETE FROM recovery_codes WHERE user_id = ?').bind(userId).run();
+}
+
+export async function unusedRecoveryCodeCount(db: D1Database, userId: string): Promise<number> {
+  const res = await db
+    .prepare('SELECT COUNT(*) AS n FROM recovery_codes WHERE user_id = ? AND used_at IS NULL')
+    .bind(userId)
+    .first<{ n: number }>();
+  return Number(res?.n ?? 0);
+}
+
+/** True if the digest matches an unused code for this user. */
+export async function isUnusedRecoveryCode(db: D1Database, userId: string, codeHash: string): Promise<boolean> {
+  const row = await db
+    .prepare('SELECT user_id FROM recovery_codes WHERE user_id = ? AND code_hash = ? AND used_at IS NULL')
+    .bind(userId, codeHash)
+    .first();
+  return row !== null;
+}
+
+export async function useRecoveryCode(db: D1Database, userId: string, codeHash: string): Promise<void> {
+  await db.prepare('UPDATE recovery_codes SET used_at = ? WHERE user_id = ? AND code_hash = ?').bind(NOW(), userId, codeHash).run();
+}
+
+export async function createPasswordReset(db: D1Database, userId: string, tokenHash: string, expiresAt: string): Promise<void> {
+  await db.prepare('INSERT INTO password_resets (token_hash, user_id, created_at, expires_at, used_at) VALUES (?, ?, ?, ?, NULL)').bind(tokenHash, userId, NOW(), expiresAt).run();
+}
+
+export async function deletePasswordResetsForUser(db: D1Database, userId: string): Promise<void> {
+  await db.prepare('DELETE FROM password_resets WHERE user_id = ?').bind(userId).run();
+}
+
+/** Validates a reset token: exists, unused, not expired. Returns the user if usable. */
+export async function findUserForPasswordReset(db: D1Database, tokenHash: string): Promise<UserRow | null> {
+  const row = await db
+    .prepare(
+      `SELECT u.id, u.email, u.pw_hash, u.pw_salt, u.iterations, u.role, u.created_at
+         FROM password_resets r
+         JOIN users u ON u.id = r.user_id
+        WHERE r.token_hash = ? AND r.used_at IS NULL AND r.expires_at > ?`,
+    )
+    .bind(tokenHash, NOW())
+    .first<UserRow>();
+  return row ?? null;
+}
+
+export async function consumePasswordReset(db: D1Database, tokenHash: string): Promise<void> {
+  await db.prepare('UPDATE password_resets SET used_at = ? WHERE token_hash = ?').bind(NOW(), tokenHash).run();
+}

@@ -30,6 +30,8 @@ does not collect, and how you can control it.
 |------|-------|-----|
 | Email address (normalized to lowercase) | Cloudflare D1, `users.email` | Account identity |
 | Password hash (salted PBKDF2-SHA256, 100k iterations (Workers crypto cap)) | Cloudflare D1, `users.pw_hash` | Authentication — the plaintext password is never stored |
+| Recovery-code digests (SHA-256 only) | Cloudflare D1, `recovery_codes` | Account-recovery fallback — the plaintext codes are shown once and never stored |
+| Password-reset token (SHA-256 digest, 30-min TTL) | Cloudflare D1, `password_resets` | Email-based password reset |
 | Account role (`user` / `admin`) | Cloudflare D1, `users.role` | Gating server-side hosted inference |
 | Created-at timestamp | Cloudflare D1, `users.created_at` | Account metadata |
 | Session token (SHA-256 digest only) | Cloudflare D1, `sessions` | Remembering you while signed in |
@@ -42,6 +44,8 @@ does not collect, and how you can control it.
 - Trial prompts, judge rulings, or case texts from BYOK trials.
 - Browsing history, IP-derived profiles, or advertising identifiers.
 - Payment information (we hold no money).
+- Recovery codes or reset tokens in plaintext anywhere — only their SHA-256
+  digests exist server-side, so a lost set cannot be recovered by us or anyone.
 
 ## Cookies and sessions
 

@@ -6,6 +6,19 @@ Keep a Changelog conventions; version numbers follow SemVer.
 ## [Unreleased]
 
 ### Added
+- **Password recovery** (fully Cloudflare-native): single-use 30-minute reset
+  tokens (`password_resets` table; only SHA-256 of the token is stored), wired
+  through `POST /api/auth/forgot` + `POST /api/auth/reset`, delivered by email
+  via a Resend HTTP integration when `RESEND_API_KEY`/`RESEND_FROM` are bound.
+  The forgot endpoint answers identically for known/unknown emails (no account
+  enumeration). Plus **one-time recovery codes** (`recovery_codes` table; only
+  digests stored): 8 codes per generation (`XXXX-XXXX`, unambiguous alphabet)
+  returned once at signup, regenerable from the account panel, and redeemable
+  via `POST /api/auth/recovery/verify` to set a new password. Both paths rotate
+  the account's session and revoke its other sessions.
+- Auth UI: "Forgot password?" view in `AuthModal`, one-time recovery-code
+  screen at signup and on regenerate, and a `ResetPasswordModal` that opens when
+  the app boots with `?reset_token=` in the URL.
 - Server-side **hosted inference** for the workspace administrator: `users.role`
   column, `POST /api/llm` (admin-only, Workers AI `AI` binding), and the
   **Hosted (Cloudflare)** option in the Key Vault — shown only to the `admin`
@@ -18,6 +31,13 @@ Keep a Changelog conventions; version numbers follow SemVer.
 
 ### Changed
 - `LLMProvider` gains `hosted`; `GET /api/auth/me` returns `user.role`.
+- Live **Cloudflare deployment**: D1 `overrool` provisioned (APAC),
+  `wrangler.toml` wired to its `database_id`, Pages project `overrool` created,
+  and PBKDF2 lowered to **100,000 iterations** to satisfy the Workers
+  `crypto.subtle` cap (this was failing live with `NotSupportedError` code
+  1101; Node's test environment permitted the old 210,000).
+- Successful sign-in now clears the failed-login counter and the lockout
+  window covers the correct password too (no lock-bypass).
 - **BYOK keys are now identity-scoped** (`storage.ts`): each signed-in account
   reads/writes its own device-local key slot (hashed by email), and a signed-in
   user can never see, load, or bill another account's key on the same device.
@@ -27,7 +47,7 @@ Keep a Changelog conventions; version numbers follow SemVer.
 - **Keyless copy softened:** the case list no longer scolds keyless players with
   a red "Arm Your Key" nudge; the chip is a muted "No Key" and the banner now
   explains that every case still plays via the rules-only local Bench.
-- README/CONTRIBUTING test counts updated (187 tests across 21 suites).
+- README/CONTRIBUTING test counts updated (194 tests across 21 suites).
 
 ## [2.0.0] - 2026-09-20
 

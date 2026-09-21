@@ -6,9 +6,14 @@ import * as signupModule from '../api/auth/signup';
 import * as loginModule from '../api/auth/login';
 import * as meModule from '../api/auth/me';
 import * as logoutModule from '../api/auth/logout';
+import * as forgotModule from '../api/auth/forgot';
+import * as resetModule from '../api/auth/reset';
+import * as recoveryCodesModule from '../api/auth/recovery/codes';
+import * as recoveryVerifyModule from '../api/auth/recovery/verify';
 import * as runModule from '../api/run';
 import * as llmModule from '../api/llm';
-import { setUserRole, LOGIN_MAX_FAILURES } from '../lib/db';
+import { setUserRole, LOGIN_MAX_FAILURES, createPasswordReset, findUserByEmail } from '../lib/db';
+import { sha256Hex } from '../lib/auth';
 
 function makeEnv(ai?: AppEnv['AI']): AppEnv {
   const { db } = makeFakeDb();
@@ -27,6 +32,14 @@ const dispatch = async (env: AppEnv, path: string, init: RequestInit = {}): Prom
       return meModule.onRequestGet(ctx);
     case '/api/auth/logout':
       return logoutModule.onRequestPost(ctx);
+    case '/api/auth/forgot':
+      return forgotModule.onRequestPost(ctx);
+    case '/api/auth/reset':
+      return resetModule.onRequestPost(ctx);
+    case '/api/auth/recovery/codes':
+      return recoveryCodesModule.onRequestPost(ctx);
+    case '/api/auth/recovery/verify':
+      return recoveryVerifyModule.onRequestPost(ctx);
     case '/api/run': {
       if (req.method === 'GET') return runModule.onRequestGet(ctx);
       if (req.method === 'PUT') return runModule.onRequestPut(ctx);
@@ -153,6 +166,142 @@ describe('auth + run API integration', () => {
       const res = await dispatch(env, '/api/auth/login', post({ email: EMAIL, password: WRONG_PW }));
       expect(res.status).toBe(401);
     }
+  });
+});
+
+describe('password reset + recovery codes', () => {
+  const signupWithCodes = async (env: AppEnv, email: string, password: string): Promise<{ cookie: string; codes: string[] }> => {
+    const res = await dispatch(env, '/api/auth/signup', post({ email, password }));
+    expect(res.status).toBe(201);
+    const body = (await res.json()) as { recoveryCodes?: string[] };
+    expect(body.recoveryCodes).toHaveLength(8);
+    const cookie = (res.headers.get('set-cookie') ?? '').split(';')[0].split('=')[1];
+    return { cookie, codes: body.recoveryCodes ?? [] };
+  };
+
+  it('issues 8 recovery codes at signup and a code resets the password', async () => {
+    const env = makeEnv();
+    const { codes } = await signupWithCodes(env, EMAIL, GOOD_PW);
+
+    const fiddled = await dispatch(env, '/api/auth/recovery/verify', post({ email: EMAIL, code: 'wabc', password: 'new-pass-9!' }));
+    expect(fiddled.status).toBe(400);
+
+    const unknown = await dispatch(env, '/api/auth/recovery/verify', post({ email: EMAIL, code: 'AAAA-AAAA', password: GOOD_PW }));
+    expect(unknown.status).toBe(400);
+
+    // Wrong password shape is rejected before any code check.
+    const weak = await dispatch(env, '/api/auth/recovery/verify', post({ email: EMAIL, code: codes[0], password: 'short' }));
+    expect(weak.status).toBe(400);
+
+    const good = await dispatch(env, '/api/auth/recovery/verify', post({ email: EMAIL, code: codes[0], password: 'fresh-one-9!' }));
+    expect(good.status).toBe(200);
+    expect(good.headers.get('set-cookie') ?? '').toContain('__Host-overrool_session=');
+
+    // Old password is dead, the new one signs in.
+    expect((await dispatch(env, '/api/auth/login', post({ email: EMAIL, password: GOOD_PW }))).status).toBe(401);
+    expect((await dispatch(env, '/api/auth/login', post({ email: EMAIL, password: 'fresh-one-9!' }))).status).toBe(200);
+
+    // The consumed code cannot be replayed.
+    const replay = await dispatch(env, '/api/auth/recovery/verify', post({ email: EMAIL, code: codes[0], password: GOOD_PW }));
+    expect(replay.status).toBe(400);
+  });
+
+  it('a second unused code still works after the first is consumed', async () => {
+    const env = makeEnv();
+    const { codes } = await signupWithCodes(env, EMAIL, GOOD_PW);
+    await dispatch(env, '/api/auth/recovery/verify', post({ email: EMAIL, code: codes[0], password: 'reset-one-9!' }));
+    const second = await dispatch(env, '/api/auth/recovery/verify', post({ email: EMAIL, code: codes[1], password: 'reset-two-9!' }));
+    expect(second.status).toBe(200);
+    const me = await dispatch(env, '/api/auth/me', { headers: { cookie: `__Host-overrool_session=${(second.headers.get('set-cookie') ?? '').split(';')[0].split('=')[1]}` } });
+    expect(((await me.json()) as { user: { email: string } }).user.email).toBe('counsel@example.com');
+  });
+
+  it('recovery codes require a valid session and rotate codes on regenerate', async () => {
+    const env = makeEnv();
+    const anon = await dispatch(env, '/api/auth/recovery/codes', post({}));
+    expect(anon.status).toBe(401);
+
+    const { cookie, codes } = await signupWithCodes(env, EMAIL, GOOD_PW);
+    const regenerated = await dispatch(env, '/api/auth/recovery/codes', post({}, `__Host-overrool_session=${cookie}`));
+    expect(regenerated.status).toBe(200);
+    const body = (await regenerated.json()) as { codes: string[]; remaining: number };
+    expect(body.codes).toHaveLength(8);
+
+    // Old codes are revoked; a fresh one works.
+    const old = await dispatch(env, '/api/auth/recovery/verify', post({ email: EMAIL, code: codes[0], password: GOOD_PW }));
+    expect(old.status).toBe(400);
+    const fresh = await dispatch(env, '/api/auth/recovery/verify', post({ email: EMAIL, code: body.codes[0], password: 'rotated-pw-9!' }));
+    expect(fresh.status).toBe(200);
+  });
+
+  it('forgot answers identically for known and unknown emails (no enumeration)', async () => {
+    const env = makeEnv();
+    await signupWithCodes(env, EMAIL, GOOD_PW);
+    const known = (await dispatch(env, '/api/auth/forgot', post({ email: EMAIL }))).json();
+    const unknown = (await dispatch(env, '/api/auth/forgot', post({ email: 'ghost@example.com' }))).json();
+    expect(await known).toEqual(await unknown);
+    expect((await unknown) as { ok: boolean }).toMatchObject({ ok: true });
+  });
+
+  it('emails a reset link when the transport is configured, then resets end-to-end', async () => {
+    const { vi } = await import('vitest');
+    const sent: Array<{ to: string; resetUrl: string }> = [];
+    const fetchStub = vi.fn(async (url: string, init: RequestInit) => {
+      if (url === 'https://api.resend.com/emails') {
+        const payload = JSON.parse(String(init.body)) as { to: string; text: string };
+        const resetUrl = payload.text.split('\n').find((l) => l.includes('reset_token=')) ?? '';
+        sent.push({ to: payload.to, resetUrl });
+        return new Response('ok', { status: 200 });
+      }
+      return new Response('nope', { status: 404 });
+    });
+    vi.stubGlobal('fetch', fetchStub);
+
+    const env = makeEnv();
+    env.RESEND_API_KEY = 're_0000test';
+    env.RESEND_FROM = 'Overrool <noreply@overrool.example>';
+    await signupWithCodes(env, EMAIL, GOOD_PW);
+
+    const forgot = await dispatch(env, '/api/auth/forgot', post({ email: EMAIL }));
+    expect(forgot.status).toBe(200);
+    expect(((await forgot.json()) as { emailConfigured: boolean }).emailConfigured).toBe(true);
+    expect(fetchStub).toHaveBeenCalledTimes(1);
+    expect(sent).toHaveLength(1);
+    expect(sent[0].to).toBe('counsel@example.com');
+
+    const token = new URL(sent[0].resetUrl).searchParams.get('reset_token');
+    expect(token).toBeTruthy();
+
+    const fail = await dispatch(env, '/api/auth/reset', post({ token: 'bad-token', password: 'whatever9!' }));
+    expect(fail.status).toBe(400);
+
+    const ok = await dispatch(env, '/api/auth/reset', post({ token, password: 'reset-link-pw-9' }));
+    expect(ok.status).toBe(200);
+    expect(ok.headers.get('set-cookie') ?? '').toContain('__Host-overrool_session=');
+    expect((await dispatch(env, '/api/auth/login', post({ email: EMAIL, password: GOOD_PW }))).status).toBe(401);
+    expect((await dispatch(env, '/api/auth/login', post({ email: EMAIL, password: 'reset-link-pw-9' }))).status).toBe(200);
+
+    // Single use: replaying the same token fails.
+    const replay = await dispatch(env, '/api/auth/reset', post({ token, password: 'another-pw-9!' }));
+    expect(replay.status).toBe(400);
+
+    vi.unstubAllGlobals();
+  });
+
+  it('rejects expired and malformed reset tokens', async () => {
+    const env = makeEnv();
+    await signupWithCodes(env, EMAIL, GOOD_PW);
+    const user = await findUserByEmail(env.DB, EMAIL);
+    expect(user).not.toBeNull();
+
+    const expiredToken = 'expired-token-1234';
+    const expiredAt = new Date(Date.now() - 1000).toISOString();
+    await createPasswordReset(env.DB, user!.id, await sha256Hex(expiredToken), expiredAt);
+    const res = await dispatch(env, '/api/auth/reset', post({ token: expiredToken, password: 'whatever9!' }));
+    expect(res.status).toBe(400);
+
+    const missing = await dispatch(env, '/api/auth/reset', post({ password: 'whatever9!' }));
+    expect(missing.status).toBe(400);
   });
 });
 

@@ -327,7 +327,7 @@ Provision once (see [`AUTH.md`](AUTH.md) for the full runbook):
 ```bash
 npm run d1:create                          # creates the D1 database, prints its id
 # paste the printed database_id into wrangler.toml
-npm run d1:migrate                         # apply d1/schema.sql (users, sessions, runs, login_attempts)
+npm run d1:migrate                         # apply d1/schema.sql (users, sessions, runs, login_attempts, recovery_codes, password_resets)
 npm run cf:deploy                          # build + wrangler pages deploy dist
 ```
 
@@ -336,10 +336,11 @@ Local, full-stack dev is `npm run cf:dev` (serves `dist/` with Functions against
 What the API does (`functions/api/`):
 
 - `POST /api/auth/signup` · `POST /api/auth/login` · `POST /api/auth/logout` · `GET /api/auth/me` — email + password accounts. Passwords are stored as **salted PBKDF2-SHA256** hashes (100k iterations (Workers crypto cap)); sessions are opaque 32-byte tokens whose SHA-256 digest is stored, delivered as `HttpOnly; Secure; SameSite=Strict` cookies (`__Host-overrool_session`). One active session per account (login rotates).
+- `POST /api/auth/forgot` · `POST /api/auth/reset` — **password recovery**: single-use 30-minute reset tokens (SHA-256 digest stored) delivered by email when a Resend sender is configured, with recovery codes (`/api/auth/recovery/*`) as the always-on Cloudflare-native fallback (8 codes per account, only hashes stored, each redeemable once to set a new password). See `AUTH.md` §6.
 - `GET/PUT /api/run` — account-scoped game-progress save (chips, XP, jokers, bosses). Signed-in players sync automatically; signed-out play is 100% device-local.
 - `POST /api/llm` — admin-only hosted inference proxy to the Workers AI `AI` binding (free tier). See `AUTH.md` §7.
 
-Declared account gaps (see `AUTH.md`): no email verification (there is no transactional email on Pages), and sessions are single-bearer-token (no refresh rotation beyond login). Failed logins are rate-limited per email in-app (`429 login_locked` after 10 fails / 15 min); a Cloudflare WAF rate rule can still be layered onto `/api/auth/*` for IP-level aggregation.
+Declared account gaps (see `AUTH.md`): no email verification (there is no transactional email on Pages beyond the optional Resend reset link), and sessions are single-bearer-token (no refresh rotation beyond login). Failed logins are rate-limited per email in-app (`429 login_locked` after 10 fails / 15 min) and password recovery is fully self-contained (reset tokens + recovery codes); a Cloudflare WAF rate rule can still be layered onto `/api/auth/*` for IP-level aggregation.
 
 Known static-host notes:
 

@@ -48,17 +48,31 @@ API keys.
   per-email lock (`429 login_locked`) engages after 10 failures inside 15
   minutes. It covers unknown emails too and won't be bypassed by the correct
   password while locked; a successful sign-in clears the counter.
+- **Password recovery:** `/api/auth/forgot` and `/api/auth/reset` implement
+  single-use 30-minute reset tokens whose SHA-256 digests are stored in
+  `password_resets` (`__Host-only` plaintext lives in the emailed link). The
+  forgot endpoint answers identically for known and unknown emails to prevent
+  account enumeration. As a fallback, signup and the account panel emit 8
+  one-time **recovery codes** (`XXXX-XXXX`, unambiguous alphabet); only
+  `sha256(code)` is stored, each code redeems once via
+  `/api/auth/recovery/verify`, and both reset paths revoke the account's other
+  sessions. Reset email is delivered through Resend only when `RESEND_API_KEY`
+  and `RESEND_FROM` are bound; with no transport the server reports
+  `emailConfigured:false` and nothing is leaked about whether the account exists.
 - **DOM hygiene:** user-authored text is rendered as text, never injected as
   markup; no `dangerouslySetInnerHTML` is used.
 
 ## Known account trade-offs (accepted for the MVP)
 
 - No email verification (Cloudflare Pages has no outbound email; a provider
-  such as Resend is the intended retrofit).
+  such as Resend is wired for password-reset links but a sender domain must be
+  verified before those emails can go out).
 - Application-layer backoff is per-email; a Cloudflare WAF/rate rule can still
   be layered onto `/api/auth/*` for IP-level aggregate limits.
 - Sessions are a single bearer cookie rotated on login; there is no refresh-token
   rotation after that.
+- Reset links and recovery codes are bearer secrets; treat a lost-device + lost-codes
+  scenario as unrecoverable by design (we store only hashes).
 - The auth HTTP layer is a small custom implementation, not a managed IdP.
   Treat account data as low-value sync state, not as a high-assurance identity.
 

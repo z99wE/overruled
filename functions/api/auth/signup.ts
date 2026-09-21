@@ -1,6 +1,16 @@
 import { json, readJson, methodNotAllowed } from '../../lib/http';
-import { buildSessionCookie, createSessionToken, hashPassword, isValidEmail, isValidPassword } from '../../lib/auth';
-import { createSession, createUser, findUserByEmail } from '../../lib/db';
+import {
+  buildSessionCookie,
+  createSessionToken,
+  generateRecoveryCodes,
+  hashPassword,
+  isValidEmail,
+  isValidPassword,
+  normalizeRecoveryCode,
+  RECOVERY_CODE_COUNT,
+  sha256Hex,
+} from '../../lib/auth';
+import { createSession, createUser, findUserByEmail, insertRecoveryCode } from '../../lib/db';
 import type { AppEnv } from '../../lib/d1';
 
 export async function onRequestPost(context: { request: Request; env: AppEnv }): Promise<Response> {
@@ -40,8 +50,14 @@ export async function onRequestPost(context: { request: Request; env: AppEnv }):
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
   await createSession(context.env.DB, { tokenHash, userId: id, expiresAt });
 
+  // One-time recovery codes, shown exactly once. Only the digests are stored.
+  const recoveryCodes = generateRecoveryCodes(RECOVERY_CODE_COUNT);
+  for (const code of recoveryCodes) {
+    await insertRecoveryCode(context.env.DB, id, await sha256Hex(normalizeRecoveryCode(code)));
+  }
+
   return new Response(
-    JSON.stringify({ user: { email, createdAt: new Date().toISOString() } }),
+    JSON.stringify({ user: { email, createdAt: new Date().toISOString() }, recoveryCodes }),
     {
       status: 201,
       headers: {

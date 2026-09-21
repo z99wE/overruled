@@ -13,6 +13,7 @@ import { CourtroomChamber } from './components/CourtroomChamber';
 import { KeySettings } from './components/KeySettings';
 import { Landing } from './components/Landing';
 import { AuthModal } from './components/AuthModal';
+import { ResetPasswordModal } from './components/ResetPasswordModal';
 import { ensureCaseOfDay, loadRun, normalizeRun, saveRun, type RunState } from './game/runStore';
 import { ShopModal } from './game/ShopModal';
 import { DuelMode } from './game/DuelMode';
@@ -41,6 +42,7 @@ export function App() {
   const [keysOpen, setKeysOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'signup' | 'login'>('signup');
+  const [resetToken, setResetToken] = useState<string | null>(null);
   const [hasKey, setHasKey] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [run, setRun] = useState<RunState>(() => loadRun());
@@ -75,6 +77,8 @@ export function App() {
     })();
     void initHaptics();
     void refreshKeyState().catch(() => undefined);
+    const bootToken = new URLSearchParams(window.location.search).get('reset_token');
+    if (bootToken) setResetToken(bootToken);
     return () => {
       mounted = false;
     };
@@ -224,6 +228,17 @@ export function App() {
         />
       )}
       {authOpen && <AuthModal mode={authMode} onClose={() => setAuthOpen(false)} />}
+      {resetToken && (
+        <ResetPasswordModal
+          token={resetToken}
+          onClose={() => {
+            setResetToken(null);
+            const url = new URL(window.location.href);
+            url.searchParams.delete('reset_token');
+            window.history.replaceState({}, '', url);
+          }}
+        />
+      )}
       {shopOpen && (
         <ShopModal
           chips={run.chips}

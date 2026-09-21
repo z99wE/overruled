@@ -14,20 +14,36 @@ interface AuthValue {
   user: AuthUser | null;
   status: AuthStatus;
   /** Creates an account; on success the session cookie is set and the user is returned. */
-  signup: (email: string, password: string) => Promise<AuthUser>;
+  signup: (email: string, password: string) => Promise<{ user: AuthUser; recoveryCodes: string[] }>;
   login: (email: string, password: string) => Promise<AuthUser>;
   logout: () => Promise<void>;
+  /** Starts an email-based password reset. Resolves `emailConfigured` so the UI can offer recovery codes. */
+  requestReset: (email: string) => Promise<{ ok: boolean; emailConfigured: boolean }>;
+  /** Consumes a reset token and signs straight in with a fresh session. */
+  resetPassword: (token: string, password: string) => Promise<AuthUser>;
+  /** Generates a new set of one-time recovery codes (signed in). */
+  generateRecoveryCodes: () => Promise<{ codes: string[]; remaining: number }>;
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
 
 const JSON_HEADERS = { 'content-type': 'application/json' };
 
-async function postJson(path: string, body: unknown): Promise<{ user?: AuthUser; error?: string; retryAfterSeconds?: number }> {
+type ApiResult = {
+  user?: AuthUser;
+  error?: string;
+  retryAfterSeconds?: number;
+  recoveryCodes?: string[];
+  emailConfigured?: boolean;
+  codes?: string[];
+  remaining?: number;
+};
+
+async function postJson(path: string, body: unknown): Promise<ApiResult> {
   const res = await fetch(path, { method: 'POST', headers: JSON_HEADERS, body: JSON.stringify(body) });
-  const data = (await res.json().catch(() => ({}))) as { user?: AuthUser; error?: string; retryAfterSeconds?: number };
+  const data = (await res.json().catch(() => ({}))) as ApiResult;
   if (!res.ok) return { error: data.error ?? `Request failed (${res.status}).`, retryAfterSeconds: data.retryAfterSeconds };
-  return { user: data.user };
+  return data;
 }
 
 const CANON = (email: string) => email.trim().toLowerCase();
@@ -57,12 +73,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void refresh();
   }, [refresh]);
 
-  const signup = useCallback(async (email: string, password: string): Promise<AuthUser> => {
+  const signup = useCallback(async (email: string, password: string): Promise<{ user: AuthUser; recoveryCodes: string[] }> => {
     const result = await postJson('/api/auth/signup', { email: CANON(email), password });
     if (!result.user) throw new Error(result.error ?? 'Could not create account.');
     setUser(result.user);
     setByokScope(byokScope(result.user.email));
-    return result.user;
+    return { user: result.user, recoveryCodes: result.recoveryCodes ?? [] };
   }, []);
 
   const login = useCallback(async (email: string, password: string): Promise<AuthUser> => {
@@ -86,8 +102,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setByokScope(byokScope(null));
   }, []);
 
+  const requestReset = useCallback(async (email: string): Promise<{ ok: boolean; emailConfigured: boolean }> => {
+    const result = await postJson('/api/auth/forgot', { email: CANON(email) });
+    if (result.error) throw new Error(result.error);
+    return { ok: true, emailConfigured: result.emailConfigured ?? false };
+  }, []);
+
+  const resetPassword = useCallback(async (token: string, password: string): Promise<AuthUser> => {
+    const result = await postJson('/api/auth/reset', { token, password });
+    if (!result.user) throw new Error(result.error ?? 'This reset link is invalid or has expired.');
+    setUser(result.user);
+    setByokScope(byokScope(result.user.email));
+    return result.user;
+  }, []);
+
+  const generateRecoveryCodes = useCallback(async (): Promise<{ codes: string[]; remaining: number }> => {
+    const result = await postJson('/api/auth/recovery/codes', {});
+    if (result.error) throw new Error(result.error);
+    return { codes: result.codes ?? [], remaining: result.remaining ?? 0 };
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, status, signup, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, status, signup, login, logout, requestReset, resetPassword, generateRecoveryCodes }}>
+      {children}
+    </AuthContext.Provider>
   );
 }
 

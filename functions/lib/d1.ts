@@ -20,4 +20,8 @@ export interface AiLike {
 export interface AppEnv {
   DB: D1Database;
   AI?: AiLike;
+  /** Secret binding (use `wrangler pages secret put RESEND_API_KEY`). */
+  RESEND_API_KEY?: string;
+  /** Sender address: `Overrool <noreply@your.domain>` once a domain is wired. */
+  RESEND_FROM?: string;
 }

@@ -61,6 +61,8 @@ export async function createSessionToken(): Promise<{ token: string; tokenHash: 
 
 export const SESSION_COOKIE = '__Host-overrool_session';
 export const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30; // 30 days
+export const RESET_TOKEN_TTL_MS = 30 * 60 * 1000; // 30 minutes
+export const RECOVERY_CODE_COUNT = 8;
 
 export function parseCookies(header: string | null): Map<string, string> {
   const out = new Map<string, string>();
@@ -92,6 +94,28 @@ export function clearSessionCookie(): string {
 
 export function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+}
+
+// Unambiguous alphabet for recovery codes (no 0/O/1/I/L).
+const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+/** Generates one-time recovery codes as "XXXX-XXXX" strings. */
+export function generateRecoveryCodes(count: number = RECOVERY_CODE_COUNT): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < count; i++) {
+    const bytes = new Uint8Array(8);
+    crypto.getRandomValues(bytes);
+    const chars = Array.from(bytes)
+      .map((b) => CODE_ALPHABET[b % CODE_ALPHABET.length])
+      .join('');
+    out.push(`${chars.slice(0, 4)}-${chars.slice(4)}`);
+  }
+  return out;
+}
+
+/** Normalizes a typed recovery code (strips separators/whitespace, uppercases). */
+export function normalizeRecoveryCode(input: string): string {
+  return input.toUpperCase().replace(/[^A-Z0-9]/g, '');
 }
 
 export function isValidPassword(password: string): { ok: true } | { ok: false; reason: string } {

@@ -64,10 +64,15 @@ npm run cf:dev         # serves dist/ + Functions and connects to your D1 bindin
 | `functions/api/auth/login.ts` | `POST /api/auth/login` |
 | `functions/api/auth/logout.ts` | `POST /api/auth/logout` |
 | `functions/api/auth/me.ts` | `GET /api/auth/me` (returns `user.role`) |
+| `functions/api/auth/forgot.ts` | `POST /api/auth/forgot` (email reset link) |
+| `functions/api/auth/reset.ts` | `POST /api/auth/reset` (consume token, set password) |
+| `functions/api/auth/recovery/codes.ts` | `POST /api/auth/recovery/codes` (signed-in: rotate codes) |
+| `functions/api/auth/recovery/verify.ts` | `POST /api/auth/recovery/verify` (redeem a code) |
 | `functions/api/run.ts` | `GET/PUT /api/run` (account-scoped save) |
 | `functions/api/llm.ts` | `POST /api/llm` (admin-only hosted inference via the `AI` binding) |
+| `functions/lib/email.ts` | Resend HTTP integration for reset links |
 | `functions/lib/*` | D1 access, PBKDF2 + sessions, HTTP helpers |
-| `d1/schema.sql` | DDL for `users`, `sessions`, `runs` |
+| `d1/schema.sql` | DDL for `users`, `sessions`, `runs`, `login_attempts`, `recovery_codes`, `password_resets` |
 | `public/_redirects` | `/* → /index.html 200` SPA fallback |
 | `public/_headers` | security headers incl. CSP `connect-src` provider allowlist |
 
@@ -96,6 +101,24 @@ end-to-end against an in-memory fake D1 (`functions/api/integration.test.ts`).
   lock-bypass). A successful sign-in clears the counter. Requires the
   `login_attempts` table from `d1/schema.sql` (re-run `npm run d1:migrate` on
   an existing deployment).
+- **Password recovery:** two always-available backstops. (1) **Ignition-reset
+  links** — `POST /api/auth/forgot` issues a 160-bit token whose SHA-256 digest
+  is stored in `password_resets` with a 30-minute TTL; the plaintext lives only
+  in the reset link (`${origin}/?reset_token=…`). `POST /api/auth/reset` sets a
+  new password, consumes the token, and rotates the session. The response shape
+  is identical for valid/invalid/unknown emails, so the endpoint cannot be used
+  to enumerate accounts. (2) **One-time recovery codes** — 8 codes per
+  generation, `XXXX-XXXX` (no ambiguous 0/O/1/I/L), shown once at signup and
+  when regenerated from the account panel; only `sha256(code)` is stored.
+  `POST /api/auth/recovery/verify` redeems a code (single-use) to set a new
+  password. Reset links and code redemption both invalidate the account's other
+  sessions.
+- **Email transport (optionally configured):** Cloudflare has no outbound mail,
+  so reset emails go through **Resend** from a Function (`functions/lib/email.ts`,
+  plain `fetch`, no SDK). Until a sender domain is verified, bind
+  `wrangler pages secret put RESEND_API_KEY` and a `RESEND_FROM` var
+  (`[vars]` in `wrangler.toml`); with neither bound, `/api/auth/forgot` answers
+  `emailConfigured:false` and the UI points users at their recovery codes.
 - `/api/llm` requires a valid session **and** `role = 'admin'` (403 otherwise).
   It is the only server component that touches an LLM; the `model` and prompts
   come from the admin's client, and the `AI` binding (Workers AI free tier,
@@ -125,13 +148,16 @@ all other accounts keep the zero-knowledge BYOK route.
 
 ## 7. Accepted gaps / next steps
 
-- **Email verification:** Cloudflare Pages has no outbound mail. Retrofit: send
-  a verification link via Resend/Mailgun from a Function; flip
-  `users.verified` (not yet in the schema) to gate full functionality.
-- **Rate limiting:** no login lockout yet. Layer Cloudflare WAF rate rules
-  against `/api/auth/login` and `/api/auth/signup` in the dashboard.
-- **Token lifecycle:** single bearer cookie, rotated on login; no refresh-token
-  rotation or device list afterwards. Sufficient for low-value save sync.
+- **Email verification:** Cloudflare Pages has no outbound mail. Reset links are
+  delivered via Resend (see above); verifying the address at signup would reuse
+  the same transport — flip `users.verified` (not yet in the schema) to gate
+  full functionality.
+- **Rate limiting:** login lockout ships in-app (see §6). Layer Cloudflare WAF
+  rate rules against `/api/auth/login` and `/api/auth/signup` in the dashboard
+  to back it at the edge.
+- **Recovery codes:** the signup panel only ever shows codes once, but a fresh
+  device that signed in earlier relies on the user having stored them. That is
+  the documented trade-off for zero-secret storage.
 - **Account deletion / GDPR:** add `DELETE /api/auth/me` + a cascade-clean job
   (`ON DELETE CASCADE` is already on the FK edges) when required.
 - **OAuth:** not included by design — email/password keeps the zero-cost core.
