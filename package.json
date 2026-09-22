@@ -16,6 +16,7 @@
     "icons": "node scripts/gen-icons.mjs",
     "cf:dev": "wrangler pages dev dist",
     "cf:deploy": "npm run build && wrangler pages deploy dist",
+    "deploy": "npm run typecheck && npm run lint && npm test && npm run d1:migrate && npm run cf:deploy",
     "d1:create": "wrangler d1 create overrool",
     "d1:migrate": "wrangler d1 execute overrool --remote --file=d1/schema.sql",
     "cap:sync": "npx cap sync",

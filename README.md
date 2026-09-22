@@ -228,6 +228,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 | `npm run icons` | Regenerate `public/icons/*.png` from `public/icon.svg` (needs `sharp`) |
 | `npm run cf:dev` | `wrangler pages dev` — static shell + Functions + local D1 |
 | `npm run cf:deploy` | Build + `wrangler pages deploy` to Cloudflare Pages |
+| `npm run deploy` | **One-command production deploy** — typecheck → lint → test → apply D1 schema → build → deploy |
 | `npm run d1:create` | Create the D1 database (once, then paste its id into `wrangler.toml`) |
 | `npm run d1:migrate` | Apply `d1/schema.sql` to remote D1 |
 | `npm run cap:sync` | Sync web assets to iOS/Android (requires Capacitor CLI + Xcode/Android Studio) |
@@ -401,9 +402,13 @@ Provision once (see [`AUTH.md`](AUTH.md) for the full runbook):
 ```bash
 npm run d1:create                          # creates the D1 database, prints its id
 # paste the printed database_id into wrangler.toml
-npm run d1:migrate                         # apply d1/schema.sql (users, sessions, runs, login_attempts, recovery_codes, password_resets)
-npm run cf:deploy                          # build + wrangler pages deploy dist
+npm run deploy                             # typecheck + lint + test + apply d1/schema.sql + build + deploy
 ```
+
+After that first provisioning, every release is a single command: `npm run deploy`.
+If you installed with an account created before 2026-09-22, run the one-time
+column migration once:
+`wrangler d1 execute overrool --remote --file=d1/migrations/20260922_newsletter_optin.sql`.
 
 Local, full-stack dev is `npm run cf:dev` (serves `dist/` with Functions against your D1 binding).
 
