@@ -10,11 +10,12 @@ interface AuthModalProps {
 type View = 'form' | 'forgot' | 'codes';
 
 export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
-  const { user, signup, login, logout, requestReset, generateRecoveryCodes } = useAuth();
+  const { user, signup, login, logout, requestReset, generateRecoveryCodes, setNewsletterOptin } = useAuth();
   const [mode, setMode] = useState<'signup' | 'login'>(initialMode);
   const [view, setView] = useState<View>(user ? 'form' : 'form');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [newsletter, setNewsletter] = useState(true);
   const [codes, setCodes] = useState<string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -36,7 +37,7 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
     try {
       let freshCodes: string[] | null = null;
       if (mode === 'signup') {
-        const { recoveryCodes } = await signup(email, password);
+        const { recoveryCodes } = await signup(email, password, newsletter);
         freshCodes = recoveryCodes;
       } else {
         await login(email, password);
@@ -85,6 +86,19 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
       const { codes: fresh } = await generateRecoveryCodes();
       setCodes(fresh);
       setView('codes');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const toggleNewsletter = async () => {
+    if (!user) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await setNewsletterOptin(!user.newsletterOptin);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -157,6 +171,25 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                 <p className="mt-1 text-[11px] text-cream/60">
                   Game progress syncs to this account; your LLM keys stay on this device and are scoped to this account — another user who signs in here never sees them.
                 </p>
+              </div>
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-ink bg-ink/40 px-3 py-2.5">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-cream/50">AI Briefing newsletter</p>
+                  <p className="text-[11px] text-cream/65">
+                    {user.newsletterOptin ? 'Subscribed — the briefing shows on your matter gallery.' : 'Not subscribed yet.'}
+                  </p>
+                </div>
+                <button
+                  aria-label={user.newsletterOptin ? 'Unsubscribe from the AI Briefing' : 'Subscribe to the free AI Briefing'}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void toggleNewsletter()}
+                  className={`shrink-0 rounded-lg border-2 border-ink px-3 py-1.5 font-display text-[11px] uppercase tracking-wider transition disabled:opacity-50 ${
+                    user.newsletterOptin ? 'bg-felt-600 text-cream' : 'bg-chip-gold text-ink hover:brightness-110'
+                  }`}
+                >
+                  {user.newsletterOptin ? 'Unsubscribe' : 'Subscribe free'}
+                </button>
               </div>
               <button
                 aria-label="Generate a fresh set of recovery codes"
@@ -261,6 +294,21 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                   className="w-full rounded-lg border border-ink bg-ink px-3 py-2 font-mono text-[12px] text-cream outline-none focus:border-chip-gold/50"
                 />
               </div>
+
+              {mode === 'signup' && (
+                <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-chip-gold/25 bg-chip-gold/5 px-3 py-2.5">
+                  <input
+                    type="checkbox"
+                    checked={newsletter}
+                    onChange={(e) => setNewsletter(e.target.checked)}
+                    className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-chip-gold"
+                  />
+                  <span className="text-[11px] leading-relaxed text-cream/75">
+                    <strong className="text-chip-gold">Send me the free AI Briefing</strong> — what's new in law-meets-AI, delivered
+                    in-app. No spam, no email sent (it's an in-product feed), unsubscribe anytime.
+                  </span>
+                </label>
+              )}
 
               {error && (
                 <div className="rounded-lg border border-poker-red/40 bg-poker-red/5 px-3 py-2 text-[11px] leading-relaxed text-poker-red">{error}</div>

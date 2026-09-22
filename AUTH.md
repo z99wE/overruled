@@ -28,15 +28,21 @@ npm run d1:create
 #   database_id = "…"
 # (The dashboard shows the same id under Workers & Pages → D1.)
 
-# Create the tables (users, sessions, runs)
+# Create/upgrade the tables (users, sessions, runs, login_attempts,
+# recovery_codes, password_resets, meter, credit_overrides)
 npm run d1:migrate
+
+# One-time, for databases created before 2026-09-22 only (fresh installs
+# already have this column via schema.sql) — the AI Briefing opt-in:
+npx wrangler d1 execute overrool --remote --file=d1/migrations/20260922_newsletter_optin.sql
 
 # Grant the workspace administrator the 'admin' role so they alone get the
 # server-side Hosted (Cloudflare) inference option in the Key Vault.
 npx wrangler d1 execute overrool --remote --command="UPDATE users SET role='admin' WHERE email='<admin-email>'"
 ```
 
-`schema.sql` is idempotent; re-running it is safe.
+`schema.sql` is idempotent; re-running it is safe. Files in `d1/migrations/`
+are one-time ALTERs for existing databases — run each once, in filename order.
 
 ## 3. Deploy
 
@@ -72,7 +78,7 @@ npm run cf:dev         # serves dist/ + Functions and connects to your D1 bindin
 | `functions/api/llm.ts` | `POST /api/llm` (admin-only hosted inference via the `AI` binding) |
 | `functions/lib/email.ts` | Resend HTTP integration for reset links |
 | `functions/lib/*` | D1 access, PBKDF2 + sessions, HTTP helpers |
-| `d1/schema.sql` | DDL for `users`, `sessions`, `runs`, `login_attempts`, `recovery_codes`, `password_resets` |
+| `d1/schema.sql` | DDL for `users` (incl. `newsletter_optin`), `sessions`, `runs`, `login_attempts`, `recovery_codes`, `password_resets`, `meter`, `credit_overrides` |
 | `public/_redirects` | `/* → /index.html 200` SPA fallback |
 | `public/_headers` | security headers incl. CSP `connect-src` provider allowlist |
 

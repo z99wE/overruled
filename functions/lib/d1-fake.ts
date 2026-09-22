@@ -7,6 +7,7 @@ interface UserRow {
   pw_salt: string;
   iterations: number;
   role: string;
+  newsletter_optin: number;
   created_at: string;
 }
 
@@ -136,7 +137,7 @@ export function makeFakeDb() {
         },
         async run(): Promise<D1Result> {
           if (sql.startsWith('INSERT INTO users')) {
-            const [id, email, pwHash, pwSalt, iterations, role, createdAt] = bound;
+            const [id, email, pwHash, pwSalt, iterations, role, newsletterOptin, createdAt] = bound;
             users.push({
               id: String(id),
               email: String(email),
@@ -144,6 +145,7 @@ export function makeFakeDb() {
               pw_salt: String(pwSalt),
               iterations: Number(iterations),
               role: String(role),
+              newsletter_optin: Number(newsletterOptin),
               created_at: String(createdAt),
             });
             return { meta: { changes: 1 } };
@@ -153,6 +155,13 @@ export function makeFakeDb() {
             const u = users.find((x) => x.email === email);
             if (!u) return { meta: { changes: 0 } };
             u.role = String(role);
+            return { meta: { changes: 1 } };
+          }
+          if (sql.startsWith('UPDATE users SET newsletter_optin')) {
+            const [optin, userId] = bound;
+            const u = users.find((x) => x.id === String(userId));
+            if (!u) return { meta: { changes: 0 } };
+            u.newsletter_optin = Number(optin);
             return { meta: { changes: 1 } };
           }
           if (sql.startsWith('DELETE FROM sessions WHERE user_id')) {

@@ -7,6 +7,7 @@ export interface UserRow {
   pw_salt: string;
   iterations: number;
   role: string;
+  newsletter_optin: number;
   created_at: string;
 }
 
@@ -26,26 +27,31 @@ const NOW = () => new Date().toISOString();
 
 export async function findUserByEmail(db: D1Database, email: string): Promise<UserRow | null> {
   return db
-    .prepare('SELECT id, email, pw_hash, pw_salt, iterations, role, created_at FROM users WHERE email = ?')
+    .prepare('SELECT id, email, pw_hash, pw_salt, iterations, role, newsletter_optin, created_at FROM users WHERE email = ?')
     .bind(email)
     .first<UserRow>();
 }
 
 export async function findUserById(db: D1Database, id: string): Promise<UserRow | null> {
   return db
-    .prepare('SELECT id, email, pw_hash, pw_salt, iterations, role, created_at FROM users WHERE id = ?')
+    .prepare('SELECT id, email, pw_hash, pw_salt, iterations, role, newsletter_optin, created_at FROM users WHERE id = ?')
     .bind(id)
     .first<UserRow>();
 }
 
 export async function createUser(
   db: D1Database,
-  user: { id: string; email: string; pwHash: string; pwSalt: string; iterations: number; role?: string },
+  user: { id: string; email: string; pwHash: string; pwSalt: string; iterations: number; role?: string; newsletterOptin?: boolean },
 ): Promise<boolean> {
   const res = await db
-    .prepare('INSERT INTO users (id, email, pw_hash, pw_salt, iterations, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')
-    .bind(user.id, user.email, user.pwHash, user.pwSalt, user.iterations, user.role ?? 'user', NOW())
+    .prepare('INSERT INTO users (id, email, pw_hash, pw_salt, iterations, role, newsletter_optin, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+    .bind(user.id, user.email, user.pwHash, user.pwSalt, user.iterations, user.role ?? 'user', user.newsletterOptin ? 1 : 0, NOW())
     .run();
+  return res.meta.changes === 1;
+}
+
+export async function setNewsletterOptin(db: D1Database, userId: string, optin: boolean): Promise<boolean> {
+  const res = await db.prepare('UPDATE users SET newsletter_optin = ? WHERE id = ?').bind(optin ? 1 : 0, userId).run();
   return res.meta.changes === 1;
 }
 
@@ -76,7 +82,7 @@ export async function deleteSession(db: D1Database, tokenHash: string): Promise<
 export async function getUserForSession(db: D1Database, tokenHash: string): Promise<UserRow | null> {
   const row = await db
     .prepare(
-      `SELECT u.id, u.email, u.pw_hash, u.pw_salt, u.iterations, u.role, u.created_at
+      `SELECT u.id, u.email, u.pw_hash, u.pw_salt, u.iterations, u.role, u.newsletter_optin, u.created_at
          FROM sessions s
          JOIN users u ON u.id = s.user_id
         WHERE s.token_hash = ? AND s.expires_at > ?`,

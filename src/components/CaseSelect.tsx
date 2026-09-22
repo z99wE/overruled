@@ -2,6 +2,7 @@ import { ArrowRight, CalendarDays, KeyRound, Landmark, Scale, ShieldCheck, Spark
 import { useState } from 'react';
 import type { Jurisdiction, ScenarioBundle } from '../types/legal';
 import { StatutoryNotice } from './StatutoryNotice';
+import { NewsFeed } from './NewsFeed';
 import { RunPanel } from '../game/RunPanel';
 import { bossForJurisdiction } from '../game/bosses';
 import type { RunState } from '../game/runStore';
@@ -114,6 +115,8 @@ export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, o
         <div className="mb-6">
           <RunPanel run={run} onChange={onRunChange} />
         </div>
+
+        <NewsFeed onNeedAccount={onOpenAccount} />
 
         {!hasKey && (
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-ink bg-felt-700/40 p-4">

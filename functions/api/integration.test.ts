@@ -12,6 +12,7 @@ import * as recoveryCodesModule from '../api/auth/recovery/codes';
 import * as recoveryVerifyModule from '../api/auth/recovery/verify';
 import * as runModule from '../api/run';
 import * as llmModule from '../api/llm';
+import * as preferencesModule from '../api/preferences';
 import { setUserRole, LOGIN_MAX_FAILURES, createPasswordReset, findUserByEmail } from '../lib/db';
 import { sha256Hex } from '../lib/auth';
 
@@ -47,6 +48,8 @@ const dispatch = async (env: AppEnv, path: string, init: RequestInit = {}): Prom
     }
     case '/api/llm':
       return llmModule.onRequestPost(ctx);
+    case '/api/preferences':
+      return preferencesModule.onRequestPost(ctx);
     default:
       return new Response('nope', { status: 404 });
   }
@@ -130,6 +133,40 @@ describe('auth + run API integration', () => {
     expect(res.status).toBe(200);
     res = await dispatch(env, '/api/auth/me', { headers: { cookie: `__Host-overrool_session=${token2}` } });
     expect((await res.json()).user).toBeNull();
+  });
+
+  it('stores the AI Briefing opt-in, toggles it, and defaults to opt-out', async () => {
+    const env = makeEnv();
+
+    // Defaults to opt-out when the flag is omitted.
+    const anonRes = await dispatch(env, '/api/auth/signup', post({ email: 'anon@example.com', password: GOOD_PW }));
+    expect(anonRes.status).toBe(201);
+    const anonCookie = (anonRes.headers.get('set-cookie') ?? '').split(';')[0];
+    let me = await dispatch(env, '/api/auth/me', { headers: { cookie: anonCookie } });
+    expect((await me.json()).user.newsletterOptin).toBe(false);
+
+    // Opt-in at signup is persisted and reflected on /me.
+    const res = await dispatch(env, '/api/auth/signup', post({ email: EMAIL, password: GOOD_PW, newsletter: true }));
+    const cookie = (res.headers.get('set-cookie') ?? '').split(';')[0];
+    me = await dispatch(env, '/api/auth/me', { headers: { cookie } });
+    expect((await me.json()).user.newsletterOptin).toBe(true);
+
+    // Signed-out callers cannot change preferences.
+    const anon = await dispatch(env, '/api/preferences', post({ newsletter: true }));
+    expect(anon.status).toBe(401);
+
+    // Toggle off.
+    const off = await dispatch(env, '/api/preferences', post({ newsletter: false }, cookie));
+    expect(off.status).toBe(200);
+    expect((await off.json()).newsletterOptin).toBe(false);
+    me = await dispatch(env, '/api/auth/me', { headers: { cookie } });
+    expect((await me.json()).user.newsletterOptin).toBe(false);
+
+    // Toggle back on.
+    const on = await dispatch(env, '/api/preferences', post({ newsletter: true }, cookie));
+    expect(on.status).toBe(200);
+    me = await dispatch(env, '/api/auth/me', { headers: { cookie } });
+    expect((await me.json()).user.newsletterOptin).toBe(true);
   });
 
   it('locks sign-in after repeated failures and blocks the correct password too', async () => {

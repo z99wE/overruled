@@ -19,6 +19,7 @@ export async function onRequestPost(context: { request: Request; env: AppEnv }):
 
   const emailRaw = typeof body.email === 'string' ? body.email : '';
   const password = typeof body.password === 'string' ? body.password : '';
+  const newsletter = body.newsletter === true;
   const email = emailRaw.trim().toLowerCase();
 
   if (!isValidEmail(email)) {
@@ -41,6 +42,7 @@ export async function onRequestPost(context: { request: Request; env: AppEnv }):
     pwHash: hashed.hash,
     pwSalt: hashed.salt,
     iterations: hashed.iterations,
+    newsletterOptin: newsletter,
   });
   if (!created) {
     return json({ error: 'Could not create account. Try again.' }, 500);
@@ -57,7 +59,7 @@ export async function onRequestPost(context: { request: Request; env: AppEnv }):
   }
 
   return new Response(
-    JSON.stringify({ user: { email, createdAt: new Date().toISOString() }, recoveryCodes }),
+    JSON.stringify({ user: { email, newsletterOptin: newsletter, createdAt: new Date().toISOString() }, recoveryCodes }),
     {
       status: 201,
       headers: {

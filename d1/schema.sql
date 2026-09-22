@@ -2,13 +2,14 @@
 -- Apply with:  wrangler d1 execute overrool --remote --file=d1/schema.sql
 
 CREATE TABLE IF NOT EXISTS users (
-  id          TEXT PRIMARY KEY,
-  email       TEXT NOT NULL UNIQUE COLLATE NOCASE,
-  pw_hash     TEXT NOT NULL,
-  pw_salt     TEXT NOT NULL,
-  iterations  INTEGER NOT NULL,
-  role        TEXT NOT NULL DEFAULT 'user',
-  created_at  TEXT NOT NULL
+  id                TEXT PRIMARY KEY,
+  email             TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  pw_hash           TEXT NOT NULL,
+  pw_salt           TEXT NOT NULL,
+  iterations        INTEGER NOT NULL,
+  role              TEXT NOT NULL DEFAULT 'user',
+  newsletter_optin  INTEGER NOT NULL DEFAULT 0,
+  created_at        TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sessions (

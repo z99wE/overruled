@@ -33,6 +33,7 @@ does not collect, and how you can control it.
 | Recovery-code digests (SHA-256 only) | Cloudflare D1, `recovery_codes` | Account-recovery fallback — the plaintext codes are shown once and never stored |
 | Password-reset token (SHA-256 digest, 30-min TTL) | Cloudflare D1, `password_resets` | Email-based password reset |
 | Account role (`user` / `admin`) | Cloudflare D1, `users.role` | Gating server-side hosted inference |
+| AI Briefing opt-in (yes/no) | Cloudflare D1, `users.newsletter_optin` | Free in-app news feed — a single boolean; no email list is ever built or exported |
 | Credit-meter counters (calls/credits per UTC day, burst-window count) | Cloudflare D1, `meter` | Fair-use limits on the hosted inference path; the only per-account inference data retained, and never the prompt content |
 | Created-at timestamp | Cloudflare D1, `users.created_at` | Account metadata |
 | Session token (SHA-256 digest only) | Cloudflare D1, `sessions` | Remembering you while signed in |

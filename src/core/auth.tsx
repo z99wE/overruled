@@ -6,6 +6,7 @@ export interface AuthUser {
   email: string;
   createdAt?: string;
   role?: 'admin' | 'user';
+  newsletterOptin?: boolean;
 }
 
 type AuthStatus = 'loading' | 'ready';
@@ -14,7 +15,7 @@ interface AuthValue {
   user: AuthUser | null;
   status: AuthStatus;
   /** Creates an account; on success the session cookie is set and the user is returned. */
-  signup: (email: string, password: string) => Promise<{ user: AuthUser; recoveryCodes: string[] }>;
+  signup: (email: string, password: string, newsletter?: boolean) => Promise<{ user: AuthUser; recoveryCodes: string[] }>;
   login: (email: string, password: string) => Promise<AuthUser>;
   logout: () => Promise<void>;
   /** Starts an email-based password reset. Resolves `emailConfigured` so the UI can offer recovery codes. */
@@ -23,6 +24,8 @@ interface AuthValue {
   resetPassword: (token: string, password: string) => Promise<AuthUser>;
   /** Generates a new set of one-time recovery codes (signed in). */
   generateRecoveryCodes: () => Promise<{ codes: string[]; remaining: number }>;
+  /** Toggles the in-app AI Briefing subscription (signed in). */
+  setNewsletterOptin: (optin: boolean) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -34,6 +37,7 @@ type ApiResult = {
   error?: string;
   retryAfterSeconds?: number;
   recoveryCodes?: string[];
+  newsletterOptin?: boolean;
   emailConfigured?: boolean;
   codes?: string[];
   remaining?: number;
@@ -73,13 +77,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void refresh();
   }, [refresh]);
 
-  const signup = useCallback(async (email: string, password: string): Promise<{ user: AuthUser; recoveryCodes: string[] }> => {
-    const result = await postJson('/api/auth/signup', { email: CANON(email), password });
-    if (!result.user) throw new Error(result.error ?? 'Could not create account.');
-    setUser(result.user);
-    setByokScope(byokScope(result.user.email));
-    return { user: result.user, recoveryCodes: result.recoveryCodes ?? [] };
-  }, []);
+  const signup = useCallback(
+    async (email: string, password: string, newsletter = false): Promise<{ user: AuthUser; recoveryCodes: string[] }> => {
+      const result = await postJson('/api/auth/signup', { email: CANON(email), password, newsletter });
+      if (!result.user) throw new Error(result.error ?? 'Could not create account.');
+      setUser(result.user);
+      setByokScope(byokScope(result.user.email));
+      return { user: result.user, recoveryCodes: result.recoveryCodes ?? [] };
+    },
+    [],
+  );
 
   const login = useCallback(async (email: string, password: string): Promise<AuthUser> => {
     const result = await postJson('/api/auth/login', { email: CANON(email), password });
@@ -122,8 +129,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { codes: result.codes ?? [], remaining: result.remaining ?? 0 };
   }, []);
 
+  const setNewsletterOptin = useCallback(async (optin: boolean): Promise<void> => {
+    const result = await postJson('/api/preferences', { newsletter: optin });
+    if (result.error) throw new Error(result.error);
+    setUser((prev) => (prev ? { ...prev, newsletterOptin: optin } : prev));
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, status, signup, login, logout, requestReset, resetPassword, generateRecoveryCodes }}>
+    <AuthContext.Provider value={{ user, status, signup, login, logout, requestReset, resetPassword, generateRecoveryCodes, setNewsletterOptin }}>
       {children}
     </AuthContext.Provider>
   );

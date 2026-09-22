@@ -5,6 +5,14 @@ Keep a Changelog conventions; version numbers follow SemVer.
 
 ## [Unreleased]
 
+### Added — in-app AI Briefing newsletter
+- Free opt-in newsletter at signup ("Send me the free AI Briefing"), persisted
+  as a single `newsletter_optin` boolean on the account (D1). Delivered **in-app**
+  on the matter gallery — static bundled feed, no email provider, Cloudflare-only.
+  Toggle anytime from the account modal (`POST /api/preferences`).
+  Files: `src/core/news.ts`, `src/components/NewsFeed.tsx`, `functions/api/preferences.ts`,
+  `d1/migrations/20260922_newsletter_optin.sql`, `AuthModal.tsx`.
+
 ### Added — fair access & hardened AI surface
 - **Daily credit meter.** 100 credits per identity per UTC day (identity-scoped via
   the BYOK scope) with a resettable wallet: a trial run costs **10 credits**, a Legal
@@ -21,7 +29,7 @@ Keep a Changelog conventions; version numbers follow SemVer.
   `<untrusted-data>…</untrusted-data>` tags before it reaches any model — across trial
   resolution, opposing-counsel persona, Legal Desk ops, and docket enrichment. Covers
   prompt hijacking, LLM-jacking, and LLM-spoofing. `guardrails.test.ts`.
-- Test suite grows to **234 tests across 25 files**.
+- Test suite grows to **235 tests across 25 files**.
 
 ### Changed
 - **True 3D card flips.** The fake 92° `tblFlipIn` turn is replaced with real
