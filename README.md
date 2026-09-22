@@ -2,7 +2,9 @@
 
 > Roll for precedent. Object to hearsay. Win with the law.
 
-Overrool is an adversarial legal strategy courtroom card game built with React 19, TypeScript, Tailwind CSS v4, and a zero-cost BYOK (bring-your-own-key) LLM orchestrator. Players pick a side, spend strategy tokens, deploy precedent cards, cite statutes, and push the Judge's Favor Meter to 0 (dismissal) or 100 (victory). It ships an embedded global corpus of real, published landmark judgments from seven legal systems (United States, United Kingdom, European Union, Canada, Australia, South Africa, India), client-side factual citation verification, a single-pass **multi-role** LLM resolution loop (Presiding Judge, Opposing Senior Advocate, and Co-Counsel voices resolved in one structured JSON turn), and an in-app Advocate Consultation Docket export (markdown / print / share).
+Overrool is an adversarial legal strategy courtroom card game built with React 19, TypeScript, Tailwind CSS v4, and a zero-cost BYOK (bring-your-own-key) LLM orchestrator. Players pick a side, spend strategy tokens, deploy precedent cards, cite statutes, and push the Judge's Favor Meter to 0 (dismissal) or 100 (victory). It ships an embedded global corpus of real, published landmark judgments from seven legal systems (United States, United Kingdom, European Union, Canada, Australia, South Africa, India), client-side factual citation verification, a single-pass **multi-role** LLM resolution loop (Presiding Judge, Opposing Senior Advocate, and Co-Counsel voices resolved in one structured JSON turn), an in-app Advocate Consultation Docket export (markdown / print / share), and a **Legal Desk** — a document-understanding workspace (simplify, risk audit, two-document comparison, ask-the-text, prepare-for-your-lawyer) that runs on the same GenAI pipeline over the user's own contract, policy, lease, or judgment.
+
+[See below](#alignment-with-the-brief-and-genai-architecture) for the explicit mapping between the problem brief's GenAI use cases and where each is implemented, and exactly which GenAI services run where.
 
 ---
 
@@ -21,6 +23,34 @@ Overrool addresses four concrete gaps:
 
 ---
 
+## Alignment with the brief — and GenAI architecture
+
+This project is built against the **"AI for Legal Assistance & Access"** problem statement. The table below maps every use case in the brief to the exact feature that delivers it and to where GenAI actually runs (`→ AI` marks a live model call).
+
+| Brief use case | Where Overrool delivers it | GenAI involvement |
+|---|---|---|
+| **Simplifying complex legal documents** | Legal Desk → **Simplify**: bottom-line verdict, plain-language bullets, who-it-affects, plain glossary; also every trial ruling is written by the bench as lay-readable law. | `→ AI` `docEngine.genDeskAnalysis(op='simplify')` via BYOK model; keyless = clearly-labeled Local Rules Analyst |
+| **Comparing contracts, agreements, or policies** | Legal Desk → **Compare** (Version A vs Version B): material-difference table per topic (liability, termination, data), who each side favours, which version wins. | `→ AI` `genDeskAnalysis(op='compare')` |
+| **Highlighting important clauses, obligations, risks, or inconsistencies** | Legal Desk → **Risks & obligations**: sentence-level findings with kind (obligation / risk / inconsistency / opportunity / unclear) and severity 1–5. In-trials, bench rulings and the docket flag exposure points. | `→ AI` `genDeskAnalysis(op='risks')`; trial `llmOrchestrator.resolveTurn` + fact-checked citation gate |
+| **Answering questions based on provided legal documents** | Legal Desk → **Ask the text** (grounded answer + quote evidence + confidence + next steps). In-trials, hiring a provision / statute *is* asking the law a question — answered by the Presiding Judge with verified authority only. | `→ AI` `genDeskAnalysis(op='ask')`; `resolveTurn` multi-role pass |
+| **Helping users understand their options and potential next steps** | Every trial turn produces a reasoned ruling (sustained/overruled with legal basis); the Advocate Consultation Docket ends with actionable consultation questions and exposure points. | `→ AI` `docket.buildSessionSummary` enrichment (consultation questions) |
+| **Generating summaries, checklists, or other actionable outputs** | Legal Desk (Simplify / For-your-lawyer checklists), the final docket, and `legal-desk-*.md` exports (download / copy / share / print). | `→ AI` `genDeskAnalysis(op='lawyer')`, `buildSessionSummary` |
+| **Preparing information or questions for a legal professional** | Legal Desk → **For your lawyer**: the questions most likely to change a decision, why each matters, and what papers to bring — a ready-made pre-consultation pack. | `→ AI` `genDeskAnalysis(op='lawyer')` |
+| **Access without professional assistance / free access** | Unlimited free accounts, zero per-seat cost, Google Gemini **free tier** as the flagship BYOK path, admin-only Cloudflare Workers AI, and a keyless offline mode that still demonstrates every interaction. | Model calls run direct browser→provider, under the user's own free quota |
+
+### Explicit GenAI architecture
+
+| Service | Where it is used in the product |
+|---|---|
+| **Google Gemini API** (free tier; Google AI Studio key) — *default* | Every structured model call: trial resolution `llmOrchestrator.ts:resolveTurn` (single-pass multi-role Presiding Judge + Opposing Senior Advocate + Co-Counsel), Legal Desk document operations `docEngine.ts:genDeskAnalysis` (all five ops), docket consultation-question enrichment `docket.ts:enrichConsultationQuestions`. |
+| **OpenAI / Anthropic Chat Completions / Groq** — *optional BYOK alternates* | Same five integration points, interchangeable via the Key Vault (`storage.ts` `PROVIDERS`); identical prompt/JSON contract enforced in `requestChat`. |
+| **Cloudflare Workers AI** (hosted; `functions/api/llm` + `AI` binding) | Admin-only hosted inference path proxying the same turn-resolution request server-side (free tier, quota guarded). |
+| **Local Rules Analyst / Local Judge** (keyless, deterministic) | No model. Clearly-labeled rule-based fallbacks (`docEngine.localDeskAnalysis`, `useTrial` keyless verdicts) so the product is demonstrable with zero credentials — never represented as a model. |
+
+All calls share one disciplined path: `requestChat(providerCall.ts)` → origin allowlist → structured-JSON contract (`response_format: json_object` / schema directive) → typed parse → application state. The engine's **anti-hallucination layer** (`searchIndex.validateCitation` + embedded 43-case corpus) is what lets regulation loading and cite-and-reply work *correctly*, and what makes the bench refuse fabricated authority outright.
+
+---
+
 ## Architecture
 
 ```
@@ -33,23 +63,31 @@ overrool/
 │   └── sw.js                          ← cache-first service worker (hashed /assets/ + /data/)
 ├── src/
 │   ├── components/                    ← React UI
-│   │   ├── CaseSelect.tsx             ← scenario gallery grid
-│   │   ├── CourtroomChamber.tsx       ← main battle screen (deck, motions, log, verdict flash)
-│   │   ├── DocketExportModal.tsx      ← docket modal: download/print/share (exports buildPrintHtml, escapeHtml)
-│   │   ├── FavorMeter.tsx             ← horizontal Judicial Favor bar (exports lerpColor, favorColor)
+│   │   ├── CaseSelect.tsx             ← scenario gallery grid (incl. Legal Desk entry)
+│   │   ├── CourtroomChamber.tsx       ← main battle screen (hand on the table, live showdown, transcript, verdict flash)
+│   │   ├── LegalDesk.tsx              ← document-understanding workspace (simplify/risks/compare/ask/lawyer) + markdown export
+│   │   ├── DocketExportModal.tsx      ← docket modal: download/print/share
+│   │   ├── FavorMeter.tsx             ← horizontal Judicial Favor bar
 │   │   ├── KeySettings.tsx            ← BYOK key modal (provider, model, persist, live test)
 │   │   ├── PrecedentCard.tsx          ← citation card (domain emoji, ratio, statutory chips, exhaustion)
 │   │   └── StatutoryNotice.tsx        ← mandatory statutory rider
 │   ├── core/                          ← shared logic (no UI)
 │   │   ├── dataLoader.ts              ← /data/ fetch + scenario hydration (dedup, cache)
 │   │   ├── docket.ts                  ← session summary builder + consultation questions + markdown/sharing
+│   │   ├── docEngine.ts               ← Legal Desk GenAI ops + JSON parser + keyless Local Rules Analyst
+│   │   ├── deskSamples.ts             ← bundled sample documents for the Legal Desk
 │   │   ├── haptics.ts                 ← Capacitor Haptics thin wrapper (no-op on web)
 │   │   ├── llmOrchestrator.ts         ← resolveTurn: prompt build → JSON-resolution parse + verdict mapping
-│   │   ├── providerCall.ts            ← BYOK network layer: origin allowlist, 90s timeout, per-provider shapes, Gemini key header
+│   │   ├── providerCall.ts            ← BYOK network layer: origin allowlist, timeout, per-provider shapes, Gemini key header
 │   │   ├── searchIndex.ts             ← MiniSearch citation index + validateCitation (precedent/statute)
 │   │   ├── storage.ts                 ← KeyManager (BYOK): Capacitor SecureStorage (native) or localStorage/sessionStorage (web)
 │   │   └── useTrial.ts                ← reducer-based trial state machine (favor, phase, turn, log)
-│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (22 files, 210 tests)
+│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (23 files, 222 tests)
+│   ├── game/                          ← playing-card machinery
+│   │   ├── cardMeta.ts                ← seeded hand deal, authority weight, suits, turn winner (+ cardMeta.test.ts)
+│   │   ├── GameCard.tsx               ← shared playing-card face (corner pips, backs, burnout)
+│   │   ├── HandFan.tsx                ← fanned hand with deal-in stagger, tap-to-play
+│   │   └── CardTable.tsx              ← centre-table showdown (deal/flip/burn/glow driven by trial phase)
 │   ├── types/
 │   │   └── legal.ts                   ← all shared TS interfaces + constants (STATUTORY_NOTICE, VERDICT_TAGS, MODEL_DEFAULTS usage)
 │   ├── App.tsx                        ← screen shell (loading / home / trial) + key-vault modal + error fallbacks
@@ -183,7 +221,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 | `npm run preview` | Serve production build locally |
 | `npm run typecheck` | `tsc --noEmit` (app) + `tsc -p tsconfig.workers.json` (Pages Functions) |
 | `npm run lint` | ESLint over `src`, `functions`, `scripts` |
-| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 210 tests) |
+| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 222 tests) |
 | `npm run test:coverage` | Vitest with v8 coverage report + thresholds |
 | `npm run icons` | Regenerate `public/icons/*.png` from `public/icon.svg` (needs `sharp`) |
 | `npm run cf:dev` | `wrangler pages dev` — static shell + Functions + local D1 |
@@ -204,6 +242,20 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 - **Hosted inference exception (admin only).** The workspace administrator (single `role='admin'` account) can enable **Hosted (Cloudflare)** in the Key Vault — the only server-side LLM path. It calls the same-origin `POST /api/llm` function, which requires a session **and** the admin role and proxy the admin's turn to the `AI` binding (Workers AI). No Workers AI credential ever appears in the UI, the admin email is never exposed — only the `role` flag — and everyone else stays on BYOK. See [`AUTH.md`](AUTH.md) for the role-grant runbook and quota handling.
 - Default provider models are listed in `storage.ts` (`MODEL_DEFAULTS`) and are model-overridable per provider. Providers: `gemini`, `openai`, `anthropic`, `groq` (plus `hosted` for the admin).
 - For production hardening on Tauri desktop, wire `tauri-plugin-store` or Tauri's `safeStorage` in place of the in-memory fallback.
+
+---
+
+## The Legal Desk (document understanding)
+
+The **Legal Desk** (`LegalDesk.tsx` + `docEngine.ts`) closes the brief's biggest gap — working with *your* document, not a pre-built case. Open it from the gallery header. Paste a contract, policy, lease, judgement excerpt, or terms page (or load a bundled sample), pick an operation, and analyse:
+
+- **Simplify** — plain-English bottom line, what-it-means bullets, who it affects, glossary of legalese.
+- **Risks & obligations** — evidence-quoted audit with kind and severity per finding.
+- **Compare** — material differences between two versions, who each favours, which is safer.
+- **Ask the text** — a grounded answer quoted from the document, with confidence and next steps.
+- **For your lawyer** — the questions that would change the decision, why each matters, and what to bring.
+
+With a key armed, each op is one structured GenAI pass (`genDeskAnalysis`) through the same BYOK pipeline as the trial (the origin-allowlist + JSON-contract discipline applies identically). Without a key the deterministic **Local Rules Analyst** runs instead and is labeled as such. Results export as `legal-desk-<op>.md` (copy / download / share). The pasted text is read only in the browser and is sent nowhere except your own provider for the single analysis pass.
 
 ---
 
@@ -307,7 +359,7 @@ Duplicate an existing entry, change the id/facts/persona, add any new precedents
 
 What is automated today (`npm run test`, v8 coverage thresholds in `vitest.config.ts`):
 
-- **Core engine**: `dataLoader`, `searchIndex` (citation/statute verification incl. fabricated-authority rejection), `llmOrchestrator` (prompt, malformed-JSON handling, delta clamp), `providerCall` (origin allowlist / SSRF guard, HTTP-error handling, all four provider request shapes), `docket` (summary, exposure flags, consultation questions), `storage` (persist/session split, contamination regression), `useTrial` (full reducer state machine), `haptics` (web + native).
+- **Core engine**: `dataLoader`, `searchIndex` (citation/statute verification incl. fabricated-authority rejection), `llmOrchestrator` (prompt, malformed-JSON handling, delta clamp), `providerCall` (origin allowlist / SSRF guard, HTTP-error handling, all four provider request shapes), `docEngine` (JSON parser, all five Local Rules Analyst operations, deterministic dispatch), `docket` (summary, exposure flags, consultation questions), `cardMeta` (seeded deal, suits, weights, turn winner), `storage` (persist/session split, contamination regression), `useTrial` (full reducer state machine), `haptics` (web + native).
 - **Pure UI helpers**: `escapeHtml`/`buildPrintHtml` (XSS neutralisation in exports), `favorColor`/`lerpColor`.
 
 Known gaps — declared honestly:

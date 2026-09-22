@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarDays, KeyRound, Scale, ShieldCheck, Sparkles, Wand2, Dices, Layers, Skull, ShoppingBag, Swords } from 'lucide-react';
+import { ArrowRight, CalendarDays, KeyRound, Landmark, Scale, ShieldCheck, Sparkles, Wand2, Dices, Layers, Skull, ShoppingBag, Swords } from 'lucide-react';
 import { useState } from 'react';
 import type { Jurisdiction, ScenarioBundle } from '../types/legal';
 import { StatutoryNotice } from './StatutoryNotice';
@@ -14,6 +14,7 @@ interface CaseSelectProps {
   onRunChange: (next: RunState) => void;
   onOpenShop: () => void;
   onOpenDuel: () => void;
+  onOpenDesk: () => void;
   onSelect: (id: string) => void;
   onOpenKeys: () => void;
   onOpenAccount: () => void;
@@ -32,7 +33,7 @@ const JURISDICTION_LABEL: Record<Jurisdiction, string> = {
   IN: 'India',
 };
 
-export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, onOpenShop, onOpenDuel, onSelect, onOpenKeys, onOpenAccount, accountEmail, onGenerate, onOpenHowItWorks }: CaseSelectProps) {
+export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, onOpenShop, onOpenDuel, onOpenDesk, onSelect, onOpenKeys, onOpenAccount, accountEmail, onGenerate, onOpenHowItWorks }: CaseSelectProps) {
   const [genOpen, setGenOpen] = useState(false);
   const [generated, setGenerated] = useState<ScenarioBundle | null>(null);
 
@@ -75,6 +76,14 @@ export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, o
             className="btn-3d inline-flex items-center gap-1.5 rounded-lg border-2 border-ink bg-chip-gold px-3 py-2 font-display text-[11px] uppercase tracking-wider text-ink"
           >
             <ShoppingBag className="h-4 w-4" /> 🪙 {run.chips}
+          </button>
+          <button
+            aria-label="Open the Legal Desk to understand any legal document"
+            type="button"
+            onClick={onOpenDesk}
+            className="btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-felt-800 px-3 py-2 font-display text-[11px] uppercase tracking-wider text-cream"
+          >
+            <Landmark className="h-4 w-4" /> Desk
           </button>
           <button
           aria-label={hasKey ? 'Open key vault' : 'Open key vault to see key options'}

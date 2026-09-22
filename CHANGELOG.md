@@ -5,6 +5,21 @@ Keep a Changelog conventions; version numbers follow SemVer.
 
 ## [Unreleased]
 
+### Added
+- **The Legal Desk — understand *your* document.** A document-understanding
+  workspace in the gallery header. Paste any contract, policy, lease, judgement
+  excerpt or terms page (or load a bundled sample) and run one of five
+  operations — **Simplify** (plain-English bottom line, what-it-means, who it
+  affects, legalese glossary), **Risks & obligations** (evidence-quoted findings
+  with kind + severity 1–5), **Compare** (material differences between two
+  versions, who each favours), **Ask the text** (grounded answer + quote +
+  confidence + next steps), and **For your lawyer** (decision-changing questions,
+  why each matters, what papers to bring). Every op is a single structured GenAI
+  pass on the same BYOK pipeline as the trial; without a key the clearly-labeled
+  deterministic Local Rules Analyst stands in. Results export as markdown
+  (copy / download / share). Test suite grows to **222 tests across 23 files**.
+  Files: `docEngine.ts`, `docEngine.test.ts`, `deskSamples.ts`, `LegalDesk.tsx`.
+
 ### Changed — the case table (full card-game rebuild)
 - **Your Hand.** Every matter now *deals* its five verified precedents out as a
   fanned hand of playing cards along the bottom of the table (deterministic

@@ -11,6 +11,7 @@ import { useAuth, pullRemoteRun, enqueueRemoteSave } from './core/auth';
 import { CaseSelect } from './components/CaseSelect';
 import { CourtroomChamber } from './components/CourtroomChamber';
 import { KeySettings } from './components/KeySettings';
+import { LegalDesk } from './components/LegalDesk';
 import { Landing } from './components/Landing';
 import { AuthModal } from './components/AuthModal';
 import { ResetPasswordModal } from './components/ResetPasswordModal';
@@ -48,6 +49,7 @@ export function App() {
   const [run, setRun] = useState<RunState>(() => loadRun());
   const [shopOpen, setShopOpen] = useState(false);
   const [duelOpen, setDuelOpen] = useState(false);
+  const [deskOpen, setDeskOpen] = useState(false);
   const libraryRef = useRef<{ payload: LibraryPayload; index: CitationIndex } | null>(null);
   const runRef = useRef(run);
   const pulledAccount = useRef<string | null>(null);
@@ -202,6 +204,7 @@ export function App() {
           onRunChange={updateRun}
           onOpenShop={() => setShopOpen(true)}
           onOpenDuel={() => setDuelOpen(true)}
+          onOpenDesk={() => setDeskOpen(true)}
           onSelect={(id) => void openTrial(id)}
           onOpenKeys={() => setKeysOpen(true)}
           onOpenAccount={() => openAccount(user ? 'login' : 'signup')}
@@ -253,6 +256,12 @@ export function App() {
         <DuelMode
           deck={libraryRef.current.payload.corpus.cases.slice(0, 12)}
           onClose={() => setDuelOpen(false)}
+        />
+      )}
+      {deskOpen && (
+        <LegalDesk
+          onClose={() => setDeskOpen(false)}
+          onOpenKeys={() => setKeysOpen(true)}
         />
       )}
     </div>
