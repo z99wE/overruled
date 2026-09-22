@@ -26,7 +26,7 @@ interface CourtroomChamberProps {
   index: CitationIndex;
   /** Run-layer id: static matters carry the 'static-' boss prefix, generated ones are their seed id. */
   gameScenarioId: string;
-  onExit: () => void;
+  onExit: (run: RunState) => void;
   onOpenKeys: () => void;
 }
 
@@ -187,7 +187,7 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
 
   return (
     <div className={`felt-bg felt-noise flex h-full flex-col ${shake ? 'screen-shake' : ''}`}>
-      <ChamberHeader scenario={scenario} state={state} onExit={onExit} />
+      <ChamberHeader scenario={scenario} state={state} onExit={() => onExit(run)} />
 
       {boss && (
         <div className="border-b-2 border-ink bg-ink/30 px-4 py-1.5">

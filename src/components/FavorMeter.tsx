@@ -49,7 +49,7 @@ export function FavorMeter({ value, delta, compact }: FavorMeterProps) {
           <span className="font-mono text-[10px] text-cream/50">/100</span>
           {delta !== undefined && delta !== 0 && (
             <span
-              key={`${delta}-${Math.random()}`}
+              key={delta}
               className={`anim-pop font-display text-[11px] ${delta > 0 ? 'text-felt-200' : 'text-poker-red'}`}
               style={{ textShadow: '1px 1px 0 var(--color-ink)' }}
             >

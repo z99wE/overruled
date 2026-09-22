@@ -265,13 +265,13 @@ export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
                   </span>
                 </div>
                 <div className="flex gap-1.5">
-                  <button onClick={() => void exportMd('copy')} className="rounded-lg border border-ink bg-felt-800 p-2 text-cream/70 transition hover:bg-felt-700 hover:text-cream" title="Copy as markdown">
+                  <button onClick={() => void exportMd('copy')} aria-label="Copy analysis as markdown" className="rounded-lg border border-ink bg-felt-800 p-2 text-cream/70 transition hover:bg-felt-700 hover:text-cream" title="Copy as markdown">
                     {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
                   </button>
-                  <button onClick={() => void exportMd('share')} className="rounded-lg border border-ink bg-felt-800 p-2 text-cream/70 transition hover:bg-felt-700 hover:text-cream" title="Share">
+                  <button onClick={() => void exportMd('share')} aria-label="Share analysis" className="rounded-lg border border-ink bg-felt-800 p-2 text-cream/70 transition hover:bg-felt-700 hover:text-cream" title="Share">
                     <Share2 className="h-4 w-4" />
                   </button>
-                  <button onClick={() => void exportMd('download')} className="rounded-lg border border-ink bg-felt-800 p-2 text-cream/70 transition hover:bg-felt-700 hover:text-cream" title="Download markdown">
+                  <button onClick={() => void exportMd('download')} aria-label="Download analysis as markdown" className="rounded-lg border border-ink bg-felt-800 p-2 text-cream/70 transition hover:bg-felt-700 hover:text-cream" title="Download markdown">
                     <Download className="h-4 w-4" />
                   </button>
                 </div>

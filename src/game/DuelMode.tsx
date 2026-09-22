@@ -117,10 +117,9 @@ export function DuelMode({
             <div className="mt-4 space-y-3 text-center">
               <p className="font-mono text-[10px] uppercase tracking-widest text-cream/50">Round {state.round} · pass the device</p>
               <button
-          aria-label={`${NAMES.A}
+                aria-label={`${NAMES.A}: take the deck`}
                 type="button"
                 onClick={() => startPicking('A')}
-: take the deck`}
                 className="btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-chip-gold px-5 py-3 font-display text-sm uppercase tracking-wider text-ink"
               >
                 <Hand className="h-4 w-4" /> {NAMES.A}: take the deck

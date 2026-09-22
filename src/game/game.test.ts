@@ -174,12 +174,12 @@ describe('run store', () => {
     expect(run.bestStreak).toBe(5);
   });
 
-  it('pins the case of the day per date', () => {
+  it('pins the case of the day per date without mutating the run', () => {
     const run = blankRun();
     const a = ensureCaseOfDay(run, '2026-09-19', ['static-x', 'static-y']);
     const b = ensureCaseOfDay(run, '2026-09-19', ['static-x', 'static-y']);
     expect(a).toBe(b);
-    expect(run.caseOfDay?.date).toBe('2026-09-19');
+    expect(run.caseOfDay).toBeNull();
   });
 
   it('round-trips through localStorage', () => {

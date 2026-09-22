@@ -9,7 +9,6 @@ default to enabled in the source; deployments gate them through `.env`.
 | ------------------ | ------------ | ------- | -------------------------------------------------------------- |
 | `freeformMotion`   | Gameplay     | on      | Freeform motion composer (off → precedent-cards only)          |
 | `bossBounties`     | Economy      | on      | Chip bounty when a static matter clears its boss target        |
-| `sparringBench`    | Offline sim  | on      | Local single-model sparring resolution for generated matters   |
 
 ## Promotion path
 

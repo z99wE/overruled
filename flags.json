@@ -8,10 +8,6 @@
     "bossBounties": {
       "enabled": true,
       "description": "Grant chip bounties when a static matter's boss target is cleared."
-    },
-    "sparringBench": {
-      "enabled": true,
-      "description": "Local offline sparring resolution for generated matters without a live opponent."
     }
   }
 }

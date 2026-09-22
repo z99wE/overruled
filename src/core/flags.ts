@@ -10,7 +10,6 @@ export interface FlagEntry {
 const OVERRIDES_BY_ENV: Partial<Record<FeatureFlag, boolean>> = {
   freeformMotion: import.meta.env.VITE_FLAG_FREEFORM_MOTION === 'true',
   bossBounties: import.meta.env.VITE_FLAG_BOSS_BOUNTIES === 'true',
-  sparringBench: import.meta.env.VITE_FLAG_SPARRING_BENCH === 'true',
 };
 
 export function isFlagEnabled(flag: FeatureFlag): boolean {

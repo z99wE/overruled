@@ -19,7 +19,7 @@ import { LLMOrchestratorError } from '../core/providerCall';
  * fabricates law — it argues only from the scenario's real corpus deck.
  */
 
-const SPARRING_MARKER = '[SPARRING BENCH — LOCAL JUDGE]';
+export const SPARRING_MARKER = '[SPARRING BENCH — LOCAL JUDGE]';
 
 function hashStr(s: string): number {
   let h = 5381;
@@ -166,7 +166,7 @@ export function localVerdict(args: LocalVerdictArgs): LocalVerdict {
     citation_valid: validation.verified,
     bench_verdict_tag: tag,
     judicial_favor_delta: delta,
-    judge_dialogue: `${SPARRING_MARKER} ${judgeDialogue}${opponentCite}`,
+    judge_dialogue: `${judgeDialogue}${opponentCite}`,
     opposing_advocate_strike: strike,
     co_counsel_tactical_hint: hint,
     trial_terminated: false,

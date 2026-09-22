@@ -20,9 +20,9 @@ export function RunPanel({
     .join(' ');
 
   const reset = () => {
-    if (window.confirm('Burn the whole run? Chips, rank, perks — everything goes.')) {
+    if (window.confirm('Burn the whole run? Chips, rank, jokers — everything goes.')) {
       clearRun();
-      onChange({ ...run, ...{ chips: 0, xp: 0, bestStreak: 0, bossesDefeated: [], perks: [], matterChips: {}, caseOfDay: null } });
+      onChange({ ...run, ...{ chips: 0, xp: 0, bestStreak: 0, bossesDefeated: [], jokers: [], matterChips: {}, caseOfDay: null } });
     }
   };
 

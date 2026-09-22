@@ -79,15 +79,18 @@ describe('ensureCaseOfDay', () => {
     expect(ensureCaseOfDay(run, '2026-09-20', ['abc', 'generated-x'])).toBe('abc');
   });
 
-  it('pins a fresh case and excludes generated scenarios', () => {
+  it('picks a stable case for a fresh date, excludes generated scenarios, and never mutates the run', () => {
     const run = blankRun();
-    const pick = ensureCaseOfDay(run, '2026-09-21', ['generated-g1', 'hands']);
-    expect(pick).toBe('hands');
-    expect(run.caseOfDay).toEqual({ date: '2026-09-21', scenarioId: 'hands' });
+    const first = ensureCaseOfDay(run, '2026-09-21', ['generated-g1', 'hands']);
+    const second = ensureCaseOfDay(run, '2026-09-21', ['generated-g1', 'hands']);
+    expect(first).toBe('hands');
+    expect(second).toBe('hands');
+    expect(run.caseOfDay).toBeNull();
   });
 
-  it('pins empty when only generated scenarios exist', () => {
+  it('picks empty when only generated scenarios exist', () => {
     const run = blankRun();
     expect(ensureCaseOfDay(run, '2026-09-22', ['generated-g1', 'generated-g2'])).toBe('');
+    expect(run.caseOfDay).toBeNull();
   });
 });

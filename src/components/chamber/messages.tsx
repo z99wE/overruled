@@ -54,8 +54,8 @@ export function OpponentMessage({ from, text, style, attack }: { from: string; t
     <div className="flex flex-col items-end gap-1">
       <p className="text-right font-display text-[10px] uppercase tracking-widest text-poker-red">{from}</p>
       <div className="max-w-[88%] rounded-xl rounded-tr-sm border-2 border-ink bg-poker-red-deep/40 p-3 shadow-[0_3px_0_0_var(--color-ink)]">
-        {from.includes('live agent') && (
-          <p className="mb-1 inline-flex items-center gap-1 rounded bg-ink/60 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-widest text-poker-red">⚡ opposing agent</p>
+        {from.includes('AI bench') && (
+          <p className="mb-1 inline-flex items-center gap-1 rounded bg-ink/60 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-widest text-poker-red">⚡ AI bench</p>
         )}
         <p className="text-[13px] leading-relaxed text-cream/90">{text}</p>
       </div>

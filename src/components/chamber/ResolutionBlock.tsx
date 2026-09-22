@@ -1,11 +1,14 @@
 import type { TurnRecord } from '../../types/legal';
-import { isSparringBrief } from '../../game/localJudge';
+import { isSparringBrief, SPARRING_MARKER } from '../../game/localJudge';
 import { VERDICT_STYLE, JudgeMessage, OpponentMessage, CoCounselMessage } from './messages';
 
 export function ResolutionBlock({ record }: { record: TurnRecord }) {
   const style = VERDICT_STYLE[record.resolution.bench_verdict_tag];
   const r = record.resolution;
   const sparring = isSparringBrief(record.opposingBrief);
+  // Belt-and-braces: any stale marker from a pre-honesty session must never
+  // leak into the transcript as though it were the bench speaking.
+  const judgeText = r.judge_dialogue.replace(SPARRING_MARKER, '').trim();
   return (
     <div className="space-y-3 border-l-4 border-ink/70 pl-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -38,9 +41,9 @@ export function ResolutionBlock({ record }: { record: TurnRecord }) {
           READ THE JUDGMENT ↗ {record.citedPrecedent.citation}
         </a>
       )}
-      <JudgeMessage text={r.judge_dialogue} />
+      <JudgeMessage text={judgeText} />
       <OpponentMessage
-        from={record.opposingBrief ? 'Opposing Counsel · live agent' : 'Opposing Counsel'}
+        from={sparring ? 'Opposing Counsel · local bench' : record.opposingBrief ? 'Opposing Counsel · AI bench' : 'Opposing Counsel'}
         text={record.opposingBrief?.strike ?? r.opposing_advocate_strike}
         style="adversarial"
       />

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CitationIndex } from './core/searchIndex';
 import type { LibraryPayload, ScenarioBundle } from './types/legal';
 import { loadAllScenarios, loadLibrary, loadScenario } from './core/dataLoader';
@@ -20,7 +20,7 @@ import { ShopModal } from './game/ShopModal';
 import { DuelMode } from './game/DuelMode';
 import type { JokerId } from './game/jokers';
 
-// The seven shipped matters are the boss benches of the run; generated
+// The six shipped matters are the boss benches of the run; generated
 // matters are free sparring. Prefixing keeps game logic (boss targets,
 // bounties, case-of-the-day) keyed to the static set.
 const STATIC_IDS = [
@@ -53,6 +53,7 @@ export function App() {
   const libraryRef = useRef<{ payload: LibraryPayload; index: CitationIndex } | null>(null);
   const runRef = useRef(run);
   const pulledAccount = useRef<string | null>(null);
+  const mountedRef = useRef(true);
 
   const refreshKeyState = async () => {
     const km = createKeyManager();
@@ -60,31 +61,34 @@ export function App() {
     setHasKey(!!cfg);
   };
 
+  const load = useCallback(async () => {
+    setLoadError(null);
+    try {
+      const lib = await loadLibrary();
+      const all = await loadAllScenarios();
+      if (!mountedRef.current) return;
+      libraryRef.current = lib;
+      setIndex(lib.index);
+      setScenarios(all);
+      setScreen('landing');
+    } catch (err) {
+      if (mountedRef.current) setLoadError(err instanceof Error ? err.message : String(err));
+    }
+  }, []);
+
   useEffect(() => {
-    let mounted = true;
+    mountedRef.current = true;
     initErrorTracking();
     bootHealth();
-    void (async () => {
-      try {
-        const lib = await loadLibrary();
-        const all = await loadAllScenarios();
-        if (!mounted) return;
-        libraryRef.current = lib;
-        setIndex(lib.index);
-        setScenarios(all);
-        setScreen('landing');
-      } catch (err) {
-        if (mounted) setLoadError(err instanceof Error ? err.message : String(err));
-      }
-    })();
+    void load();
     void initHaptics();
     void refreshKeyState().catch(() => undefined);
     const bootToken = new URLSearchParams(window.location.search).get('reset_token');
     if (bootToken) setResetToken(bootToken);
     return () => {
-      mounted = false;
+      mountedRef.current = false;
     };
-  }, []);
+  }, [load]);
 
   const openTrial = async (rawId: string) => {
     // Static ids are game-prefixed ('static-') for boss/scoring logic; the
@@ -128,18 +132,31 @@ export function App() {
     () => [...STATIC_IDS.map((id) => `static-${id}`), ...scenarios.map((s) => s.id)],
     [scenarios],
   );
-  const caseOfDayId = useMemo(
-    () => ensureCaseOfDay(run, new Date().toISOString().slice(0, 10), runScenarioIds),
-     
-    [runScenarioIds],
+
+  const updateRun = useCallback(
+    (next: RunState) => {
+      runRef.current = next;
+      saveRun(next);
+      setRun(next);
+      if (user) enqueueRemoteSave(next);
+    },
+    [user],
   );
 
-  const updateRun = (next: RunState) => {
-    runRef.current = next;
-    saveRun(next);
-    setRun(next);
-    if (user) enqueueRemoteSave(next);
-  };
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const caseOfDayId = useMemo(
+    () => ensureCaseOfDay(run, todayIso, runScenarioIds),
+    [run, runScenarioIds, todayIso],
+  );
+
+  // The pick is computed in render (pure) and then persisted here once per
+  // date, so case-of-the-day never mutates state mid-render and always
+  // survives reload/remote sync.
+  useEffect(() => {
+    const stored = run.caseOfDay;
+    if (stored?.date === todayIso && stored.scenarioId === caseOfDayId) return;
+    updateRun({ ...run, caseOfDay: { date: todayIso, scenarioId: caseOfDayId } });
+  }, [run, caseOfDayId, todayIso, updateRun]);
 
   // Account sync: on first sight of a signed-in user, pull the cloud run.
   // Remote wins on a fresh device; a new/sans-save account seeds from local.
@@ -165,7 +182,8 @@ export function App() {
     setAuthOpen(true);
   };
 
-  const handleExitTrial = () => {
+  const handleExitTrial = (nextRun: RunState) => {
+    updateRun(nextRun);
     setActive(null);
     setScreen('home');
   };
@@ -180,7 +198,18 @@ export function App() {
           OVERROOL
         </h1>
         <p className="anim-float font-mono text-xs uppercase tracking-widest text-cream/60">Shuffling the world's judgments…</p>
-        {loadError && <p className="max-w-sm px-6 text-center text-[12px] text-poker-red">{loadError}</p>}
+        {loadError && (
+          <div className="flex flex-col items-center gap-4">
+            <p className="max-w-sm px-6 text-center text-[12px] text-poker-red">{loadError}</p>
+            <button
+              type="button"
+              onClick={() => void load()}
+              className="btn-gold rounded-xl px-5 py-2.5 font-display text-xs uppercase tracking-wider text-ink"
+            >
+              Retry
+            </button>
+          </div>
+        )}
       </div>
     );
   }

@@ -215,11 +215,9 @@ export function applyMatterPayout(
   };
 }
 
-/** Lazily roll and pin the case of the day for the given date. */
+/** Deterministic case-of-the-day pick for the given date (pure — no mutation). */
 export function ensureCaseOfDay(run: RunState, dateIso: string, scenarioIds: readonly string[]): string {
   if (run.caseOfDay && run.caseOfDay.date === dateIso) return run.caseOfDay.scenarioId;
   const ids = scenarioIds.filter((id) => !id.startsWith('generated-'));
-  const pick = ids.length ? caseOfTheDayFor(dateIso, ids) : '';
-  run.caseOfDay = { date: dateIso, scenarioId: pick };
-  return pick;
+  return ids.length ? caseOfTheDayFor(dateIso, ids) : '';
 }

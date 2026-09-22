@@ -85,7 +85,12 @@ export async function onRequestPost(context: { request: Request; env: AppEnv }):
   const system = body.system;
   const userContent = body.jsonSchema !== undefined ? `${body.user}\n\nRespond ONLY with a single JSON object.` : body.user;
   const requested = typeof body.model === 'string' ? body.model.trim() : '';
-  const model = HOSTED_MODEL_ALLOWLIST.has(requested) ? requested : HOSTED_MODEL;
+  // No silent fallback: a client asking for a model outside the allowlist is
+  // a bug or a probe — answer loudly so it can't smuggle an arbitrary id.
+  if (requested && !HOSTED_MODEL_ALLOWLIST.has(requested)) {
+    return json({ error: { code: 'bad_model', message: 'That model is not on the hosted allowlist.' } }, 400);
+  }
+  const model = requested || HOSTED_MODEL;
   const input = compactRecord({
     messages: [
       { role: 'system', content: system },
@@ -102,11 +107,13 @@ export async function onRequestPost(context: { request: Request; env: AppEnv }):
     return json({ text });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    console.error('[llm] hosted inference failed:', message);
     const quotaLike = /insufficient_funds|billing|quota|usage.limit|1007|1003|limit reached/i.test(message);
     if (quotaLike) {
       return json({ error: { code: 'hosted_quota', message: 'Hosted inference quota is exhausted. Add a Cloudflare billing method or switch to your own API key.' } }, 429);
     }
-    return json({ error: { code: 'provider_error', message: `Hosted inference failed: ${message}` } }, 502);
+    // Never echo provider internals to the client — log them server-side.
+    return json({ error: { code: 'provider_error', message: 'Hosted inference failed. Please try again in a moment.' } }, 502);
   }
 }
 

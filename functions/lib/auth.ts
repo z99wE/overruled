@@ -27,6 +27,7 @@ export async function hashPassword(password: string): Promise<{
   salt: string;
   iterations: number;
 }> {
+  if (password.length > 128) throw new Error('Password exceeds maximum length.');
   const salt = randomHex(16);
   const iterations = PBKDF2_ITERATIONS;
   const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
@@ -44,6 +45,9 @@ export async function verifyPassword(
   iterations: number,
   expectedHashHex: string,
 ): Promise<boolean> {
+  // Fast-fail on out-of-policy inputs so login never runs PBKDF2 on attacker
+  // sized payloads (stored hashes are all 8..128 by construction).
+  if (password.length < 8 || password.length > 128) return false;
   const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
   const bits = await crypto.subtle.deriveBits(
     { name: 'PBKDF2', salt: hexToBytes(saltHex), iterations, hash: 'SHA-256' },
