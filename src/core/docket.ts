@@ -6,6 +6,7 @@ import type {
   TurnRecord,
 } from '../types/legal';
 import { requestChat } from './providerCall';
+import { INJECTION_DEFENCE, sandboxUntrusted } from './guardrails';
 
 export interface DocketDraft {
   summary: SessionSummary;
@@ -85,6 +86,8 @@ export async function enrichConsultationQuestions(
   scenario: ScenarioBundle,
 ): Promise<string[]> {
   const system = [
+    INJECTION_DEFENCE,
+    '',
     'You are a senior litigator preparing an Advocate Consultation Docket.',
     'Based on the simulation transcript below, produce EXACTLY 5 precise, technical, high-leverage questions a junior counsel should put to a practicing advocate.',
     'Questions must be specific to the case posture, cite the likely governing law, and avoid generalities.',
@@ -104,7 +107,7 @@ export async function enrichConsultationQuestions(
     ...summary.exposurePoints.map((e) => `- ${e}`),
     '',
     'TURN TRANSCRIPT:',
-    ...summary.turnRecords.map((r) => `Turn ${r.turnNumber}: ${r.playerAction.rawText} => [${r.resolution.bench_verdict_tag} ${r.resolution.judicial_favor_delta > 0 ? '+' : ''}${r.resolution.judicial_favor_delta}] ${r.resolution.judge_dialogue}`),
+    ...sandboxUntrusted('Trial transcript', summary.turnRecords.map((r) => `Turn ${r.turnNumber}: ${r.playerAction.rawText} => [${r.resolution.bench_verdict_tag} ${r.resolution.judicial_favor_delta > 0 ? '+' : ''}${r.resolution.judicial_favor_delta}] ${r.resolution.judge_dialogue}`).join('\n')).split('\n'),
     '',
     'Render the JSON now.',
   ].join('\n');

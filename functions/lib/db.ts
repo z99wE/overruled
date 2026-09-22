@@ -213,3 +213,66 @@ export async function findUserForPasswordReset(db: D1Database, tokenHash: string
 export async function consumePasswordReset(db: D1Database, tokenHash: string): Promise<void> {
   await db.prepare('UPDATE password_resets SET used_at = ? WHERE token_hash = ?').bind(NOW(), tokenHash).run();
 }
+
+/* ── Hosted-inference credit meter (authoritative, server-side) ─────────────
+ * Protects the admin-owned Workers AI surface against jacking. Enforced in
+ * /api/llm: per-account daily cap + per-minute burst, recorded atomically in
+ * D1. Rows are keyed (account_id, UTC day). credit_overrides lets an admin
+ * raise a specific account's daily cap later — the monetization knob.
+ */
+export const METER_DAILY_CAP = 100;
+export const METER_BURST_LIMIT = 8;
+export const METER_BURST_WINDOW_SECONDS = 60;
+
+export interface MeterCheck {
+  allowed: boolean;
+  kind?: 'daily' | 'burst';
+  remaining: number;
+}
+
+export async function meterCheckAndCharge(
+  db: D1Database,
+  accountId: string,
+  cost = 1,
+): Promise<MeterCheck> {
+  const now = Math.floor(Date.now() / 1000);
+  const day = new Date().toISOString().slice(0, 10);
+  const window = Math.floor(now / METER_BURST_WINDOW_SECONDS);
+
+  const override = await db
+    .prepare('SELECT daily_cap FROM credit_overrides WHERE account_id = ?')
+    .bind(accountId)
+    .first<{ daily_cap: number }>();
+  const cap = Number(override?.daily_cap ?? METER_DAILY_CAP);
+
+  const row = await db
+    .prepare('SELECT credits, burst_at, burst_count FROM meter WHERE account_id = ? AND day = ?')
+    .bind(accountId, day)
+    .first<{ credits: number; burst_at: number; burst_count: number }>();
+
+  const credits = Number(row?.credits ?? 0);
+  const burstAt = Number(row?.burst_at ?? 0);
+  const burstCount = Number(row?.burst_count ?? 0);
+
+  if (credits + cost > cap) return { allowed: false, kind: 'daily', remaining: 0 };
+  if (burstAt === window && burstCount >= METER_BURST_LIMIT) {
+    return { allowed: false, kind: 'burst', remaining: Math.max(0, cap - credits) };
+  }
+
+  const nextBurstCount = burstAt === window ? burstCount + 1 : 1;
+  await db
+    .prepare(
+      `INSERT INTO meter (account_id, day, credits, calls, burst_at, burst_count)
+       VALUES (?, ?, ?, 1, ?, ?)
+       ON CONFLICT (account_id, day) DO UPDATE SET
+         credits = meter.credits + excluded.credits,
+         calls = meter.calls + excluded.calls,
+         burst_at = excluded.burst_at,
+         burst_count = excluded.burst_count`,
+    )
+    .bind(accountId, day, cost, window, nextBurstCount)
+    .run();
+
+  const newCredits = credits + cost;
+  return { allowed: true, remaining: Math.max(0, cap - newCredits) };
+}

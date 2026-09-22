@@ -5,6 +5,7 @@ import { PROVIDERS, HOSTED_ENTRY, createKeyManager } from '../core/storage';
 import type { AskResult, CompareResult, DeskAnalysis, DeskOp, LawyerResult, RisksResult, SimplifyResult } from '../core/docEngine';
 import { genDeskAnalysis, localDeskAnalysis } from '../core/docEngine';
 import { DESK_SAMPLES } from '../core/deskSamples';
+import { CREDIT_COSTS, creditsToday, spendCredits } from '../core/meter';
 
 interface LegalDeskProps {
   onClose: () => void;
@@ -103,6 +104,11 @@ export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
     setError(null);
     try {
       if (cfg) {
+        const spend = spendCredits(CREDIT_COSTS.deskOp);
+        if (!spend.ok) {
+          setError(`Daily credit limit reached (${spend.used}/${spend.cap} used). The Local Rules Analyst still runs free — or try again tomorrow.`);
+          return;
+        }
         const result = await genDeskAnalysis(cfg, op, doc.trim(), op === 'compare' ? { docB: docB.trim() } : op === 'ask' ? { question: question.trim() } : undefined);
         setAnalysis({ op, origin: 'genai', provider: providerLabel(cfg.provider), result });
       } else {
@@ -142,6 +148,7 @@ export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
   };
 
   const r = analysis?.result;
+  const met = creditsToday();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
@@ -229,6 +236,10 @@ export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Landmark className="h-4 w-4" />}
               {busy ? `Analysing${cfg ? '' : ' with Local Rules'}…` : `Analyse with ${cfg ? providerLabel(cfg.provider) : 'Local Rules Analyst'}`}
             </button>
+
+            <p className="font-mono text-[10px] leading-relaxed text-cream/40">
+              Daily credits: <span className="text-cream/70">{met.used} / {met.cap} used</span> · model analysis costs {CREDIT_COSTS.deskOp} credits · resets at midnight UTC · Local Rules runs free
+            </p>
 
             {error && (
               <p className="rounded-lg border border-poker-red/40 bg-poker-red-deep/30 px-3 py-2 text-[13px] text-poker-red">{error}</p>

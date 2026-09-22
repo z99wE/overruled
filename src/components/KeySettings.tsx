@@ -4,6 +4,7 @@ import type { LLMConfig, LLMProvider } from '../types/legal';
 import { PROVIDERS, HOSTED_ENTRY, createKeyManager, defaultModel, isHostedProvider } from '../core/storage';
 import { requestChat } from '../core/providerCall';
 import { useAuth } from '../core/auth';
+import { CREDIT_COSTS, creditsToday } from '../core/meter';
 
 interface KeySettingsProps {
   onClose: () => void;
@@ -116,6 +117,7 @@ export function KeySettings({ onClose }: KeySettingsProps) {
 
   const statusKind = status?.split('|')[0];
   const statusMsg = status?.split('|')[1] ?? '';
+  const met = creditsToday();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
@@ -234,6 +236,20 @@ export function KeySettings({ onClose }: KeySettingsProps) {
                   <Check className="h-3.5 w-3.5" /> Active: {labelFor(config.provider)} · {config.model}
                 </p>
               )}
+
+              <div className="rounded-lg border border-ink bg-ink/50 px-3 py-2.5">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-cream/50">Daily credits</p>
+                  <p className="font-mono text-[11px] text-chip-gold">
+                    {met.used} / {met.cap} used
+                  </p>
+                </div>
+                <ul className="mt-1.5 space-y-0.5 font-mono text-[10px] text-cream/50">
+                  <li>· 1 trial run = {CREDIT_COSTS.trial} credits · 1 Legal Desk op = {CREDIT_COSTS.deskOp} credits</li>
+                  <li>· Resets at midnight UTC · the keyless bench &amp; Local Rules run free, never billed</li>
+                  <li>· BYOK spend is metered against your own provider quota; hosted spend is capped server-side</li>
+                </ul>
+              </div>
 
               <div className="flex gap-2">
                 <button

@@ -33,6 +33,7 @@ does not collect, and how you can control it.
 | Recovery-code digests (SHA-256 only) | Cloudflare D1, `recovery_codes` | Account-recovery fallback — the plaintext codes are shown once and never stored |
 | Password-reset token (SHA-256 digest, 30-min TTL) | Cloudflare D1, `password_resets` | Email-based password reset |
 | Account role (`user` / `admin`) | Cloudflare D1, `users.role` | Gating server-side hosted inference |
+| Credit-meter counters (calls/credits per UTC day, burst-window count) | Cloudflare D1, `meter` | Fair-use limits on the hosted inference path; the only per-account inference data retained, and never the prompt content |
 | Created-at timestamp | Cloudflare D1, `users.created_at` | Account metadata |
 | Session token (SHA-256 digest only) | Cloudflare D1, `sessions` | Remembering you while signed in |
 | Game-progress JSON (chips, XP, jokers, boss progress) | Cloudflare D1, `runs` | Cross-device save sync |
@@ -62,6 +63,11 @@ model; the same-origin request carries only the current turn's prompts, and
 the model output is returned to the browser. Admins can verify the free-tier
 quota on Cloudflare at any time. Non-admin accounts are rejected on this path
 and continue with their own keys.
+
+Server-side calls are also metered in D1: a daily cap (100 credits, resetting
+midnight UTC) plus a per-minute burst limit and a two-model allowlist, so a
+single account cannot exhaust the free tier. Only aggregated counters are
+stored — never the prompt or response text.
 
 ## Third parties
 

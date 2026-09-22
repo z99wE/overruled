@@ -205,9 +205,13 @@ export async function requestChat(opts: ChatOptions): Promise<string> {
               ? 'Hosted inference is reserved for the workspace administrator. Supply your own key instead.'
               : code === 'hosted_quota'
                 ? 'Hosted inference quota is exhausted. Contact the administrator or use your own key.'
-                : code === 'hosted_unconfigured'
-                  ? 'Hosted inference is not configured on this deployment yet. Use your own key.'
-                  : fallback;
+                : code === 'rate_daily'
+                  ? 'Daily hosted-inference allowance reached (100 model calls). It resets at midnight UTC — use your own key meanwhile.'
+                  : code === 'rate_burst'
+                    ? 'Hosted-inference burst limit reached. Wait a minute and try again.'
+                    : code === 'hosted_unconfigured'
+                      ? 'Hosted inference is not configured on this deployment yet. Use your own key.'
+                      : fallback;
         throw new LLMOrchestratorError(friendly, 'hosted', res.status);
       }
       const text = data.text;

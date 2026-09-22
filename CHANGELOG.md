@@ -5,6 +5,34 @@ Keep a Changelog conventions; version numbers follow SemVer.
 
 ## [Unreleased]
 
+### Added — fair access & hardened AI surface
+- **Daily credit meter.** 100 credits per identity per UTC day (identity-scoped via
+  the BYOK scope) with a resettable wallet: a trial run costs **10 credits**, a Legal
+  Desk model operation **2**, and both Local Judge / Local Rules Analyst stay free.
+  Client meter: `src/core/meter.ts` (+ `meter.test.ts`).
+- **Server-side hosted-inference limits.** The admin-only `/api/llm` path now enforces
+  the same daily cap authoritatively in D1 plus a per-minute burst limit (8 calls/60s)
+  and a two-model allowlist, surfacing `429 rate_daily` / `429 rate_burst`.
+  `d1/schema.sql` adds the `meter` and `credit_overrides` tables; `credit_overrides`
+  is the reserved monetization knob for raising an account's cap later.
+  `functions/lib/db.ts` (`meterCheckAndCharge`), `functions/lib/db.test.ts`.
+- **Prompt-injection defence.** `src/core/guardrails.ts` adds a SECURITY CONTRACT to
+  every system prompt and sandboxes all attacker/model-derived content inside
+  `<untrusted-data>…</untrusted-data>` tags before it reaches any model — across trial
+  resolution, opposing-counsel persona, Legal Desk ops, and docket enrichment. Covers
+  prompt hijacking, LLM-jacking, and LLM-spoofing. `guardrails.test.ts`.
+- Test suite grows to **234 tests across 25 files**.
+
+### Changed
+- **True 3D card flips.** The fake 92° `tblFlipIn` turn is replaced with real
+  `rotateY` flips (`card3d` in `index.css`): hand cards deal in face-down→face-up
+  with a stagger, spent cards flip face→back, and the Bench reveal flips at the
+  verdict (`flipMode: 'both' | 'toggled'`, `flipDelay` on `GameCard`).
+- **Landing realignment.** The landing page now pitches the product without
+  hackathon framing — hero, "Your documents" (Legal Desk pillars), "The bench",
+  "Where the AI actually runs" (GenAI architecture), "Why it matters", "What it's
+  worth", and an FAQ, wired to open the desk via `onOpenDesk`.
+
 ### Added
 - **The Legal Desk — understand *your* document.** A document-understanding
   workspace in the gallery header. Paste any contract, policy, lease, judgement

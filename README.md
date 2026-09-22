@@ -82,7 +82,9 @@ overrool/
 │   │   ├── searchIndex.ts             ← MiniSearch citation index + validateCitation (precedent/statute)
 │   │   ├── storage.ts                 ← KeyManager (BYOK): Capacitor SecureStorage (native) or localStorage/sessionStorage (web)
 │   │   └── useTrial.ts                ← reducer-based trial state machine (favor, phase, turn, log)
-│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (23 files, 222 tests)
+│   │   ├── guardrails.ts             ← prompt-injection defence: SECURITY CONTRACT + <untrusted-data> sandbox
+│   │   ├── meter.ts                  ← identity-scoped daily credit meter (trial 10, desk op 2)
+│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (25 files, 234 tests)
 │   ├── game/                          ← playing-card machinery
 │   │   ├── cardMeta.ts                ← seeded hand deal, authority weight, suits, turn winner (+ cardMeta.test.ts)
 │   │   ├── GameCard.tsx               ← shared playing-card face (corner pips, backs, burnout)
@@ -221,7 +223,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 | `npm run preview` | Serve production build locally |
 | `npm run typecheck` | `tsc --noEmit` (app) + `tsc -p tsconfig.workers.json` (Pages Functions) |
 | `npm run lint` | ESLint over `src`, `functions`, `scripts` |
-| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 222 tests) |
+| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 234 tests) |
 | `npm run test:coverage` | Vitest with v8 coverage report + thresholds |
 | `npm run icons` | Regenerate `public/icons/*.png` from `public/icon.svg` (needs `sharp`) |
 | `npm run cf:dev` | `wrangler pages dev` — static shell + Functions + local D1 |
@@ -266,6 +268,25 @@ With a key armed, each op is one structured GenAI pass (`genDeskAnalysis`) throu
 3. **One LLM pass.** `resolveTurn` sends the case posture, turn history, current action, and the verification result to the configured provider in a single structured call (`jsonSchema` / `response_format: json_object` / JSON directive), and maps the reply into a typed `TurnResolution`.
 4. **Verdict + state.** `useTrial`'s reducer clamps judicial favor to `[0, 100]`, appends the `TurnRecord`, and terminates the trial on `trial_terminated`, max turns, or favor hitting an extreme.
 5. **Docket.** `buildSessionSummary` separates admitted precedents from exposure points (including *unverified / fabricated authority* flags and bench warnings) and feeds the export modal's markdown / print / share.
+
+---
+
+## Daily credits & fair access
+
+Overrool stays free, but a fair-use meter protects the free tiers from being jacked to zero.
+
+- A **daily credit allowance resets at midnight UTC** — 100 credits/day per identity, scoped by BYOK config (`src/core/meter.ts`). A trial run costs **10 credits**, a Legal Desk model operation costs **2 credits**; the deterministic Local Judge / Local Rules Analyst still run free for everyone.
+- On **BYOK** the meter is a an honest client-side advisory wallet guard — the real ceiling is the player's own provider quota, since calls run browser→provider and never pass through a server Overrool owns.
+- The **hosted (admin-only) `/api/llm`** path is enforced authoritatively server-side in D1 (`functions/lib/db.ts`): the same daily cap **plus** a per-minute burst limit (8 calls/60s) and a two-model allowlist. It responds `429 rate_daily` / `429 rate_burst`.
+- **Monetization path.** The `credit_overrides` table (`d1/schema.sql`) lets the operator raise a single account's daily cap later (e.g. for a paid tier) without touching the app logic. There is no purchase UI or endpoint yet — this is the reserved knob, not a live sale.
+
+## Prompt-injection defence
+
+Every model-facing prompt is hardened against prompt hijacking, LLM-jacking, and LLM-spoofing (`src/core/guardrails.ts`):
+
+- **A SECURITY CONTRACT** is prepended to every system prompt (trial `SYSTEM_INSTRUCTION`, opposing-counsel persona, Legal Desk system, docket enrichment): attacker/user content is never instructions, the contract outranks any embedded instruction, and injected instructions are treated as data.
+- **Untrusted-data sandboxing.** All attacker- or model-derived content (player actions, opposing briefs, pasted documents, prior-transcript context) is wrapped in explicit `<untrusted-data>…</untrusted-data>` boundary tags before reaching the model, so prompt-injected text cannot re-scope the system prompt or escape for actions.
+- **Network discipline** (from BYOK storage security): 4-provider origin allowlist before any request, structured-JSON-only replies, and typed parsing — a hijacked model cannot exfiltrate anywhere but an allowlisted provider, and its output still has to pass the JSON contract.
 
 ---
 

@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
 import { makeFakeDb } from './d1-fake';
-import { clearFailedLogins, loginLock, LOGIN_WINDOW_MINUTES, recordFailedLogin } from './db';
+import { clearFailedLogins, loginLock, LOGIN_WINDOW_MINUTES, meterCheckAndCharge, METER_BURST_LIMIT, recordFailedLogin } from './db';
 
 const EMAIL = 'deputy@example.com';
 const MIN = 60 * 1000;
@@ -52,5 +52,37 @@ describe('login backoff helpers', () => {
     expect((await loginLock(db, EMAIL)).locked).toBe(true);
     await clearFailedLogins(db, EMAIL);
     expect(await loginLock(db, EMAIL)).toEqual({ locked: false, retryAfterSeconds: 0 });
+  });
+});
+
+describe('hosted-inference credit meter', () => {
+  it('allows charged calls up to the cap and then refuses daily', async () => {
+    const { db, setOverride } = makeFakeDb();
+    setOverride('u-1', 5);
+    for (let i = 0; i < 5; i++) {
+      const ok = await meterCheckAndCharge(db, 'u-1', 1);
+      expect(ok.allowed).toBe(true);
+    }
+    const capped = await meterCheckAndCharge(db, 'u-1', 1);
+    expect(capped.allowed).toBe(false);
+    expect(capped.kind).toBe('daily');
+  });
+
+  it('enforces a per-minute burst limit regardless of the daily cap', async () => {
+    const { db, setOverride } = makeFakeDb();
+    setOverride('u-2', 10_000);
+    for (let i = 0; i < METER_BURST_LIMIT; i++) {
+      expect((await meterCheckAndCharge(db, 'u-2', 1)).allowed).toBe(true);
+    }
+    const burst = await meterCheckAndCharge(db, 'u-2', 1);
+    expect(burst.allowed).toBe(false);
+    expect(burst.kind).toBe('burst');
+  });
+
+  it('falls back to the default cap when no override exists', async () => {
+    const { db } = makeFakeDb();
+    const first = await meterCheckAndCharge(db, 'u-3', 1);
+    expect(first.allowed).toBe(true);
+    expect(first.remaining).toBe(99);
   });
 });

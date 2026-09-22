@@ -1,5 +1,6 @@
 import type { LLMConfig } from '../types/legal';
 import { requestChat } from './providerCall';
+import { INJECTION_DEFENCE, sandboxUntrusted } from './guardrails';
 
 /**
  * LEGAL DESK ENGINE — document-understanding operations on the player's own
@@ -60,13 +61,15 @@ export interface DeskAnalysis {
   result: DeskResult;
 }
 
-const SYS = [
+export const DESK_SYSTEM = [
+  INJECTION_DEFENCE,
+  '',
   'You are a careful legal-english analyst for people without legal training.',
   'You only ever reason from the document given — never invent facts, clauses, or citations.',
   'Translate legalese into plain speech, surface obligations, risks and inconsistencies, and produce questions a person should take to a qualified lawyer.',
   'This is educational assistance, not legal advice.',
   'Respond with ONLY a single JSON object — no markdown, no preamble.',
-].join(' ');
+].join('\n');
 
 const OP_SHAPES: Record<DeskOp, string> = {
   simplify:
@@ -83,16 +86,30 @@ const OP_SHAPES: Record<DeskOp, string> = {
 
 function opUserPrompts(op: DeskOp, doc: string, opts?: { question?: string; docB?: string }): string {
   const base = (extra: string) =>
-    `DOCUMENT:\n"""\n${doc}\n"""\n\n${extra}\n\nReply with a single JSON object exactly shaped like:\n${OP_SHAPES[op]}`;
+    [
+      'DOCUMENT TO ANALYSE:',
+      ...sandboxUntrusted('Pasted document', doc).split('\n'),
+      '',
+      extra,
+      '',
+      'Reply with a single JSON object exactly shaped like:',
+      OP_SHAPES[op],
+    ].join('\n');
   switch (op) {
     case 'simplify':
       return base('Explain this document as if to a smart 15-year-old who must decide whether to sign it. Simplify every clause, name the obligations, flag the traps, and keep the glossary to the terms that actually matter here.');
     case 'risks':
       return base('Audit this document. Extract every clause that imposes an obligation, creates risk or exposure, contradicts another part, or contains an opportunity, quoting the exact sentence for each. Sort findings by severity descending.');
     case 'compare':
-      return base(`Compare the following document with the SECOND document below and list the material differences.\n\nSECOND DOCUMENT:\n"""\n${opts?.docB ?? ''}\n"""`);
+      return base(
+        [
+          'Compare the FIRST document above with the SECOND document below and list the material differences.',
+          'SECOND DOCUMENT TO ANALYSE:',
+          ...sandboxUntrusted('Second document', opts?.docB ?? '').split('\n'),
+        ].join('\n'),
+      );
     case 'ask':
-      return base(`Answer the reader's question using ONLY this document.\n\nQUESTION: ${opts?.question ?? ''}`);
+      return base(`Answer the reader's question using ONLY the document above.\n\nQUESTION: ${sandboxUntrusted('Reader question', opts?.question ?? '')}`);
     case 'lawyer':
       return base('Prepare the reader to meet a lawyer about this document: the questions most likely to change their decision, and what papers to bring.');
   }
@@ -113,7 +130,7 @@ export function extractJson(text: string): unknown | null {
 export async function genDeskAnalysis(config: LLMConfig, op: DeskOp, doc: string, opts?: { question?: string; docB?: string }): Promise<DeskResult> {
   const out = await requestChat({
     config,
-    system: SYS,
+    system: DESK_SYSTEM,
     user: opUserPrompts(op, doc, opts),
     temperature: 0.2,
     maxTokens: 1500,

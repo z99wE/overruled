@@ -36,6 +36,20 @@ interface PasswordResetRow {
   used_at: string | null;
 }
 
+interface MeterRow {
+  account_id: string;
+  day: string;
+  credits: number;
+  calls: number;
+  burst_at: number;
+  burst_count: number;
+}
+
+interface CreditOverrideRow {
+  account_id: string;
+  daily_cap: number;
+}
+
 /**
  * A tiny in-memory D1 stand-in that understands exactly the queries in db.ts.
  * Good enough to exercise the auth/run handlers end-to-end in tests.
@@ -47,6 +61,12 @@ export function makeFakeDb() {
   const loginAttempts: LoginAttemptRow[] = [];
   const recoveryCodes: RecoveryCodeRow[] = [];
   const passwordResets: PasswordResetRow[] = [];
+  const meter = new Map<string, MeterRow>();
+  const creditOverrides = new Map<string, CreditOverrideRow>();
+
+  const setOverride = (accountId: string, dailyCap: number): void => {
+    creditOverrides.set(accountId, { account_id: accountId, daily_cap: dailyCap });
+  };
 
   const db: D1Database = {
     prepare(sql: string): D1PreparedStatement {
@@ -90,6 +110,16 @@ export function makeFakeDb() {
             if (!r) return null;
             const u = users.find((x) => x.id === r!.user_id);
             return (u ?? null) as T | null;
+          }
+          if (sql.includes('FROM credit_overrides WHERE account_id')) {
+            const override = creditOverrides.get(String(bound[0]));
+            return (override ? { daily_cap: override.daily_cap } : null) as T | null;
+          }
+          if (sql.includes('FROM meter WHERE account_id') && sql.includes('AND day')) {
+            const row = meter.get(`${String(bound[0])}:${String(bound[1])}`);
+            return (row
+              ? { credits: row.credits, burst_at: row.burst_at, burst_count: row.burst_count }
+              : null) as T | null;
           }
           return null as T | null;
         },
@@ -228,6 +258,27 @@ export function makeFakeDb() {
             u.iterations = Number(iterations);
             return { meta: { changes: 1 } };
           }
+          if (sql.startsWith('INSERT INTO meter')) {
+            const [accountId, day, cost, window, nextBurst] = bound;
+            const key = `${String(accountId)}:${String(day)}`;
+            const prev = meter.get(key);
+            if (prev) {
+              prev.credits += Number(cost);
+              prev.calls += 1;
+              prev.burst_at = Number(window);
+              prev.burst_count = Number(nextBurst);
+            } else {
+              meter.set(key, {
+                account_id: String(accountId),
+                day: String(day),
+                credits: Number(cost),
+                calls: 1,
+                burst_at: Number(window),
+                burst_count: Number(nextBurst),
+              });
+            }
+            return { meta: { changes: 1 } };
+          }
           return { meta: { changes: 0 } };
         },
       };
@@ -236,7 +287,7 @@ export function makeFakeDb() {
   };
 
   const counts = () => ({ users: users.length, sessions: sessions.length, runs: runs.size, loginAttempts: loginAttempts.length });
-  return { db, counts };
+  return { db, counts, setOverride, meterStats: () => new Map(meter) };
 }
 
 export type FakeDb = ReturnType<typeof makeFakeDb>;

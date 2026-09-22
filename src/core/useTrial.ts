@@ -12,6 +12,7 @@ import { resolveTurn, sendOpponentBrief } from './llmOrchestrator';
 import { buildSessionSummary } from './docket';
 import { createKeyManager } from './storage';
 import { pickOpponentCard, resolveTurnSparring } from '../game/localJudge';
+import { CREDIT_COSTS, spendCredits } from './meter';
 
 export type TrialPhase = 'awaiting' | 'resolving' | 'verdict' | 'docket';
 
@@ -36,6 +37,12 @@ type TrialAction =
   | { type: 'NEXT_TURN'; scenario: ScenarioBundle }
   | { type: 'REVERT' }
   | { type: 'END_TRIAL'; scenario: ScenarioBundle };
+
+function newTrialId(): string {
+  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
 
 function flushSummary(scenario: ScenarioBundle, state: TrialState): SessionSummary {
   return buildSessionSummary({
@@ -133,11 +140,16 @@ export function useTrial(scenario: ScenarioBundle, index: CitationIndex): TrialC
   indexRef.current = index;
   const busyRef = useRef(false);
   const kmRef = useRef(createKeyManager());
+  // One toll per trial run, charged against the daily credit meter. Reseeded on
+  // restart so a brand-new trial pays again (and a re-run of the SAME id in a
+  // day is never double-billed).
+  const trialIdRef = useRef(newTrialId());
 
   const stateRef = useRef(state);
   stateRef.current = state;
 
   useEffect(() => {
+    trialIdRef.current = newTrialId();
     dispatch({ type: 'START', scenario });
   }, [scenario.id]);  
 
@@ -199,6 +211,12 @@ export function useTrial(scenario: ScenarioBundle, index: CitationIndex): TrialC
       // AGENTIC WIRING, CALL 1: the opponent agent strikes FIRST, with the trial
       // state pushed into their context. If this call fails, the trial survives —
       // the strike degrades to the persona's standing attack theme.
+      const toll = spendCredits(CREDIT_COSTS.trial, `trial:${trialIdRef.current}`);
+      if (!toll.ok) {
+        throw new Error(
+          `Daily credit limit reached (${toll.used}/${toll.cap} used). The free keyless bench still rules instantly — clear your key, or start a new trial tomorrow.`,
+        );
+      }
       let opposingBrief;
       try {
         opposingBrief = await sendOpponentBrief({
@@ -282,6 +300,7 @@ export function useTrial(scenario: ScenarioBundle, index: CitationIndex): TrialC
   }, []);
 
   const restart = useCallback(() => {
+    trialIdRef.current = newTrialId();
     dispatch({ type: 'START', scenario: scenarioRef.current });
   }, []);
 

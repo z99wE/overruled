@@ -1,9 +1,15 @@
 import { json, methodNotAllowed, readJson } from '../lib/http';
 import { getSessionUser } from '../lib/guard';
+import { meterCheckAndCharge } from '../lib/db';
 import { AppEnv } from '../lib/d1';
 
 /** Free-tier Workers AI chat model. Accounts without hosted access keep using BYO keys. */
 export const HOSTED_MODEL = '@cf/meta/llama-3.1-8b-instruct';
+/** Only these model ids are ever accepted from a client — no model smuggling. */
+export const HOSTED_MODEL_ALLOWLIST: ReadonlySet<string> = new Set([
+  HOSTED_MODEL,
+  '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
+]);
 const MAX_TOKENS = 4096;
 
 interface LlmRequest extends Record<string, unknown> {
@@ -58,9 +64,28 @@ export async function onRequestPost(context: { request: Request; env: AppEnv }):
     return json({ error: { code: 'hosted_unconfigured', message: 'Hosted inference is not configured on this deployment yet.' } }, 503);
   }
 
+  // Authoritative capped metering: per-account daily cap + per-minute burst so
+  // hosted inference can never be jacked into exhausting the shared queue.
+  const meter = await meterCheckAndCharge(context.env.DB, user.id, 1);
+  if (!meter.allowed) {
+    return json(
+      {
+        error: {
+          code: meter.kind === 'burst' ? 'rate_burst' : 'rate_daily',
+          message:
+            meter.kind === 'burst'
+              ? 'Hosted-inference burst limit reached — wait a minute and try again.'
+              : 'Daily hosted-inference allowance reached (100 model calls). It resets at midnight UTC; use your own key meanwhile.',
+        },
+      },
+      429,
+    );
+  }
+
   const system = body.system;
   const userContent = body.jsonSchema !== undefined ? `${body.user}\n\nRespond ONLY with a single JSON object.` : body.user;
-  const model = typeof body.model === 'string' && body.model.trim() ? body.model.trim() : HOSTED_MODEL;
+  const requested = typeof body.model === 'string' ? body.model.trim() : '';
+  const model = HOSTED_MODEL_ALLOWLIST.has(requested) ? requested : HOSTED_MODEL;
   const input = compactRecord({
     messages: [
       { role: 'system', content: system },

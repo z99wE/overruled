@@ -33,6 +33,11 @@ export function setByokScope(scope: string): void {
   activeScope = scope;
 }
 
+/** Current identity scope — also used by the daily credit meter. */
+export function activeByokScope(): string {
+  return activeScope;
+}
+
 function configKey(scope: string): string {
   return `overrool.byok.${scope}.config`;
 }

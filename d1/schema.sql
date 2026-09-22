@@ -52,3 +52,28 @@ CREATE TABLE IF NOT EXISTS password_resets (
   used_at    TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_resets_user ON password_resets(user_id);
+
+-- Hosted-inference credit meter (authoritative, server-side). Rows keyed by
+-- account + UTC day: cumulative credits/calls plus a per-minute burst counter.
+-- Enforced in /api/llm so the admin-only hosted surface can never be jacked
+-- into exhausting the shared inference queue.
+CREATE TABLE IF NOT EXISTS meter (
+  account_id  TEXT NOT NULL,
+  day         TEXT NOT NULL,
+  credits     INTEGER NOT NULL DEFAULT 0,
+  calls       INTEGER NOT NULL DEFAULT 0,
+  burst_at    INTEGER NOT NULL DEFAULT 0,
+  burst_count INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (account_id, day)
+);
+CREATE INDEX IF NOT EXISTS idx_meter_day ON meter(day);
+
+-- Monetization knob: raise (or lower) a single account's daily credit cap.
+-- Default when a row is absent is METER_DAILY_CAP (100) in functions/lib/db.ts.
+--   INSERT INTO credit_overrides (account_id, daily_cap, updated_at)
+--   VALUES ('<user-id>', 500, strftime('%Y-%m-%dT%H:%M:%fZ','now'));
+CREATE TABLE IF NOT EXISTS credit_overrides (
+  account_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  daily_cap  INTEGER NOT NULL,
+  updated_at TEXT NOT NULL
+);
