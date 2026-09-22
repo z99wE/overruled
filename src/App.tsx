@@ -191,6 +191,7 @@ export function App() {
         <Landing
           cases={libraryRef.current?.payload.corpus.cases ?? []}
           onPlay={() => setScreen('home')}
+          onOpenDesk={() => setDeskOpen(true)}
           accountEmail={user?.email ?? null}
           onOpenAccount={() => openAccount('signup')}
         />

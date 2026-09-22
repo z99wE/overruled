@@ -54,18 +54,18 @@ export function CardTable({ stage, playerCard, opponentCard, winner, record, cli
         </div>
       ) : (
         <div key={replayKey} className="absolute inset-0 z-10">
-          {/* OPPONENT'S counter-card: drops face-down, flips at verdict */}
+          {/* OPPONENT'S counter-card: drops in face-down, flips over at verdict */}
           {opponentCard && (
             <div className="tbl-deal-opp absolute left-1/2 top-1">
               <div className={`${oppWon ? 'tbl-opp-win' : oppFlipped ? 'tbl-opp-lose' : ''}`}>
-                <div className={`${oppFlipped ? 'tbl-flip-in' : ''}`}>
-                  <GameCard card={opponentCard} size="sm" faceDown={!oppFlipped} />
+                <div className="flex flex-col items-center">
+                  <GameCard card={opponentCard} size="sm" flipMode="toggled" faceDown={!oppFlipped} />
+                  {oppFlipped && !oppWon && (
+                    <span className="block pt-1 text-center font-mono text-[8px] uppercase tracking-widest text-cream/35">
+                      Counter-authority dismissed
+                    </span>
+                  )}
                 </div>
-                {oppFlipped && !oppWon && (
-                  <span className="block pt-1 text-center font-mono text-[8px] uppercase tracking-widest text-cream/35">
-                    Counter-authority dismissed
-                  </span>
-                )}
               </div>
             </div>
           )}
@@ -87,14 +87,14 @@ export function CardTable({ stage, playerCard, opponentCard, winner, record, cli
           {/* PLAYER'S card: deals up from the defence rail */}
           {hasPlayer ? (
             <div className={`tbl-deal-self absolute bottom-1 left-1/2 ${playerWon ? 'tbl-player-win' : stage === 'verdict' ? 'tbl-player-lose' : ''}`}>
-              <div className="transition-transform">
-                <GameCard card={playerCard!} size="sm" faceDown={false} />
+              <div className="flex flex-col items-center">
+                <GameCard card={playerCard!} size="sm" flipMode="both" flipDelay={260} />
+                {playerWon && (
+                  <span className="block pt-1 text-center font-mono text-[8px] uppercase tracking-widest text-chip-gold">
+                    Authority carried the point
+                  </span>
+                )}
               </div>
-              {playerWon && (
-                <span className="block pt-1 text-center font-mono text-[8px] uppercase tracking-widest text-chip-gold">
-                  Authority carried the point
-                </span>
-              )}
             </div>
           ) : (
             <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 flex-col items-center">

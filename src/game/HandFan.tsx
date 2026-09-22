@@ -81,6 +81,8 @@ export function HandFan({ cards, playedIds, selectedId, active, onSelect, pot, s
                 playable={playable}
                 disabled={!playable || (selectedId !== null && !selected)}
                 onClick={() => onSelect(c.id)}
+                flipMode="both"
+                flipDelay={i * 70 + 160}
                 label={playable ? `Play ${c.caseName}` : `${c.caseName} — card spent`}
               />
             </div>

@@ -1,7 +1,19 @@
+import type { CSSProperties } from 'react';
 import { Check, ExternalLink } from 'lucide-react';
 import { authorityWeight, domainSuit, faceOf, JURISDICTION_CODE, type CardFaceLike } from './cardMeta';
 
 export type GameCardSize = 'sm' | 'md' | 'lg';
+
+/**
+ * flipMode renders the card as a real two-sided playing card.
+ * - 'both': deals in face-down from the rail and flips face-up on landing
+ *   (used for hand cards and the defence-card deal), then any later faceDown
+ *   changes are true flips via transition (a played card turns over, for
+ *   example).
+ * - 'toggled': no deal animation — starts in whatever faceDown says and flips
+ *   live when it changes (the opponent's counter-card reveal).
+ */
+export type GameCardFlipMode = 'both' | 'toggled';
 
 interface GameCardProps {
   card: CardFaceLike;
@@ -14,6 +26,8 @@ interface GameCardProps {
   onClick?: () => void;
   showSource?: boolean;
   label?: string;
+  flipMode?: GameCardFlipMode;
+  flipDelay?: number;
 }
 
 const SIZE: Record<GameCardSize, { w: string; hg: string; name: string; ratio: string }> = {
@@ -22,10 +36,12 @@ const SIZE: Record<GameCardSize, { w: string; hg: string; name: string; ratio: s
   lg: { w: 'w-28', hg: 'aspect-[5/7]', name: 'text-[13px]', ratio: 'line-clamp-4 text-[10px]' },
 };
 
-function BackFace({ size }: { size: GameCardSize }) {
+function BackFace({ burned = false }: { burned?: boolean }) {
   return (
     <div
-      className={`${SIZE[size].w} ${SIZE[size].hg} relative overflow-hidden rounded-lg border-2 border-ink bg-gradient-to-b from-felt-500 via-felt-700 to-felt-900`}
+      className={`relative h-full w-full overflow-hidden rounded-lg border-2 border-ink bg-gradient-to-b from-felt-500 via-felt-700 to-felt-900 ${
+        burned ? 'grayscale opacity-45' : ''
+      }`}
       aria-hidden
     >
       <div
@@ -52,90 +68,122 @@ export function GameCard({
   onClick,
   showSource = false,
   label,
+  flipMode,
+  flipDelay,
 }: GameCardProps) {
   const face = faceOf(card);
   const weight = authorityWeight(face.court);
   const suit = face.domain ? domainSuit(face.domain) : '◆';
   const jTag = face.jurisdiction ? JURISDICTION_CODE[face.jurisdiction] : 'LAW';
   const s = SIZE[size];
+  const faceUp = !faceDown && !burned;
 
-  if (faceDown || burned) {
+  const faceContent = (
+    <button
+      type="button"
+      aria-label={label ?? `Play ${face.caseName}`}
+      aria-pressed={selected}
+      disabled={disabled || !playable}
+      onClick={onClick}
+      className={[
+        'group relative block h-full w-full overflow-hidden rounded-lg border-2 border-ink bg-paper text-left shadow-[0_4px_0_0_var(--color-ink)] transition-all duration-200',
+        playable && !disabled ? 'cursor-pointer hover:-translate-y-1 hover:shadow-[0_7px_0_0_var(--color-ink)]' : 'cursor-default',
+        selected ? 'ring-4 ring-chip-gold shadow-[0_7px_0_0_var(--color-ink)]' : '',
+      ].join(' ')}
+    >
+      {/* Corner pips */}
+      <span className="pointer-events-none absolute left-1 top-1 flex items-center gap-0.5 font-mono text-[9px] font-bold text-chip-gold" style={{ textShadow: '1px 1px 0 var(--color-ink)' }}>
+        {suit}
+        <span className="text-[7px]">{jTag}</span>
+      </span>
+      <span className="pointer-events-none absolute bottom-1 right-1 rotate-180 font-mono text-[9px] font-bold text-chip-gold" style={{ textShadow: '1px 1px 0 var(--color-ink)' }}>
+        {suit}
+      </span>
+
+      <div className="flex h-full flex-col">
+        <div className="flex items-center justify-between gap-1 bg-poker-red px-1.5 py-1">
+          <span className="truncate font-mono text-[7px] text-cream">{face.citation}</span>
+        </div>
+        <div className="flex flex-1 flex-col gap-1 p-1.5">
+          <p className={`${s.name} font-sans font-bold leading-tight text-ink`}>{face.caseName}</p>
+          <p className="font-mono text-[6px] uppercase tracking-wide text-ink/50">
+            {face.court} · {face.year}
+          </p>
+          <p className={`${s.ratio} leading-snug text-ink/70`}>{face.ratio}</p>
+          <div className="mt-auto flex items-center justify-between gap-1 pt-1">
+            <span className="flex gap-0.5" aria-label={`Authority weight ${weight} of 5`}>
+              {[1, 2, 3, 4, 5].map((n) => (
+                <span
+                  key={n}
+                  className={`h-1 w-2 rounded-sm ${n <= weight ? 'bg-chip-gold' : 'bg-ink/15'}`}
+                />
+              ))}
+            </span>
+            <span className="font-mono text-[7px] text-ink/40">{face.citation.slice(0, 10)}</span>
+          </div>
+        </div>
+      </div>
+
+      {selected && (
+        <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-ink bg-chip-gold text-ink">
+          <Check className="h-3 w-3" strokeWidth={3.5} />
+        </span>
+      )}
+    </button>
+  );
+
+  const sourceBadge =
+    showSource && card.sourceUrl ? (
+      <a
+        href={card.sourceUrl}
+        target="_blank"
+        rel="noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        aria-label={`Read the full judgment of ${face.caseName}`}
+        className="absolute -right-1.5 -top-2 z-10 flex items-center gap-0.5 rounded-full border border-ink bg-paper px-1.5 py-0.5 font-display text-[7px] tracking-wider text-ink transition-colors hover:bg-chip-gold"
+      >
+        <ExternalLink className="h-2 w-2" strokeWidth={3} /> FULL
+      </a>
+    ) : null;
+
+  // Non-animated path (duel decks, plain display): unchanged behaviour.
+  if (!flipMode) {
+    if (!faceUp) {
+      return (
+        <div className={`${s.w} ${s.hg} transition-all duration-300 ${burned ? 'grayscale opacity-45' : ''}`}>
+          <BackFace burned={burned} />
+          {burned && (
+            <p className="mt-0.5 text-center font-mono text-[7px] uppercase tracking-widest text-cream/40">SPENT</p>
+          )}
+        </div>
+      );
+    }
     return (
-      <div className={`${s.w} ${s.hg} transition-all duration-300 ${burned ? 'grayscale opacity-45' : ''}`}>
-        <BackFace size={size} />
-        {burned && (
-          <p className="mt-0.5 text-center font-mono text-[7px] uppercase tracking-widest text-cream/40">SPENT</p>
-        )}
+      <div className="relative transition-transform duration-200">
+        {faceContent}
+        {sourceBadge}
       </div>
     );
   }
 
   return (
-    <div className="relative transition-transform duration-200">
-      <button
-        type="button"
-        aria-label={label ?? `Play ${face.caseName}`}
-        aria-pressed={selected}
-        disabled={disabled || !playable}
-        onClick={onClick}
-        className={[
-          'group relative block overflow-hidden rounded-lg border-2 border-ink bg-paper text-left shadow-[0_4px_0_0_var(--color-ink)] transition-all duration-200',
-          playable && !disabled ? 'cursor-pointer hover:-translate-y-1 hover:shadow-[0_7px_0_0_var(--color-ink)]' : 'cursor-default',
-          selected ? 'ring-4 ring-chip-gold shadow-[0_7px_0_0_var(--color-ink)]' : '',
-          burned ? 'opacity-40 saturate-0' : '',
-        ].join(' ')}
-      >
-        {/* Corner pips */}
-        <span className="pointer-events-none absolute left-1 top-1 flex items-center gap-0.5 font-mono text-[9px] font-bold text-chip-gold" style={{ textShadow: '1px 1px 0 var(--color-ink)' }}>
-          {suit}
-          <span className="text-[7px]">{jTag}</span>
-        </span>
-        <span className="pointer-events-none absolute bottom-1 right-1 rotate-180 font-mono text-[9px] font-bold text-chip-gold" style={{ textShadow: '1px 1px 0 var(--color-ink)' }}>
-          {suit}
-        </span>
-
-        <div className="flex h-full flex-col">
-          <div className="flex items-center justify-between gap-1 bg-poker-red px-1.5 py-1">
-            <span className="truncate font-mono text-[7px] text-cream">{face.citation}</span>
-          </div>
-          <div className="flex flex-1 flex-col gap-1 p-1.5">
-            <p className={`${s.name} font-sans font-bold leading-tight text-ink`}>{face.caseName}</p>
-            <p className="font-mono text-[6px] uppercase tracking-wide text-ink/50">
-              {face.court} · {face.year}
-            </p>
-            <p className={`${s.ratio} leading-snug text-ink/70`}>{face.ratio}</p>
-            <div className="mt-auto flex items-center justify-between gap-1 pt-1">
-              <span className="flex gap-0.5" aria-label={`Authority weight ${weight} of 5`}>
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <span
-                    key={n}
-                    className={`h-1 w-2 rounded-sm ${n <= weight ? 'bg-chip-gold' : 'bg-ink/15'}`}
-                  />
-                ))}
-              </span>
-              <span className="font-mono text-[7px] text-ink/40">{face.citation.slice(0, 10)}</span>
-            </div>
-          </div>
+    <div
+      className={`card3d relative ${s.w} ${s.hg} ${flipMode === 'both' ? 'card3d-deal' : ''}`}
+      style={{ '--flip-delay': flipDelay ? `${flipDelay}ms` : '0ms' } as CSSProperties}
+    >
+      <div className={`card3d-inner ${faceUp ? 'faceUp' : ''}`}>
+        <div className="card3d-side card3d-back">
+          <BackFace burned={burned} />
         </div>
-
-        {selected && (
-          <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-ink bg-chip-gold text-ink">
-            <Check className="h-3 w-3" strokeWidth={3.5} />
-          </span>
-        )}
-      </button>
-
-      {showSource && card.sourceUrl && (
-        <a
-          href={card.sourceUrl}
-          target="_blank"
-          rel="noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          aria-label={`Read the full judgment of ${face.caseName}`}
-          className="absolute -right-1.5 -top-2 z-10 flex items-center gap-0.5 rounded-full border border-ink bg-paper px-1.5 py-0.5 font-display text-[7px] tracking-wider text-ink transition-colors hover:bg-chip-gold"
-        >
-          <ExternalLink className="h-2 w-2" strokeWidth={3} /> FULL
-        </a>
+        <div className="card3d-side card3d-front">
+          {faceContent}
+          {sourceBadge}
+        </div>
+      </div>
+      {burned && (
+        <p className="relative z-10 mt-0.5 text-center font-mono text-[7px] uppercase tracking-widest text-cream/50">
+          SPENT
+        </p>
       )}
     </div>
   );
