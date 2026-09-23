@@ -9,7 +9,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'text-summary'],
-      include: ['src/**/*.{ts,tsx}'],
+      include: ['src/**/*.{ts,tsx}', 'functions/lib/**/*.ts'],
       exclude: [
         'src/main.tsx',
         'src/vite-env.d.ts',
@@ -17,7 +17,7 @@ export default defineConfig({
         'src/**/*.test.tsx',
       ],
       thresholds: {
-        statements: 40,
+        statements: 44,
         branches: 28,
         functions: 34,
         lines: 40,
