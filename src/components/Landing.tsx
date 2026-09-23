@@ -1,3 +1,19 @@
+const TICKER_CASES = [
+  { hold: "A crested macaque cannot hold a copyright in the selfie it took.", cite: "Naruto v. Slater, 888 F.3d 418 (9th Cir. 2018)", harm: "harmless" },
+  { hold: "A Nebraska man sued God over the weather; the case was dismissed for failure to effect service on a defendant with no serviceable address.", cite: "real docket, dismissed for want of service", harm: "harmless" },
+];
+function Ticker() {
+  return (
+    <div className="overflow-hidden border-y border-ink bg-felt-900/80 py-2" aria-label="Real rulings the law affects oddly">
+      <div className="flex whitespace-nowrap font-mono text-[11px] text-cream/70 animate-[ticker_30s_linear_infinite]">
+        {TICKER_CASES.concat(TICKER_CASES).map((c, i) => (
+          <span key={i} className="mx-6">{c.hold} — {c.cite}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 import { useMemo } from 'react';
 import type { ReactNode } from 'react';
 import type { Jurisdiction, PrecedentCard } from '../types/legal';
@@ -268,6 +284,8 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
       </header>
 
       <Section id="desk" title="Your documents, in plain language.">
+        {/* ticker */}
+        <Ticker />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {DESK_PILLARS.map((p, i) => (
             <div key={p.head} className="rounded-xl border-2 border-ink bg-felt-900/70 p-5">
