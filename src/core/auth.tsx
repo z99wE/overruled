@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { RunState } from '../game/runStore';
 import { byokScope, setByokScope } from './storage';
+import { authHeaders, persistSessionToken } from './session';
 
 export interface AuthUser {
   email: string;
@@ -36,6 +37,7 @@ type ApiResult = {
   user?: AuthUser;
   error?: string;
   retryAfterSeconds?: number;
+  sessionToken?: string;
   recoveryCodes?: string[];
   newsletterOptin?: boolean;
   emailConfigured?: boolean;
@@ -44,8 +46,11 @@ type ApiResult = {
 };
 
 async function postJson(path: string, body: unknown): Promise<ApiResult> {
-  const res = await fetch(path, { method: 'POST', headers: JSON_HEADERS, body: JSON.stringify(body) });
+  const headers = { ...JSON_HEADERS, ...((await authHeaders()) ?? {}) };
+  const res = await fetch(path, { method: 'POST', headers, body: JSON.stringify(body) });
   const data = (await res.json().catch(() => ({}))) as ApiResult;
+  const token = data.sessionToken ?? ((data as { sessionToken?: string }).sessionToken);
+  if (typeof token === 'string' && token) await persistSessionToken(token);
   if (!res.ok) return { error: data.error ?? `Request failed (${res.status}).`, retryAfterSeconds: data.retryAfterSeconds };
   return data;
 }

@@ -49,7 +49,7 @@ function pickText(result: unknown): string {
 }
 
 export async function onRequestPost(context: { request: Request; env: AppEnv }): Promise<Response> {
-  const user = await getSessionUser(context.env, context.request.headers.get('cookie'));
+  const user = await getSessionUser(context.env, context.request);
   if (!user) return json({ error: { code: 'unauthorized', message: 'Sign in to use hosted inference.' } }, 401);
   if (user.role !== 'admin') {
     return json({ error: { code: 'forbidden', message: 'Hosted inference is reserved for the workspace administrator. Provide your own API key instead.' } }, 403);

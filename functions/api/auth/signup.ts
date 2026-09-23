@@ -59,7 +59,11 @@ export async function onRequestPost(context: { request: Request; env: AppEnv }):
   }
 
   return new Response(
-    JSON.stringify({ user: { email, newsletterOptin: newsletter, createdAt: new Date().toISOString() }, recoveryCodes }),
+    JSON.stringify({
+      user: { email, createdAt: new Date().toISOString(), role: 'user' },
+      recoveryCodes,
+      sessionToken: token,
+    }),
     {
       status: 201,
       headers: {

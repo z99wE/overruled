@@ -6,7 +6,7 @@ import type { AppEnv } from '../lib/d1';
 const MAX_RUN_BYTES = 400_000;
 
 export async function onRequestGet(context: { request: Request; env: AppEnv }): Promise<Response> {
-  const user = await getSessionUser(context.env, context.request.headers.get('cookie'));
+  const user = await getSessionUser(context.env, context.request);
   if (!user) return json({ error: 'Not signed in.' }, 401);
 
   const row = await getRun(context.env.DB, user.id);
@@ -22,7 +22,7 @@ export async function onRequestGet(context: { request: Request; env: AppEnv }): 
 }
 
 export async function onRequestPut(context: { request: Request; env: AppEnv }): Promise<Response> {
-  const user = await getSessionUser(context.env, context.request.headers.get('cookie'));
+  const user = await getSessionUser(context.env, context.request);
   if (!user) return json({ error: 'Not signed in.' }, 401);
 
   const body = await readJson(context.request);

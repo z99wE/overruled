@@ -8,7 +8,7 @@ import type { AppEnv } from '../lib/d1';
 // external email provider is involved (the briefing is delivered in-app).
 
 export async function onRequestPost(context: { request: Request; env: AppEnv }): Promise<Response> {
-  const user = await getSessionUser(context.env, context.request.headers.get('cookie'));
+  const user = await getSessionUser(context.env, context.request);
   if (!user) return json({ error: 'Not signed in.' }, 401);
 
   const body = await readJson(context.request);

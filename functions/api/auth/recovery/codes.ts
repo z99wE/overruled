@@ -10,7 +10,7 @@ import type { AppEnv } from '../../../lib/d1';
  * returned exactly once; only SHA-256 digests are stored.
  */
 export async function onRequestPost(context: { request: Request; env: AppEnv }): Promise<Response> {
-  const sessionUser = await getSessionUser(context.env, context.request.headers.get('cookie'));
+  const sessionUser = await getSessionUser(context.env, context.request);
   if (!sessionUser) {
     return json({ error: 'Not signed in.' }, 401);
   }

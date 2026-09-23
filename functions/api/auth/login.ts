@@ -50,7 +50,7 @@ export async function onRequestPost(context: { request: Request; env: AppEnv }):
   await createSession(context.env.DB, { tokenHash, userId: user.id, expiresAt });
 
   return new Response(
-    JSON.stringify({ user: { email: user.email, createdAt: user.created_at } }),
+    JSON.stringify({ user: { email: user.email, createdAt: user.created_at }, sessionToken: token }),
     {
       status: 200,
       headers: {
