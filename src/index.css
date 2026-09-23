@@ -366,3 +366,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .score-popup, .chip-piece, .screen-shake { animation: none !important; }
 }
+
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
