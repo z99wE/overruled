@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { ReactNode } from 'react';
 import type { Jurisdiction, PrecedentCard } from '../types/legal';
+import { MoltenMetal } from './MoltenMetal';
 
 interface LandingProps {
   cases: PrecedentCard[];
@@ -224,9 +225,33 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
         </div>
       </nav>
 
-      {/* ── Hero Section with Impressionist Museum Painting Framing ──── */}
-      <header id="top" className="mx-auto w-full max-w-6xl px-6 pb-16 pt-12 lg:pt-16">
-        <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+      {/* ── Hero Section with Molten Metal Shader & Impressionist Museum Framing ──── */}
+      <header id="top" className="relative mx-auto w-full max-w-6xl px-6 pb-16 pt-12 lg:pt-16 overflow-hidden">
+        {/* Molten Metal Shader Background */}
+        <div className="absolute inset-0 pointer-events-none opacity-30 z-0">
+          <MoltenMetal
+            color1="#fbbf24"
+            color2="#635bff"
+            color3="#f8fafc"
+            speed={0.25}
+            scale={3.5}
+            detail={3}
+            glow={1.4}
+            coreSize={0.08}
+            swirl={0.8}
+            fold={-0.18}
+            blackPoint={0.05}
+            brightness={1.2}
+            colorMode="molten"
+            grain={true}
+            grainIntensity={0.04}
+            mouseInteraction={true}
+            mouseStrength={0.25}
+            opacity={0.35}
+          />
+        </div>
+
+        <div className="relative z-10 grid gap-12 lg:grid-cols-12 lg:items-center">
           {/* Left Column: Headlines & Actions */}
           <div className="lg:col-span-7 text-left space-y-6">
             <h1 className="font-display text-4xl sm:text-6xl font-bold tracking-tight text-white leading-[1.08]">
