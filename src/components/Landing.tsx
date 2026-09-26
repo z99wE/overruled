@@ -209,25 +209,25 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
               </div>
             </div>
 
-            <div className="md:col-span-5 rounded-2xl bg-slate-900 p-6 text-white border border-slate-800 shadow-inner space-y-3">
-              <div className="font-mono text-xs font-bold text-amber-300">
+            <div className="md:col-span-5 rounded-3xl bg-slate-50/80 p-6 text-slate-900 border border-slate-200/90 shadow-xs space-y-3.5">
+              <div className="font-mono text-xs font-bold text-blue-700">
                 Real-Time Audit Capabilities
               </div>
-              <ul className="space-y-2 text-xs text-slate-300">
-                <li className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold">•</span>
+              <ul className="space-y-2.5 text-xs text-slate-600 font-medium">
+                <li className="flex items-center gap-2.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />
                   <span>Unilateral amendment trap detection</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold">•</span>
+                <li className="flex items-center gap-2.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />
                   <span>Penalty clause vs liquidated damages audit</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold">•</span>
+                <li className="flex items-center gap-2.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />
                   <span>Multi-version redline comparison</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold">•</span>
+                <li className="flex items-center gap-2.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />
                   <span>59 verified common law precedents</span>
                 </li>
               </ul>

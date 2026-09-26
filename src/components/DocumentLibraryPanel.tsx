@@ -37,11 +37,11 @@ export function DocumentLibraryPanel({ library, persist, onPick, target = 'A', p
 
   if (library.files.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-white/10 bg-slate-900/60 p-5 text-center">
-        <p className="text-[13px] text-slate-300">
+      <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-5 text-center shadow-xs">
+        <p className="text-[13px] text-slate-600 font-medium">
           No case files yet. Group a contract with its amendments and come back to it later.
         </p>
-        <button onClick={newFile} className="m3-btn m3-btn-primary px-4 py-1.5 text-xs font-semibold">
+        <button onClick={newFile} className="rounded-full bg-blue-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-blue-700 shadow-2xs cursor-pointer">
           Create Case File
         </button>
       </div>
@@ -49,24 +49,24 @@ export function DocumentLibraryPanel({ library, persist, onPick, target = 'A', p
   }
 
   return (
-    <div className="space-y-2 overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/60 p-2">
+    <div className="space-y-2 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50/50 p-2">
       {library.files.map((f: CaseFile) => {
         const docs = docsInFile(f.id, library);
         const open = openId === f.id;
         return (
-          <div key={f.id} className="rounded-xl border border-white/10 bg-slate-950/60">
+          <div key={f.id} className="rounded-xl border border-slate-200 bg-white shadow-2xs">
             <div className="flex items-center gap-1 p-1.5">
               <button
                 onClick={() => setOpenId(open ? null : f.id)}
-                className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
+                className="flex min-w-0 flex-1 items-center gap-1.5 text-left cursor-pointer"
                 aria-expanded={open}
               >
                 <span className="font-mono text-xs text-slate-400">{open ? '▼' : '▶'}</span>
-                <span className="truncate text-[13px] font-medium text-white">{f.name}</span>
-                <span className="shrink-0 font-mono text-[10px] text-slate-400">({docs.length})</span>
+                <span className="truncate text-[13px] font-bold text-slate-900">{f.name}</span>
+                <span className="shrink-0 font-mono text-[10px] text-slate-500">({docs.length})</span>
               </button>
               <label
-                className="cursor-pointer rounded px-2 py-0.5 text-xs font-mono text-slate-400 hover:text-amber-300"
+                className="cursor-pointer rounded px-2 py-0.5 text-xs font-mono font-bold text-blue-700 hover:text-blue-900"
                 title="Add a document to this case file"
               >
                 {busy ? '…' : '+ Add'}
@@ -86,7 +86,7 @@ export function DocumentLibraryPanel({ library, persist, onPick, target = 'A', p
                   const name = window.prompt('Rename case file', f.name);
                   if (name) persist(renameCaseFile(f.id, name, library));
                 }}
-                className="rounded px-1.5 py-1 font-mono text-[10px] text-slate-400 transition hover:text-white"
+                className="rounded px-1.5 py-1 font-mono text-[10px] text-slate-500 transition hover:text-slate-900 cursor-pointer"
                 title="Rename"
               >
                 Edit
@@ -97,7 +97,7 @@ export function DocumentLibraryPanel({ library, persist, onPick, target = 'A', p
                     persist(deleteCaseFile(f.id, library));
                   }
                 }}
-                className="rounded px-1.5 py-1 font-mono text-[10px] text-slate-400 transition hover:text-rose-300"
+                className="rounded px-1.5 py-1 font-mono text-[10px] text-slate-400 transition hover:text-rose-600 cursor-pointer"
                 title="Delete case file"
               >
                 Del
@@ -105,32 +105,32 @@ export function DocumentLibraryPanel({ library, persist, onPick, target = 'A', p
             </div>
 
             {open && (
-              <div className="space-y-1 border-t border-white/10 p-1.5">
-                {docs.length === 0 && <p className="px-1 py-1 text-[12px] text-slate-500">No documents yet — use + to add one.</p>}
+              <div className="space-y-1 border-t border-slate-100 p-1.5 bg-slate-50/50">
+                {docs.length === 0 && <p className="px-1 py-1 text-[12px] text-slate-400">No documents yet — use + to add one.</p>}
                 {docs.map((d) => (
                   <div
                     key={d.id}
                     className={`flex items-center gap-1.5 rounded-xl px-1.5 py-1 transition ${
-                      pickedId === d.id ? 'bg-amber-400/15' : 'hover:bg-slate-800'
+                      pickedId === d.id ? 'bg-blue-50 border border-blue-200' : 'hover:bg-slate-100'
                     }`}
                   >
-                    <button onClick={() => onPick(d)} className="min-w-0 flex-1 text-left" title={`Load into slot ${target}`}>
+                    <button onClick={() => onPick(d)} className="min-w-0 flex-1 text-left cursor-pointer" title={`Load into slot ${target}`}>
                       <DocChip name={d.name} kind={d.kind} />
                     </button>
-                    <span className="shrink-0 font-mono text-[9px] text-slate-500">{(d.text.length / 1000).toFixed(1)}k ch</span>
+                    <span className="shrink-0 font-mono text-[9px] text-slate-400">{(d.text.length / 1000).toFixed(1)}k ch</span>
                     <button
                       onClick={() => {
                         const name = window.prompt('Rename document', d.name);
                         if (name) persist(renameDoc(d.id, name, library));
                       }}
-                      className="rounded px-1 font-mono text-[10px] text-slate-400 transition hover:text-white"
+                      className="rounded px-1 font-mono text-[10px] text-slate-500 transition hover:text-slate-900 cursor-pointer"
                       title="Rename"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => persist(removeDoc(d.id, library))}
-                      className="rounded px-1 font-mono text-[10px] text-slate-400 transition hover:text-rose-300"
+                      className="rounded px-1 font-mono text-[10px] text-slate-400 transition hover:text-rose-600 cursor-pointer"
                       title="Remove document"
                     >
                       Del
@@ -144,7 +144,7 @@ export function DocumentLibraryPanel({ library, persist, onPick, target = 'A', p
       })}
       <button
         onClick={newFile}
-        className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-white/15 py-1.5 font-mono text-[10px] uppercase tracking-wider text-slate-400 transition hover:border-amber-400/40 hover:text-white"
+        className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-slate-300 py-1.5 font-mono text-[10px] uppercase font-bold tracking-wider text-slate-600 transition hover:border-blue-500 hover:text-blue-700 cursor-pointer"
       >
         + New case file
       </button>

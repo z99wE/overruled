@@ -55,14 +55,16 @@ export function DocumentIngest({ onLoaded, label = 'Upload a document' }: Docume
         }}
         aria-label={label}
         className={`flex min-h-[180px] cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-4 text-center transition ${
-          dragging ? 'border-amber-400 bg-amber-400/10' : 'border-white/15 bg-slate-900/60 hover:border-amber-400/40'
+          dragging ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-slate-50/70 hover:border-blue-500 hover:bg-slate-50'
         }`}
       >
-        <span className="font-serif text-2xl font-bold text-amber-300">§</span>
-        <p className="text-[13px] font-medium text-white">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-700 font-sans font-bold text-sm shadow-2xs">
+          DOC
+        </div>
+        <p className="text-[13px] font-bold text-slate-900">
           {busy ? 'Reading…' : dragging ? 'Drop to read' : label}
         </p>
-        <p className="font-mono text-[10px] leading-relaxed text-slate-400">
+        <p className="font-mono text-[10px] leading-relaxed text-slate-500">
           Drop a PDF, .docx or .txt here — or click to choose.
           <br />
           Read in your browser. Nothing is uploaded to a server.
@@ -76,7 +78,7 @@ export function DocumentIngest({ onLoaded, label = 'Upload a document' }: Docume
         />
       </div>
       {error && (
-        <p className="rounded-xl border border-rose-500/40 bg-rose-950/60 px-3 py-2 text-[12px] text-rose-200">{error}</p>
+        <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-800 font-medium">{error}</p>
       )}
     </div>
   );
@@ -84,9 +86,9 @@ export function DocumentIngest({ onLoaded, label = 'Upload a document' }: Docume
 
 export function DocChip({ name, kind }: { name: string; kind: string }) {
   return (
-    <span className="flex min-w-0 items-center gap-1.5 rounded-full border border-white/10 bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-200">
-      <span className="truncate">{name}</span>
-      <span className="shrink-0 font-mono text-[9px] uppercase text-amber-300">{KIND_HINT[kind] ?? kind}</span>
+    <span className="flex min-w-0 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] text-slate-700 shadow-2xs">
+      <span className="truncate font-medium">{name}</span>
+      <span className="shrink-0 font-mono text-[9px] uppercase font-bold text-blue-700">{KIND_HINT[kind] ?? kind}</span>
     </span>
   );
 }
