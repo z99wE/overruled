@@ -26,13 +26,13 @@ const TICKER_CASES = [
 
 function Ticker() {
   return (
-    <div className="overflow-hidden border-y border-slate-200 bg-white py-2.5 shadow-xs" aria-label="Selected Legal Precedents">
+    <div className="overflow-hidden border-y border-slate-200/90 bg-white/90 py-2.5 shadow-2xs backdrop-blur-md" aria-label="Selected Legal Precedents">
       <div className="flex whitespace-nowrap font-mono text-[11px] text-slate-600 animate-[ticker_35s_linear_infinite]">
         {TICKER_CASES.concat(TICKER_CASES).map((c, i) => (
           <div key={i} className="mx-6 inline-flex items-center gap-3">
-            <span className="rounded-full bg-blue-100 text-blue-700 px-2 py-0.5 font-bold text-[9px]">{c.tag}</span>
+            <span className="rounded-full bg-blue-100 text-blue-800 px-2 py-0.5 font-bold text-[9px]">{c.tag}</span>
             <span className="text-slate-900 font-medium">{c.hold}</span>
-            <span className="text-amber-600 font-bold">— {c.cite}</span>
+            <span className="text-amber-700 font-bold">— {c.cite}</span>
           </div>
         ))}
       </div>
@@ -66,8 +66,8 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
         onOpenRules={() => setRulesOpen(true)}
       />
 
-      {/* ── Top Navigation Bar ── */}
-      <nav className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-slate-200/90 bg-white/90 px-6 py-3.5 shadow-xs backdrop-blur-md lg:px-12">
+      {/* ── Transparent Liquid Glassmorphism Navbar ── */}
+      <nav className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-white/60 bg-white/75 px-6 py-3.5 shadow-xs backdrop-blur-xl lg:px-12">
         <button
           aria-label="Back to top"
           type="button"
@@ -90,10 +90,10 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
             Precedent Bench
           </button>
           <button type="button" onClick={() => scrollTo('referrals')} className="hover:text-blue-600 transition-colors cursor-pointer">
-            Team Workspace
+            Workbench
           </button>
           <button type="button" onClick={() => scrollTo('community')} className="hover:text-blue-600 transition-colors cursor-pointer">
-            Counsel Exchange
+            Privacy Architecture
           </button>
           <button type="button" onClick={onOpenDesk} className="hover:text-blue-600 transition-colors cursor-pointer">
             Legal Desk
@@ -105,7 +105,7 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
             aria-label={accountEmail ? `Signed in as ${accountEmail}` : 'Sign in or sync account'}
             type="button"
             onClick={onOpenAccount}
-            className="hidden sm:inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 font-mono text-xs text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-colors shadow-2xs cursor-pointer"
+            className="hidden sm:inline-flex items-center rounded-full border border-slate-200 bg-white/80 px-4 py-2 font-mono text-xs text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-colors shadow-2xs cursor-pointer"
           >
             {accountEmail ? accountEmail : 'Account Sync'}
           </button>
@@ -133,7 +133,7 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
       {/* ── Ticker Bar ── */}
       <Ticker />
 
-      {/* ── Hero & Zero-Leak Contract Risk Audit Stage ── */}
+      {/* ── Hero Stage ── */}
       <HeroCreationStage
         onClaimChest={handleClaimCreationChest}
         onOpenRules={() => setRulesOpen(true)}
@@ -145,8 +145,8 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
         <MilestoneTrack
           currentSubmissions={submissionsCount}
           onOpenRules={() => setRulesOpen(true)}
-          onClaimChestTier={(tier) => {
-            alert(`🛡️ Activated ${tier} Defense Module!`);
+          onClaimChestTier={(_tier) => {
+            if (onOpenDesk) onOpenDesk();
           }}
           onOpenDesk={onOpenDesk}
         />
@@ -161,24 +161,27 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
         onOpenDesk={onOpenDesk}
       />
 
-      {/* ── Legal Team Collaboration & Zero-Leak Multi-Seat Hub ── */}
+      {/* ── Forensic Contract Intelligence Workbench Section ── */}
       <ReferralRewardsHub
         onOpenRules={() => setRulesOpen(true)}
         accountEmail={accountEmail}
         onOpenDesk={onOpenDesk}
       />
 
-      {/* ── 8-Bit Platformer Community Section ── */}
+      {/* ── Client-Side Privacy Architecture ── */}
       <div id="community">
-        <CommunitySection onOpenRules={() => setRulesOpen(true)} />
+        <CommunitySection
+          onOpenRules={() => setRulesOpen(true)}
+          onOpenDesk={onOpenDesk}
+        />
       </div>
 
       {/* ── Legal Desk & Deep Discovery Section ── */}
-      <section id="desk-section" className="mx-auto w-full max-w-6xl px-4 py-16">
-        <div className="rounded-3xl bg-white border border-slate-200 p-8 shadow-sm">
+      <section id="desk-section" className="mx-auto w-full max-w-6xl px-4 py-16 font-sans">
+        <div className="rounded-3xl bg-white/90 border border-slate-200/90 p-8 shadow-xs backdrop-blur-md">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
             <div className="md:col-span-7 space-y-4">
-              <span className="rounded-full bg-blue-50 border border-blue-200 px-3 py-1 font-mono text-[11px] font-bold text-blue-600">
+              <span className="rounded-full bg-blue-50 border border-blue-200 px-3 py-1 font-mono text-[11px] font-bold text-blue-700">
                 Ground-Truth Legal Document Engine
               </span>
               <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -193,7 +196,7 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
                   onClick={onOpenDesk}
                   className="rounded-full bg-blue-600 hover:bg-blue-700 px-6 py-3 font-sans text-xs font-bold text-white shadow-md transition-all cursor-pointer"
                 >
-                  Launch Legal Desk — Free
+                  Launch Legal Desk
                 </button>
                 <button
                   type="button"
@@ -205,25 +208,25 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
               </div>
             </div>
 
-            <div className="md:col-span-5 rounded-2xl bg-slate-900 p-6 text-white border-2 border-slate-800 shadow-inner space-y-3">
+            <div className="md:col-span-5 rounded-2xl bg-slate-900 p-6 text-white border border-slate-800 shadow-inner space-y-3">
               <div className="font-mono text-xs font-bold text-amber-300">
-                ⚡ Real-time Audit Capabilities
+                Real-Time Audit Capabilities
               </div>
               <ul className="space-y-2 text-xs text-slate-300">
                 <li className="flex items-center gap-2">
-                  <span className="text-emerald-400">✓</span>
+                  <span className="text-emerald-400 font-bold">•</span>
                   <span>Unilateral amendment trap detection</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-emerald-400">✓</span>
+                  <span className="text-emerald-400 font-bold">•</span>
                   <span>Penalty clause vs liquidated damages audit</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-emerald-400">✓</span>
+                  <span className="text-emerald-400 font-bold">•</span>
                   <span>Multi-version redline comparison</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-emerald-400">✓</span>
+                  <span className="text-emerald-400 font-bold">•</span>
                   <span>59 verified common law precedents</span>
                 </li>
               </ul>
@@ -233,13 +236,13 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-slate-200 bg-white py-12 px-6 text-center text-xs text-slate-500">
+      <footer className="border-t border-slate-200/90 bg-white/90 py-12 px-6 text-center text-xs text-slate-500 backdrop-blur-md">
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-amber-400 font-bold text-slate-950 text-xs">
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-amber-400 font-black text-slate-950 text-xs">
               O
             </div>
-            <span className="font-bold text-slate-800">Overrool Jurisprudence & Contract Intelligence</span>
+            <span className="font-bold text-slate-800">Overrool Jurisprudence &amp; Contract Intelligence</span>
           </div>
           <div className="flex items-center gap-6 font-medium">
             <button type="button" onClick={() => setRulesOpen(true)} className="hover:text-blue-600 cursor-pointer">

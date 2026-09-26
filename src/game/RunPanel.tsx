@@ -28,18 +28,18 @@ export function RunPanel({
   };
 
   return (
-    <section className="rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm">
+    <section className="rounded-3xl border border-slate-200/90 bg-white/90 p-5 sm:p-6 shadow-xs backdrop-blur-md">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2.5">
-          <span className="rounded-full border border-amber-300 bg-amber-50 px-3.5 py-1.5 font-sans text-xs font-black text-amber-950 shadow-2xs">
-            🪙 {run.chips} chips
+          <span className="rounded-full border border-amber-300 bg-amber-50 px-4 py-1.5 font-sans text-xs font-black text-amber-950 shadow-2xs">
+            Chips: {run.chips}
           </span>
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 font-sans text-xs font-bold text-slate-800">
+          <span className="rounded-full border border-slate-200 bg-slate-50 px-4 py-1.5 font-sans text-xs font-bold text-slate-800">
             {rank.title} · Level {rank.level}
           </span>
           {run.bestStreak > 1 && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 font-mono text-xs font-bold text-blue-700">
-              Streak ×{run.bestStreak}
+            <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3.5 py-1.5 font-mono text-xs font-bold text-blue-700">
+              Streak: {run.bestStreak}x
             </span>
           )}
         </div>
@@ -48,9 +48,9 @@ export function RunPanel({
             aria-label={muted ? 'Unmute audio' : 'Mute audio'}
             type="button"
             onClick={() => setMuted(toggleMute())}
-            className="rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 px-3.5 py-1.5 text-xs font-bold text-slate-700 transition-colors cursor-pointer"
+            className="rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 px-4 py-1.5 text-xs font-bold text-slate-700 transition-colors cursor-pointer"
           >
-            {muted ? 'Audio Muted' : 'Audio Active'}
+            {muted ? 'Audio: Muted' : 'Audio: Active'}
           </button>
           <button
             aria-label="Open shop"
@@ -67,7 +67,7 @@ export function RunPanel({
             aria-label="Reset run ledger"
             type="button"
             onClick={reset}
-            className="rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 px-3.5 py-1.5 text-xs font-bold text-rose-700 transition-colors cursor-pointer"
+            className="rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 px-4 py-1.5 text-xs font-bold text-rose-700 transition-colors cursor-pointer"
           >
             Reset Ledger
           </button>
@@ -75,22 +75,22 @@ export function RunPanel({
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 text-xs">
         <span className="font-sans font-bold text-slate-500">
-          Overcome Benches:
+          Resolved Benches:
         </span>
         {scalps ? (
           <span className="font-mono text-xs font-bold text-blue-600">{scalps}</span>
         ) : (
-          <span className="font-sans text-xs text-slate-400">None yet — select a landmark matter to start</span>
+          <span className="font-sans text-xs text-slate-400">0 of 6 static matters completed</span>
         )}
         {rank.nextAt != null && (
           <span className="ml-auto font-sans text-xs text-slate-500">
-            Next rank at <strong className="text-slate-800 font-bold">{rank.nextAt} XP</strong>
+            Next promotion at <strong className="text-slate-800 font-bold">{rank.nextAt} XP</strong>
           </span>
         )}
       </div>
       {run.jokers.length > 0 && (
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
-          <span className="mr-1 font-sans text-xs font-bold text-slate-500">Advocate Tools Active:</span>
+          <span className="mr-1 font-sans text-xs font-bold text-slate-500">Active Modifiers:</span>
           {run.jokers.map((id) => {
             const j = jokerById(id);
             if (!j) return null;
@@ -98,7 +98,7 @@ export function RunPanel({
               <span
                 key={id}
                 title={j.blurb}
-                className={`rounded-full border px-2.5 py-0.5 font-sans text-xs font-bold ${rarityCls(j.rarity)}`}
+                className={`rounded-full border px-3 py-0.5 font-sans text-xs font-bold ${rarityCls(j.rarity)}`}
               >
                 {j.name}
               </span>

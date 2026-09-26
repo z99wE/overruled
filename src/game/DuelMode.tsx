@@ -66,10 +66,10 @@ export function DuelMode({
     <div className="fixed inset-0 z-50 flex flex-col bg-slate-950/70 p-4 backdrop-blur-md selection:bg-blue-200 selection:text-slate-950 font-sans">
       <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
         {/* Header */}
-        <header className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-6 py-4">
+        <header className="flex items-center justify-between border-b border-slate-100 bg-slate-50/90 px-6 py-4">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-sm shadow-sm">
-              ⚔
+              O
             </div>
             <div>
               <h2 className="font-display text-base font-extrabold text-slate-900">Counsel Duel Arena</h2>
@@ -108,7 +108,7 @@ export function DuelMode({
                 onClick={() => startPicking('A')}
                 className="rounded-full bg-blue-600 hover:bg-blue-700 px-8 py-3 text-xs font-bold text-white shadow-md transition-all cursor-pointer"
               >
-                {NAMES.A}: Take the Deck ▸
+                {NAMES.A}: Take the Deck
               </button>
               <p className="text-xs text-slate-600 max-w-md mx-auto">
                 Select in secret, lock, then pass the screen. Precedents clash on the table and the Bench rules on ratio strength.

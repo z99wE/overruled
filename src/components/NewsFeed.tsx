@@ -33,14 +33,13 @@ export function NewsFeed({ onNeedAccount }: NewsFeedProps) {
   const latest = NEWS_ITEMS[0];
 
   return (
-    <section className="mb-6 rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm">
+    <section className="mb-6 rounded-3xl border border-slate-200/90 bg-white/90 p-5 sm:p-6 shadow-xs backdrop-blur-md">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 font-display text-base font-extrabold text-slate-900">
-          <span>📰</span>
-          <span>The AI Legal Briefing</span>
+        <h2 className="font-display text-base font-extrabold text-slate-900">
+          The Legal Intelligence Briefing
           {subscribed && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 font-sans text-[10px] font-bold text-emerald-800">
-              Subscribed ✓
+            <span className="ml-2.5 inline-flex items-center rounded-full bg-emerald-100 px-3 py-0.5 font-sans text-[10px] font-bold text-emerald-800">
+              Subscribed
             </span>
           )}
         </h2>

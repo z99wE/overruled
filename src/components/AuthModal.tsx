@@ -100,18 +100,18 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
   const title = view === 'codes' ? 'Recovery Codes' : view === 'forgot' ? 'Reset Password' : user ? 'Counsel Workspace' : mode === 'signup' ? 'Create Counsel Account' : 'Sign In to Overrool';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md selection:bg-blue-200 selection:text-slate-950">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md selection:bg-blue-200 selection:text-slate-950 font-sans">
       <div className="w-full max-w-md overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-2xl">
         {/* ── Modal Header ────────────────────────────────────── */}
-        <header className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-6 py-4">
+        <header className="flex items-center justify-between border-b border-slate-100 bg-slate-50/90 px-6 py-4">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-sm shadow-sm">
-              {view === 'codes' ? '§' : '⚖️'}
+              O
             </div>
             <div>
               <h2 className="font-display text-sm sm:text-base font-extrabold text-slate-900">{title}</h2>
               <p className="font-sans text-[11px] text-slate-500">
-                Encrypted Workspace & Precedent Sync
+                Encrypted Workspace &amp; Precedent Sync
               </p>
             </div>
           </div>

@@ -116,10 +116,10 @@ export function KeySettings({ onClose }: KeySettingsProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md selection:bg-blue-200 selection:text-slate-950">
       <div className="w-full max-w-lg overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-2xl">
         {/* ── Modal Header ────────────────────────────────────── */}
-        <header className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-6 py-4">
+        <header className="flex items-center justify-between border-b border-slate-100 bg-slate-50/90 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-base shadow-sm">
-              §
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-sm shadow-sm">
+              O
             </div>
             <div>
               <h2 className="font-display text-base font-extrabold text-slate-900">Private Key Vault</h2>
@@ -276,7 +276,7 @@ export function KeySettings({ onClose }: KeySettingsProps) {
               onClick={() => void test()}
               className="rounded-full border border-slate-300 bg-white hover:bg-slate-50 py-2.5 px-4 text-xs font-bold text-slate-700 transition-all cursor-pointer disabled:opacity-50"
             >
-              {testing ? 'Testing…' : 'Test Connection ⟳'}
+              {testing ? 'Testing…' : 'Test Connection'}
             </button>
             {apiKey && (
               <button

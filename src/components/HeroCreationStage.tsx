@@ -17,76 +17,28 @@ export function HeroCreationStage({
 
   const handleChestClick = () => {
     setChestOpened(true);
-    setChestMessage(`🛡️ Zero-Leak Defense Active: 59 Verified Precedents Loaded!`);
+    setChestMessage(`Zero-Leak Engine Active: 59 Verified Precedents Loaded`);
     setTimeout(() => {
       if (onOpenDesk) {
         onOpenDesk();
       } else {
         onClaimChest();
       }
-    }, 1000);
+    }, 900);
   };
 
   return (
-    <div className="relative w-full pt-10 pb-8 overflow-hidden text-center">
-      {/* ── Floating Arcade Sticker Decorations ── */}
-      <div className="pointer-events-none absolute inset-0 select-none overflow-hidden">
-        {/* Extruder / Gavel Sticker (Top Left) */}
-        <div className="arcade-sticker absolute top-8 left-[8%] md:left-[12%]">
-          <svg className="w-12 h-12 text-slate-800" viewBox="0 0 24 24" fill="none">
-            <rect x="7" y="2" width="10" height="7" rx="2" fill="#334155" />
-            <path d="M12 9v6M9 15h6l-3 4-3-4z" fill="#0f172a" stroke="#0f172a" strokeWidth="1.5" strokeLinejoin="round" />
-            <circle cx="12" cy="5.5" r="1.5" fill="#f8fafc" />
-          </svg>
-        </div>
-
-        {/* Shield Bubble (Left) */}
-        <div className="arcade-sticker absolute top-20 left-[18%] md:left-[22%] anim-float" style={{ animationDelay: '0.5s' }}>
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-sky-400 bg-sky-100 text-sky-700 font-mono font-black text-xs shadow-md">
-            0-LEAK
-          </div>
-        </div>
-
-        {/* Sparkly Star with Eyes (Mid Left) */}
-        <div className="arcade-sticker absolute top-36 left-[10%] md:left-[15%]">
-          <svg className="w-12 h-12 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l2.8 6.6 7.2.6-5.4 4.8 1.6 7-6.2-3.6-6.2 3.6 1.6-7L2 9.2l7.2-.6L12 2z" stroke="#0f172a" strokeWidth="1.5" strokeLinejoin="round" />
-            <ellipse cx="9.5" cy="11.5" rx="1" ry="1.8" fill="#0f172a" />
-            <ellipse cx="14.5" cy="11.5" rx="1" ry="1.8" fill="#0f172a" />
-          </svg>
-        </div>
-
-        {/* Green Thumbs Up (Top Right) */}
-        <div className="arcade-sticker absolute top-12 right-[18%] md:right-[22%]">
-          <svg className="w-12 h-12 text-emerald-400" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M2 10h4v10H2V10zm20 2c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 3 7.59 8.59C7.22 8.95 7 9.45 7 10v8c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z" stroke="#0f172a" strokeWidth="1.5" strokeLinejoin="round" />
-          </svg>
-        </div>
-
-        {/* Blue Lightning Bolt (Mid Right) */}
-        <div className="arcade-sticker absolute top-28 right-[12%] md:right-[15%] anim-float" style={{ animationDelay: '1.2s' }}>
-          <svg className="w-12 h-12 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#0f172a" strokeWidth="1.5" strokeLinejoin="round" />
-          </svg>
-        </div>
-
-        {/* Purple Scales Sticker (Bottom Right) */}
-        <div className="arcade-sticker absolute top-40 right-[8%] md:right-[10%]">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 border-2 border-purple-400 shadow-md text-base">
-            ⚖️
-          </div>
-        </div>
-      </div>
-
-      {/* ── Top Announcement Header ── */}
-      <div className="relative z-10 flex items-center justify-center gap-2 mb-2 font-sans text-sm md:text-base font-medium text-slate-800">
-        <span>Zero-Data-Leak Contract Analysis ·</span>
+    <div className="relative w-full pt-12 pb-8 overflow-hidden text-center">
+      {/* ── Subtitle and Rules Link ── */}
+      <div className="relative z-10 flex flex-wrap items-center justify-center gap-2 mb-3 font-sans text-sm md:text-base font-medium text-slate-800">
+        <span>Zero-Data-Leak Contract Analysis</span>
+        <span className="text-slate-400">·</span>
         <button
           type="button"
           onClick={onOpenRules}
           className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors cursor-pointer"
         >
-          Instant Clause-by-Clause Risk Audit & 59 Common Law Precedents!
+          Instant Clause-by-Clause Risk Audit &amp; 59 Common Law Precedents
         </button>
       </div>
 
@@ -95,27 +47,22 @@ export function HeroCreationStage({
         ZERO LEAK
       </h1>
 
-      {/* ── Primary Blue Action Button ── */}
+      {/* ── Primary Action CTA ── */}
       <div className="relative z-10 flex flex-col items-center justify-center gap-2 mb-8">
         <button
           type="button"
           onClick={handleChestClick}
-          className="flex items-center gap-2.5 rounded-full bg-blue-600 px-7 py-3.5 text-sm md:text-base font-bold text-white shadow-lg shadow-blue-500/30 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          className="flex items-center gap-2.5 rounded-full bg-blue-600 px-8 py-3.5 text-sm md:text-base font-bold text-white shadow-lg shadow-blue-500/25 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
-          <span className="flex h-5 w-5 items-center justify-center rounded bg-white/20 text-xs">
-            ⚡
-          </span>
           <span>Ingest Contract for Instant Forensic Risk Audit</span>
         </button>
-        {/* Blue down caret pointer */}
-        <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-blue-600"></div>
       </div>
 
-      {/* ── 3D Tabletop Stage Showcase with Generated 3D Asset ── */}
+      {/* ── 3D Isometric Hero Asset Showcase ── */}
       <div className="relative z-10 mx-auto max-w-4xl px-4">
         <div
           onClick={handleChestClick}
-          className={`relative rounded-3xl overflow-hidden border-2 border-slate-200 shadow-xl cursor-pointer transition-all duration-300 ${
+          className={`relative rounded-3xl overflow-hidden border border-slate-200 shadow-xl cursor-pointer transition-all duration-300 ${
             chestOpened ? 'scale-102 ring-4 ring-amber-400' : 'hover:scale-101'
           }`}
         >
@@ -125,14 +72,14 @@ export function HeroCreationStage({
             className="w-full h-auto object-cover"
           />
 
-          {/* Interactive Live Precedent Vault Pill Overlay */}
-          <div className="absolute top-4 right-4 rounded-full bg-slate-950/80 backdrop-blur-md border border-amber-400/50 px-4 py-1.5 font-mono text-xs sm:text-sm font-black text-amber-300 shadow-lg">
+          {/* Interactive Precedent Vault Pill Overlay */}
+          <div className="absolute top-4 right-4 rounded-full bg-slate-950/85 backdrop-blur-md border border-amber-400/40 px-4 py-1.5 font-mono text-xs sm:text-sm font-bold text-amber-300 shadow-lg">
             Active Precedent Vault: {activePrecedents} Certified Rulings
           </div>
 
-          {/* Benefit Badge Overlay (Bottom Left) */}
-          <div className="absolute bottom-4 left-4 rounded-full bg-blue-900/80 backdrop-blur-md border border-sky-400/40 px-3.5 py-1 font-sans text-xs font-bold text-sky-200 shadow-md">
-            🔒 100% In-Browser Privacy · No Cloud Document Training
+          {/* Privacy Badge Overlay */}
+          <div className="absolute bottom-4 left-4 rounded-full bg-blue-950/85 backdrop-blur-md border border-sky-400/30 px-4 py-1.5 font-sans text-xs font-bold text-sky-200 shadow-md">
+            100% In-Browser Privacy · Zero Third-Party Model Training
           </div>
 
           {/* Notification Banner */}
@@ -147,9 +94,9 @@ export function HeroCreationStage({
       {/* ── Section Title & Subtitle ── */}
       <div className="relative z-10 mt-14 max-w-2xl mx-auto px-4">
         <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-          Contract Defense & Risk Audit Framework
+          Contract Defense &amp; Risk Audit Framework
         </h2>
-        <p className="mt-2.5 text-xs sm:text-sm text-slate-500 leading-relaxed font-sans">
+        <p className="mt-2.5 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
           Audit contracts and test legal arguments against certified common law authorities. Identify hidden liability traps, one-sided indemnities, and enforceability risks in seconds.
         </p>
       </div>

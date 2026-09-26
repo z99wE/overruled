@@ -61,22 +61,22 @@ export function CaseSelect({
 
   return (
     <div className="min-h-full grid-graph-light flex flex-col selection:bg-amber-300 selection:text-slate-950 font-sans text-slate-900">
-      {/* ── Top Header ────────────────────────────────────────── */}
-      <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/90 bg-white/95 px-6 py-3.5 shadow-xs backdrop-blur-md lg:px-12">
+      {/* ── Transparent Liquid Glassmorphism Navbar ──────────────── */}
+      <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-white/60 bg-white/75 px-6 py-3.5 shadow-xs backdrop-blur-xl lg:px-12">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={onOpenHowItWorks}
-            className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 font-bold text-lg shadow-sm hover:scale-105 transition-transform cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 font-black text-lg shadow-sm hover:scale-105 transition-transform cursor-pointer"
           >
             O
           </button>
           <div>
             <h1 className="font-display text-xl font-extrabold tracking-tight text-slate-900">
-              Courtroom <span className="text-blue-600">Chambers</span>
+              Courtroom Chambers
             </h1>
             <p className="font-sans text-[11px] text-slate-500">
-              Active Common Law Dockets · 59 Verified Precedents
+              59 Certified Precedents across 7 Jurisdictions
             </p>
           </div>
         </div>
@@ -86,9 +86,9 @@ export function CaseSelect({
             <button
               type="button"
               onClick={onOpenHowItWorks}
-              className="rounded-full border border-slate-200 bg-slate-50 px-4 py-1.5 font-sans text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="rounded-full border border-slate-200 bg-white/80 px-4 py-1.5 font-sans text-xs font-bold text-slate-700 hover:bg-white transition-colors cursor-pointer shadow-2xs"
             >
-              ← Overview
+              Overview
             </button>
           )}
 
@@ -96,7 +96,7 @@ export function CaseSelect({
             aria-label={accountEmail ? `Account for ${accountEmail}` : 'Sign up or log in to sync your progress'}
             type="button"
             onClick={onOpenAccount}
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 font-mono text-xs text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-colors shadow-2xs cursor-pointer"
+            className="hidden sm:inline-flex items-center rounded-full border border-slate-200 bg-white/80 px-3.5 py-1.5 font-mono text-xs text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-colors shadow-2xs cursor-pointer"
           >
             {accountEmail ? accountEmail : 'Account Sync'}
           </button>
@@ -107,7 +107,7 @@ export function CaseSelect({
             onClick={onOpenShop}
             className="rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-1.5 text-xs font-extrabold shadow-sm transition-all cursor-pointer"
           >
-            🪙 {run.chips} chips
+            Chips: {run.chips}
           </button>
 
           <button
@@ -137,26 +137,23 @@ export function CaseSelect({
       {/* ── Main Content Area ────────────────────────────────────── */}
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 pb-16 pt-6 lg:px-12">
         
-        {/* Core Value Banner */}
-        <div className="mb-6 rounded-2xl bg-white border border-slate-200 p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        {/* Core Capabilities Bar */}
+        <div className="mb-6 rounded-3xl bg-white/90 border border-slate-200/90 p-5 shadow-xs backdrop-blur-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="space-y-1 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <span className="rounded-full bg-blue-100 text-blue-800 px-2.5 py-0.5 font-bold text-[10px]">
-                Adversarial AI Courtroom
-              </span>
-              <span className="text-xs text-slate-500">Zero Hallucinations Guarantee</span>
-            </div>
-            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-sans">
-              Test your arguments against opposing counsel and strict judicial benches. Every citation in your hand is certified against official law reports across 7 jurisdictions.
+            <h2 className="font-display text-base font-extrabold text-slate-900">
+              Adversarial Common Law Simulator
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+              Test legal arguments against judicial benches. Every citation in your hand is certified against official law reports across 7 jurisdictions.
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2.5 shrink-0">
             <button
               type="button"
               onClick={onOpenDuel}
-              className="rounded-full bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 text-xs font-bold shadow-sm transition-all cursor-pointer"
+              className="rounded-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-xs font-bold shadow-sm transition-all cursor-pointer"
             >
-              ⚔️ Pass & Play Duel
+              Pass &amp; Play Duel
             </button>
             {onGenerate && (
               <button
@@ -164,7 +161,7 @@ export function CaseSelect({
                 onClick={handleGenerate}
                 className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-xs font-bold shadow-sm transition-all cursor-pointer"
               >
-                + New Matter
+                Generate Matter
               </button>
             )}
           </div>
@@ -182,17 +179,16 @@ export function CaseSelect({
 
         {/* Case of the day notification */}
         {caseOfDayId && (
-          <div className="mb-6 flex items-center justify-between rounded-2xl border border-amber-300 bg-amber-50 px-5 py-3 shadow-xs">
-            <div className="flex items-center gap-2.5 text-xs font-bold text-amber-950">
-              <span className="text-base">⭐</span>
-              <span>Case of the Day — Overcoming today's featured Bench awards <strong className="text-amber-800">+100 bonus chips</strong></span>
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-300 bg-amber-50/90 px-5 py-3 shadow-xs">
+            <div className="text-xs font-bold text-amber-950">
+              Featured Matter of the Day: Overcoming today's bench awards <strong className="text-amber-800 font-black">+100 bonus chips</strong>
             </div>
             <button
               type="button"
               onClick={() => onSelect(caseOfDayId)}
               className="rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-4 py-1 text-xs shadow-xs transition-all cursor-pointer"
             >
-              Enter Trial →
+              Enter Trial
             </button>
           </div>
         )}
@@ -211,28 +207,17 @@ export function CaseSelect({
                 key={s.id}
                 type="button"
                 onClick={() => onSelect(s.id)}
-                className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 text-left shadow-xs transition-all hover:-translate-y-1 hover:border-blue-400 hover:shadow-md focus-visible:outline-none cursor-pointer"
+                className="group relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-6 text-left shadow-xs transition-all hover:-translate-y-1 hover:border-blue-400 hover:shadow-md focus-visible:outline-none cursor-pointer"
               >
                 {/* Playing-card corner tags */}
                 <div className="pointer-events-none absolute right-4 top-4 flex items-center gap-1.5">
-                  <span className="rounded-full bg-slate-100 text-slate-700 px-2 py-0.5 font-bold text-[9px] border border-slate-200">
+                  <span className="rounded-full bg-slate-100 text-slate-700 px-2.5 py-0.5 font-bold text-[10px] border border-slate-200">
                     {s.jurisdiction}
                   </span>
-                  <span className="rounded-full bg-blue-100 text-blue-800 px-2 py-0.5 font-bold text-[9px]">
+                  <span className="rounded-full bg-blue-100 text-blue-800 px-2.5 py-0.5 font-bold text-[10px]">
                     {s.bench.slice(0, 14)}
                   </span>
                 </div>
-
-                {isGenerated && (
-                  <div className="pointer-events-none absolute left-0 top-0 rounded-br-xl bg-amber-400 px-3 py-0.5 font-sans text-[9px] font-black text-slate-950">
-                    Custom Matter
-                  </div>
-                )}
-                {isBoss && (
-                  <div className="pointer-events-none absolute left-0 top-0 rounded-br-xl bg-indigo-600 px-3 py-0.5 font-sans text-[9px] font-black text-white">
-                    Landmark Matter
-                  </div>
-                )}
 
                 <div className="mt-4 space-y-3">
                   <div>
@@ -250,22 +235,22 @@ export function CaseSelect({
 
                   <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-[11px]">
                     <div className="flex items-center gap-2">
-                      <span className="text-slate-400">Target Favor:</span>
+                      <span className="text-slate-400">Target Score:</span>
                       <span className="font-mono font-bold text-slate-900">70 Chips</span>
                     </div>
 
                     <div className="flex items-center gap-2">
                       {scalped ? (
-                        <span className="rounded-full bg-emerald-100 text-emerald-800 px-2.5 py-0.5 font-bold text-[10px]">
-                          ✓ Sustained
+                        <span className="rounded-full bg-emerald-100 text-emerald-800 px-3 py-0.5 font-bold text-[10px]">
+                          Sustained
                         </span>
                       ) : isCaseOfDay ? (
-                        <span className="rounded-full bg-amber-100 text-amber-900 px-2.5 py-0.5 font-bold text-[10px]">
-                          ⭐ +100 Chips
+                        <span className="rounded-full bg-amber-100 text-amber-900 px-3 py-0.5 font-bold text-[10px]">
+                          +100 Bonus Chips
                         </span>
                       ) : (
-                        <span className="rounded-full bg-blue-50 text-blue-700 px-2.5 py-0.5 font-bold text-[10px]">
-                          Enter Docket →
+                        <span className="rounded-full bg-blue-50 text-blue-700 px-3 py-0.5 font-bold text-[10px] group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                          Enter Chamber
                         </span>
                       )}
                     </div>
@@ -279,7 +264,7 @@ export function CaseSelect({
 
       {/* Generated Matter Modal */}
       {genOpen && generated && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md font-sans">
           <div className="relative w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl text-slate-900">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <span className="rounded-full bg-amber-400 px-3 py-1 font-sans text-xs font-black text-slate-950">

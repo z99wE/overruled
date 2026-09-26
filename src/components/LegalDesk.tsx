@@ -248,8 +248,8 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
         {/* ── Top Header Strip ────────────────────────────────────── */}
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 bg-slate-50/90 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-serif font-bold text-lg shadow-sm">
-              §
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-base shadow-sm">
+              O
             </div>
             <div>
               <h2 className="font-display text-base font-extrabold text-slate-900">
@@ -272,7 +272,7 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
               className="rounded-full bg-slate-900 hover:bg-slate-800 px-4 py-1.5 text-xs font-bold text-white transition-colors shadow-xs cursor-pointer"
               aria-label={page ? 'Back' : 'Close legal desk'}
             >
-              {page ? '← Back' : 'Close ✕'}
+              {page ? 'Back' : 'Close'}
             </button>
           </div>
         </header>
