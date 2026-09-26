@@ -29,22 +29,22 @@ export function HandFan({ cards, playedIds, selectedId, active, onSelect, pot, s
   };
 
   return (
-    <div className="shrink-0 border-t border-white/10 bg-slate-950/95 backdrop-blur-2xl px-4 pb-4 pt-3 shadow-2xl">
+    <div className="shrink-0 border-t border-slate-200/80 bg-white/80 backdrop-blur-xl px-4 pb-4 pt-3 shadow-md">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 pb-2">
         <div className="flex items-center gap-2">
-          <p className="font-sans text-xs font-semibold text-slate-200">
-            Precedent Deck · <span className="text-amber-300">{clientName}</span>
+          <p className="font-sans text-xs font-bold text-slate-900">
+            Precedent Deck · <span className="text-blue-700">{clientName}</span>
           </p>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2 font-mono text-[11px] text-slate-400">
-          <span className="text-amber-300 font-semibold">Clerk</span>
-          {streak > 0 && <span className="text-emerald-300">· {streak} sustained streak</span>}
-          {pot > 0 ? <span className="text-amber-300">· pot {pot}</span> : <span>· record open</span>}
+        <div className="hidden sm:flex items-center gap-2 font-mono text-[11px] text-slate-500">
+          <span className="text-slate-700 font-bold">Clerk</span>
+          {streak > 0 && <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">· {streak} sustained streak</span>}
+          {pot > 0 ? <span className="text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">· pot {pot}</span> : <span>· record open</span>}
         </div>
 
-        <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-slate-900/80 px-3.5 py-1 font-mono text-[11px] text-slate-300">
-          <span className="font-bold text-amber-300">{cards.length - playedIds.size}</span> in hand
+        <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-slate-200 bg-white/90 px-3.5 py-1 font-mono text-[11px] text-slate-700 shadow-xs">
+          <span className="font-bold text-blue-700">{cards.length - playedIds.size}</span> in hand
         </span>
       </div>
 
@@ -58,7 +58,7 @@ export function HandFan({ cards, playedIds, selectedId, active, onSelect, pot, s
               key={`seat-${c.id}`}
               aria-hidden
               className={`absolute bottom-2 left-1/2 aspect-[5/7.2] w-[150px] sm:w-[175px] rounded-xl border ${
-                spent ? 'border-white/5 bg-slate-900/30' : 'border-dashed border-amber-400/20 bg-amber-400/5'
+                spent ? 'border-slate-200/60 bg-slate-100/50' : 'border-dashed border-blue-300 bg-blue-50/40'
               }`}
               style={{ transform: `translateX(calc(-50% + ${p.x}px)) rotate(${p.rot}deg)` }}
             />

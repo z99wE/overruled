@@ -31,15 +31,15 @@ export function FavorMeter({ value, delta, compact }: FavorMeterProps) {
   return (
     <div className={`w-full ${compact ? 'space-y-1' : 'space-y-2'}`}>
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5 text-amber-300">
-          <span className={`font-sans font-semibold tracking-wide ${compact ? 'text-[11px]' : 'text-xs'}`}>
+        <div className="flex items-center gap-1.5 text-slate-700">
+          <span className={`font-sans font-bold tracking-wide ${compact ? 'text-[11px]' : 'text-xs'}`}>
             Bench Favor
           </span>
         </div>
         <div className="flex items-baseline gap-1.5">
           <span
             key={Math.round(value)}
-            className={`anim-pop font-display font-bold tabular-nums ${compact ? 'text-sm' : 'text-xl'} text-white`}
+            className={`anim-pop font-display font-extrabold tabular-nums ${compact ? 'text-sm' : 'text-xl'} text-slate-900`}
           >
             {Math.round(value)}
           </span>
@@ -47,7 +47,7 @@ export function FavorMeter({ value, delta, compact }: FavorMeterProps) {
           {delta !== undefined && delta !== 0 && (
             <span
               key={delta}
-              className={`anim-pop font-mono text-[10px] font-semibold ${delta > 0 ? 'text-emerald-300' : 'text-rose-300'}`}
+              className={`anim-pop font-mono text-[10px] font-bold ${delta > 0 ? 'text-emerald-600' : 'text-rose-600'}`}
             >
               {delta > 0 ? `+${delta}` : delta}
             </span>
@@ -62,10 +62,10 @@ export function FavorMeter({ value, delta, compact }: FavorMeterProps) {
           return (
             <span
               key={i}
-              className="h-3 flex-1 rounded-full border border-white/10"
+              className="h-2.5 flex-1 rounded-full border border-slate-200"
               style={{
-                backgroundColor: lit ? color : 'rgba(15, 23, 42, 0.6)',
-                boxShadow: lit ? `0 0 8px ${color}66` : 'none',
+                backgroundColor: lit ? color : '#e2e8f0',
+                boxShadow: lit ? `0 0 6px ${color}55` : 'none',
                 transition: 'background-color 200ms ease, box-shadow 200ms ease',
               }}
             />
@@ -73,7 +73,7 @@ export function FavorMeter({ value, delta, compact }: FavorMeterProps) {
         })}
       </div>
 
-      {!compact && <p className="font-sans text-xs text-slate-400">{verdict}</p>}
+      {!compact && <p className="font-sans text-xs text-slate-500">{verdict}</p>}
     </div>
   );
 }

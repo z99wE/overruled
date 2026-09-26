@@ -11,31 +11,31 @@ interface ChamberSidebarProps {
 export function ChamberSidebar({ scenario, selectedCardId, onSelectCard }: ChamberSidebarProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-5">
-      <section className="space-y-3 rounded-2xl border border-white/10 bg-slate-900/60 p-4 backdrop-blur">
-        <h2 className="font-display text-sm font-bold text-amber-300">
+      <section className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-xs">
+        <h2 className="font-display text-sm font-bold text-slate-900">
           Case File
         </h2>
-        <div className="space-y-3 text-xs leading-relaxed text-slate-300">
+        <div className="space-y-3 text-xs leading-relaxed text-slate-600">
           <div>
-            <p className="font-mono text-[10px] text-slate-400">Client</p>
-            <p className="font-semibold text-white mt-0.5">{scenario.clientName}</p>
+            <p className="font-mono text-[10px] font-bold text-slate-500">Client</p>
+            <p className="font-bold text-slate-900 mt-0.5">{scenario.clientName}</p>
           </div>
           <div>
-            <p className="font-mono text-[10px] text-slate-400">Factual Matrix</p>
-            <p className="mt-0.5">{scenario.factualBackground}</p>
+            <p className="font-mono text-[10px] font-bold text-slate-500">Factual Matrix</p>
+            <p className="mt-0.5 text-slate-700">{scenario.factualBackground}</p>
           </div>
           <div>
-            <p className="font-mono text-[10px] text-slate-400">Core Dispute</p>
-            <p className="font-semibold text-amber-200 mt-0.5">{scenario.coreDispute}</p>
+            <p className="font-mono text-[10px] font-bold text-slate-500">Core Dispute</p>
+            <p className="font-bold text-blue-900 mt-0.5">{scenario.coreDispute}</p>
           </div>
         </div>
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-display text-sm font-bold text-amber-300">
-          Precedent Authority Board
+        <h2 className="font-display text-sm font-bold text-slate-900">
+          Precedent Authority Deck
         </h2>
-        <p className="font-sans text-xs text-slate-400">
+        <p className="font-sans text-xs text-slate-500">
           All {scenario.availablePrecedents.length} verified precedents admitted to your side
         </p>
         <div className="grid gap-3">
@@ -52,12 +52,12 @@ export function ChamberSidebar({ scenario, selectedCardId, onSelectCard }: Chamb
 
       {scenario.statuteReferences.length > 0 && (
         <section className="space-y-2">
-          <h3 className="font-mono text-[10px] text-slate-400">Statutory Anchors</h3>
+          <h3 className="font-mono text-[10px] font-bold text-slate-500">Statutory Provisions</h3>
           <ul className="space-y-2">
             {scenario.statuteReferences.map((st) => (
-              <li key={st.id} className="rounded-xl border border-white/10 bg-slate-900/60 p-3">
-                <p className="text-xs font-semibold text-slate-200">{st.name}</p>
-                <p className="mt-1 font-mono text-[10px] text-amber-300/90">{st.sections.map((s) => s.section).join(' · ')}</p>
+              <li key={st.id} className="rounded-xl border border-slate-200 bg-white p-3 shadow-xs">
+                <p className="text-xs font-bold text-slate-900">{st.name}</p>
+                <p className="mt-1 font-mono text-[10px] text-blue-700">{st.sections.map((s) => s.section).join(' · ')}</p>
               </li>
             ))}
           </ul>

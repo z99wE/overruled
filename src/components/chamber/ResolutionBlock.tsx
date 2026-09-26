@@ -9,24 +9,24 @@ export function ResolutionBlock({ record }: { record: TurnRecord }) {
   const judgeText = r.judge_dialogue.replace(SPARRING_MARKER, '').trim();
 
   return (
-    <div className="space-y-3.5 border-l-2 border-amber-400/30 pl-4">
+    <div className="space-y-3.5 border-l-2 border-amber-400/50 pl-4 my-2">
       <div className="flex flex-wrap items-center gap-2">
-        <span className={`rounded-full px-3 py-1 font-sans text-xs font-semibold ${style.cls}`}>
+        <span className={`rounded-full px-3 py-1 font-sans text-xs font-bold ${style.cls}`}>
           {style.label}
         </span>
         <span
-          className={`font-mono text-xs font-medium ${r.judicial_favor_delta > 0 ? 'text-emerald-300' : r.judicial_favor_delta < 0 ? 'text-rose-300' : 'text-slate-400'}`}
+          className={`font-mono text-xs font-bold ${r.judicial_favor_delta > 0 ? 'text-emerald-700' : r.judicial_favor_delta < 0 ? 'text-rose-700' : 'text-slate-500'}`}
         >
           {r.judicial_favor_delta > 0 ? '+' : ''}{r.judicial_favor_delta} favor
         </span>
         {!r.citation_valid && (
-          <span className="m3-chip m3-chip-rose text-[9px]">
-            Unverified Citation Flagged
+          <span className="rounded-full bg-rose-100 text-rose-800 px-2.5 py-0.5 font-mono text-[10px] font-bold">
+            Unverified Citation
           </span>
         )}
         {sparring && (
-          <span className="m3-chip m3-chip-cyan text-[9px]">
-            ⚡ Local Sparring Bench
+          <span className="rounded-full bg-blue-100 text-blue-800 px-2.5 py-0.5 font-mono text-[10px] font-bold">
+            Local Sparring Bench
           </span>
         )}
       </div>
@@ -36,9 +36,9 @@ export function ResolutionBlock({ record }: { record: TurnRecord }) {
           href={record.citedPrecedent.sourceUrl}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-slate-900/80 px-3 py-1 font-mono text-[10px] text-amber-300 hover:bg-amber-400 hover:text-slate-950 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-mono text-[10px] text-blue-600 hover:text-blue-800 hover:border-blue-300 transition-colors shadow-2xs"
         >
-          Read Full Ruling ↗ {record.citedPrecedent.citation}
+          Read Full Ruling: {record.citedPrecedent.citation}
         </a>
       )}
 
