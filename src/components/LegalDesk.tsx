@@ -260,12 +260,9 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
         {/* ── Top Header Strip ────────────────────────────────────── */}
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 bg-slate-50/90 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-base shadow-sm">
-              O
-            </div>
             <div>
-              <h2 className="font-display text-base font-extrabold text-slate-900">
-                Overrool Legal Risk Workbench
+              <h2 className="font-display text-lg font-black text-slate-900">
+                Over<span className="text-blue-600">rool</span> <span className="text-slate-500 font-semibold text-sm">· Legal Risk Workbench</span>
               </h2>
               <p className="font-sans text-xs text-slate-500">
                 Plain language translation · Hidden risk audit · Version diff · Grounded precedent Q&amp;A

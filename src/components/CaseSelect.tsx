@@ -64,16 +64,9 @@ export function CaseSelect({
       {/* ── Transparent Liquid Glassmorphism Navbar ──────────────── */}
       <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-white/60 bg-white/75 px-6 py-3.5 shadow-xs backdrop-blur-xl lg:px-12">
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={onOpenHowItWorks}
-            className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 font-black text-lg shadow-sm hover:scale-105 transition-transform cursor-pointer"
-          >
-            O
-          </button>
           <div>
-            <h1 className="font-display text-xl font-extrabold tracking-tight text-slate-900">
-              Courtroom Chambers
+            <h1 className="font-display text-2xl font-black tracking-tight text-slate-900">
+              Over<span className="text-blue-600">rool</span> <span className="text-slate-500 font-semibold text-lg">· Chambers</span>
             </h1>
             <p className="font-sans text-[11px] text-slate-500">
               59 Certified Precedents across 7 Jurisdictions

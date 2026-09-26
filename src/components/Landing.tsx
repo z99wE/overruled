@@ -73,12 +73,9 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
           aria-label="Back to top"
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="group flex items-center gap-2.5 text-left cursor-pointer"
+          className="group flex items-center gap-2 text-left cursor-pointer"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 shadow-sm font-sans text-lg font-black transition-transform group-hover:scale-105">
-            O
-          </div>
-          <span className="font-display text-xl font-extrabold tracking-tight text-slate-900">
+          <span className="font-display text-2xl sm:text-3xl font-black tracking-tight text-slate-900 group-hover:opacity-90 transition-opacity">
             Over<span className="text-blue-600">rool</span>
           </span>
         </button>
