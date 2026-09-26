@@ -11,7 +11,6 @@ export function HeroCreationStage({
   onOpenRules,
   onOpenDesk,
 }: HeroCreationStageProps) {
-  const [activePrecedents] = useState(59);
   const [chestOpened, setChestOpened] = useState(false);
   const [chestMessage, setChestMessage] = useState<string | null>(null);
 
@@ -62,35 +61,30 @@ export function HeroCreationStage({
       <div className="relative z-10 mx-auto max-w-4xl px-4">
         <div
           onClick={handleChestClick}
-          className={`group relative rounded-3xl overflow-hidden border border-slate-200 bg-gradient-to-b from-purple-50/50 via-slate-50/50 to-amber-50/40 p-4 sm:p-8 shadow-2xl backdrop-blur-xl cursor-pointer transition-all duration-300 ${
+          className={`group relative rounded-3xl overflow-hidden border border-white/60 bg-gradient-to-br from-violet-200/50 via-sky-100/60 to-amber-100/50 p-4 sm:p-8 shadow-2xl backdrop-blur-2xl cursor-pointer transition-all duration-300 ring-1 ring-slate-900/5 ${
             chestOpened ? 'scale-102 ring-4 ring-purple-500' : 'hover:scale-101 hover:shadow-3xl'
           }`}
         >
-          {/* Wood Table Grid Mat */}
-          <div className="relative rounded-2xl border border-slate-200/80 bg-white/90 p-4 sm:p-6 shadow-sm overflow-hidden min-h-[360px] flex flex-col justify-between">
-            <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px] opacity-60" />
+          {/* Ambient Glows Inside the Stage Card */}
+          <div className="absolute -top-16 -left-16 h-64 w-64 rounded-full bg-purple-400/35 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-16 -right-16 h-64 w-64 rounded-full bg-sky-400/35 blur-3xl pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-300/25 blur-3xl pointer-events-none" />
 
-            {/* Top Badge Rail */}
-            <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 mb-4">
-              <div className="rounded-full bg-slate-900/90 backdrop-blur-md border border-amber-400/40 px-3.5 py-1 font-mono text-[11px] font-bold text-amber-300 shadow-sm">
-                Active Precedent Vault: {activePrecedents} Certified Authorities
-              </div>
-              <div className="rounded-full bg-purple-100 border border-purple-200 px-3 py-1 font-sans text-xs font-bold text-purple-900 shadow-2xs">
-                Common Law Codex
-              </div>
-            </div>
+          {/* Table Grid Mat */}
+          <div className="relative rounded-2xl border border-white/80 bg-white/85 p-6 sm:p-12 shadow-sm overflow-hidden min-h-[380px] flex items-center justify-center">
+            <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:20px_20px] opacity-40" />
 
             {/* Central Tabletop Arena with 3D Legal Stickers Around the Chest */}
-            <div className="relative z-10 flex items-center justify-center py-6 my-auto">
-              <div className="relative w-full max-w-2xl flex items-center justify-center">
+            <div className="relative z-10 flex items-center justify-center py-4 my-auto w-full">
+              <div className="relative w-full max-w-xl flex items-center justify-center">
 
                 {/* ── Sticker 1 (Top Left): 3D Scales of Justice / Weighing Balance ── */}
                 <div
-                  className="absolute -top-6 left-2 sm:left-6 z-20 anim-sticker-balance group/sticker"
+                  className="absolute -top-10 left-0 sm:left-4 z-20 anim-sticker-balance group/sticker"
                   title="Scales of Justice · Certified Precedent Balance"
                 >
-                  <div className="relative rounded-2xl bg-white/95 p-2 sm:p-2.5 shadow-xl border-2 border-amber-200/90 backdrop-blur-md hover:scale-115 hover:rotate-3 transition-transform duration-300">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                  <div className="relative rounded-2xl bg-white/95 p-2 sm:p-3 shadow-xl border-2 border-amber-200/90 backdrop-blur-md hover:scale-115 hover:rotate-3 transition-transform duration-300">
+                    <div className="w-14 h-14 sm:w-18 sm:h-18 flex items-center justify-center">
                       <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-md">
                         <defs>
                           <linearGradient id="goldBeamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -138,11 +132,11 @@ export function HeroCreationStage({
 
                 {/* ── Sticker 2 (Bottom Left): 3D Stack of Law Books / Legal Codices ── */}
                 <div
-                  className="absolute -bottom-4 left-1 sm:left-8 z-20 anim-sticker-books group/sticker"
+                  className="absolute -bottom-8 left-0 sm:left-6 z-20 anim-sticker-books group/sticker"
                   title="Jurisprudence Codices & Precedent Treatises"
                 >
-                  <div className="relative rounded-2xl bg-white/95 p-2 sm:p-2.5 shadow-xl border-2 border-indigo-200/90 backdrop-blur-md hover:scale-115 hover:-rotate-4 transition-transform duration-300">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                  <div className="relative rounded-2xl bg-white/95 p-2 sm:p-3 shadow-xl border-2 border-indigo-200/90 backdrop-blur-md hover:scale-115 hover:-rotate-4 transition-transform duration-300">
+                    <div className="w-14 h-14 sm:w-18 sm:h-18 flex items-center justify-center">
                       <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-md">
                         <defs>
                           <linearGradient id="bookRed" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -190,7 +184,7 @@ export function HeroCreationStage({
 
                 {/* ── Central Purple 3D Precedent Vault Chest ── */}
                 <div className="relative flex flex-col items-center mx-4 sm:mx-12">
-                  <div className="relative h-44 w-44 sm:h-56 sm:w-56 rounded-3xl overflow-hidden border-2 border-purple-300/80 shadow-2xl bg-purple-950/10 group-hover:scale-105 transition-transform duration-500">
+                  <div className="relative h-48 w-48 sm:h-64 sm:w-64 rounded-3xl overflow-hidden border-2 border-purple-300/80 shadow-2xl bg-purple-950/10 group-hover:scale-105 transition-transform duration-500">
                     <img
                       src="/assets/master_chest.jpg"
                       alt="3D Purple Precedent Vault Chest"
@@ -202,11 +196,11 @@ export function HeroCreationStage({
 
                 {/* ── Sticker 3 (Top Right): 3D Judge's Gavel & Baton with Sound Block ── */}
                 <div
-                  className="absolute -top-6 right-2 sm:right-6 z-20 anim-sticker-gavel group/sticker"
+                  className="absolute -top-10 right-0 sm:right-4 z-20 anim-sticker-gavel group/sticker"
                   title="Magisterial Gavel & Baton · Judicial Authority"
                 >
-                  <div className="relative rounded-2xl bg-white/95 p-2 sm:p-2.5 shadow-xl border-2 border-amber-300/90 backdrop-blur-md hover:scale-115 hover:rotate-6 transition-transform duration-300">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                  <div className="relative rounded-2xl bg-white/95 p-2 sm:p-3 shadow-xl border-2 border-amber-300/90 backdrop-blur-md hover:scale-115 hover:rotate-6 transition-transform duration-300">
+                    <div className="w-14 h-14 sm:w-18 sm:h-18 flex items-center justify-center">
                       <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-md">
                         <defs>
                           <linearGradient id="woodGavel" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -251,11 +245,11 @@ export function HeroCreationStage({
 
                 {/* ── Sticker 4 (Bottom Right): Red Wax Legal Seal with Silk Ribbons ── */}
                 <div
-                  className="absolute -bottom-4 right-1 sm:right-8 z-20 anim-sticker-seal group/sticker"
+                  className="absolute -bottom-8 right-0 sm:right-6 z-20 anim-sticker-seal group/sticker"
                   title="Certified Red Wax Seal of Authenticity"
                 >
-                  <div className="relative rounded-2xl bg-white/95 p-2 sm:p-2.5 shadow-xl border-2 border-rose-200/90 backdrop-blur-md hover:scale-115 hover:rotate-6 transition-transform duration-300">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                  <div className="relative rounded-2xl bg-white/95 p-2 sm:p-3 shadow-xl border-2 border-rose-200/90 backdrop-blur-md hover:scale-115 hover:rotate-6 transition-transform duration-300">
+                    <div className="w-14 h-14 sm:w-18 sm:h-18 flex items-center justify-center">
                       <svg viewBox="0 0 64 64" className="w-full h-full drop-shadow-md">
                         <defs>
                           <radialGradient id="waxRed" cx="40%" cy="40%" r="60%">
@@ -292,11 +286,11 @@ export function HeroCreationStage({
 
                 {/* ── Sticker 5 (Floating Side Left): Rolled Parchment Scroll ── */}
                 <div
-                  className="hidden md:block absolute -left-6 top-1/2 -translate-y-1/2 z-20 anim-sticker-scroll group/sticker"
+                  className="hidden md:block absolute -left-8 top-1/2 -translate-y-1/2 z-20 anim-sticker-scroll group/sticker"
                   title="Certified Judicial Decree Scroll"
                 >
-                  <div className="relative rounded-2xl bg-white/95 p-2 shadow-lg border-2 border-amber-100/90 backdrop-blur-md hover:scale-115 hover:-rotate-6 transition-transform duration-300">
-                    <div className="w-10 h-10 flex items-center justify-center">
+                  <div className="relative rounded-2xl bg-white/95 p-2 sm:p-2.5 shadow-lg border-2 border-amber-100/90 backdrop-blur-md hover:scale-115 hover:-rotate-6 transition-transform duration-300">
+                    <div className="w-12 h-12 flex items-center justify-center">
                       <svg viewBox="0 0 48 48" className="w-full h-full drop-shadow-sm">
                         <defs>
                           <linearGradient id="parchmentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -322,11 +316,11 @@ export function HeroCreationStage({
 
                 {/* ── Sticker 6 (Floating Side Right): Rotating Golden Law Medallion ── */}
                 <div
-                  className="hidden md:block absolute -right-6 top-1/2 -translate-y-1/2 z-20 anim-sticker-float group/sticker"
+                  className="hidden md:block absolute -right-8 top-1/2 -translate-y-1/2 z-20 anim-sticker-float group/sticker"
                   title="Lex Aeterna · Certified Common Law Medal"
                 >
-                  <div className="relative rounded-2xl bg-white/95 p-2 shadow-lg border-2 border-amber-200/90 backdrop-blur-md hover:scale-115 hover:rotate-6 transition-transform duration-300">
-                    <div className="w-10 h-10 flex items-center justify-center">
+                  <div className="relative rounded-2xl bg-white/95 p-2 sm:p-2.5 shadow-lg border-2 border-amber-200/90 backdrop-blur-md hover:scale-115 hover:rotate-6 transition-transform duration-300">
+                    <div className="w-12 h-12 flex items-center justify-center">
                       <svg viewBox="0 0 48 48" className="w-full h-full drop-shadow-sm">
                         <defs>
                           <radialGradient id="goldMedal" cx="40%" cy="40%" r="60%">
@@ -352,16 +346,6 @@ export function HeroCreationStage({
                 </div>
 
               </div>
-            </div>
-
-            {/* Bottom Privacy & Ingest Bar */}
-            <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100">
-              <div className="rounded-full bg-slate-900/90 backdrop-blur-md border border-slate-700 px-4 py-1.5 font-sans text-xs font-bold text-sky-300 shadow-sm">
-                100% In-Browser Privacy · Zero Third-Party Model Training
-              </div>
-              <span className="rounded-full bg-blue-600 px-4 py-1.5 font-sans text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition-colors">
-                Ingest Contract for Instant Audit
-              </span>
             </div>
 
             {/* Notification Banner */}
