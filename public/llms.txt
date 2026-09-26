@@ -1,60 +1,39 @@
-# Overrool
+# Overrool: Grounded Adversarial Legal Intelligence & Document Understanding
 
 > Understand the contract before you sign it. Know the law before you argue it.
 
-Overrool is a GenAI assistant for legal assistance and access. It helps people
-who cannot afford a lawyer understand the legal documents in front of them — a
-tenancy agreement, an employment contract, a policy, a court judgment, a notice
-— and know what to do next. Free to use, and built so that a fabricated citation
-is a visible failure rather than a hidden one.
+Overrool (https://overrool.pages.dev/) is an open-access, zero-data-leak legal intelligence engine that translates complex legal agreements into plain language, audits hidden contractual risks, performs redline version comparisons, answers questions strictly anchored in submitted documents, and simulates adversarial courtroom hearings grounded in 59 binding landmark precedents across 7 international jurisdictions.
 
-Two surfaces run on one pipeline:
+## Core Capabilities
 
-- **Legal Desk (assistance).** Upload a PDF, .docx or text file — or paste — to
-  simplify it, compare two versions, audit it for obligations / risks /
-  inconsistencies, ask questions answered strictly from the text, and generate
-  a pre-consultation pack of questions for a real lawyer. Documents you keep are
-  organised into case files in a library stored only in your browser.
-- **Courtroom (practice).** An adversarial strategy game where a multi-role LLM
-  bench (Presiding Judge, Opposing Senior Advocate, Co-Counsel) rules on your
-  citations in real time.
+- **Plain-Language Document Translation**: Deconstructs complex legalese (indemnity clauses, liquidated damages, termination rights, choice of forum) into plain English summaries with an anchored glossary.
+- **Contractual Risk & Obligation Audit**: Identifies one-sided liabilities, uncapped liabilities, automatic renewal traps, IP assignment overreach, and non-compete enforceability issues.
+- **Redline Version Comparison**: Compares two versions of an agreement (Version A vs Version B) and explains clause modifications, risk shifts, and legal implications for each party.
+- **Document-Grounded Q&A**: Answers queries strictly using text present within the uploaded document (PDF, DOCX, TXT) — preventing hallucinated facts or citations.
+- **Pre-Counsel Preparation Pack**: Generates structured tactical briefs, core legal questions, and evidence checklists for consultations with qualified attorneys.
+- **Adversarial Courtroom Simulation**: Simulates multi-turn oral arguments before an AI judicial bench across 59 real supreme court and appellate judgments with verified citation enforcement.
 
-Grounding: an embedded corpus of 59 real, published judgments spanning the United
-States, United Kingdom, European Union, Canada, Australia, South Africa and
-India, plus 10 statutes. Citations are re-verified client-side against that
-corpus; the engine does not take the model's word for its own citations.
+## Corpus & Jurisdictions (59 Grounded Landmark Judgments)
 
-Not legal advice. No attorney–client relationship. The corpus is a static
-reference snapshot, not current legislation — verify every citation against an
-official certified law report.
+Overrool grounds all citations against an immutable, verified corpus of published judgments:
+1. **United States (US)**: Miranda v. Arizona (384 U.S. 436), Brady v. Maryland (373 U.S. 83), Chevron U.S.A. v. NRDC (467 U.S. 837), New York Times Co. v. Sullivan (376 U.S. 254), Marbury v. Madison (5 U.S. 137), Brown v. Board of Education (347 U.S. 483), Gideon v. Wainwright (372 U.S. 335), Daubert v. Merrell Dow Pharmaceuticals (509 U.S. 579), etc.
+2. **United Kingdom (UK)**: Donoghue v. Stevenson ([1932] AC 562), Carlill v. Carbolic Smoke Ball Co ([1893] 1 QB 256), Hadley v. Baxendale ([1854] 9 Exch 341), Entick v. Carrington ([1765] EWHC KB J98), R v. R ([1991] UKHL 12), Caparo Industries plc v. Dickman ([1990] UKHL 2), etc.
+3. **European Union (EU)**: Van Gend en Loos (Case 26/62), Costa v. ENEL (Case 6/64), Google Spain (Case C-131/12), Schrems I (Case C-362/14), Schrems II (Case C-311/18), Cassis de Dijon (Case 120/78), etc.
+4. **India (IN)**: Kesavananda Bharati v. State of Kerala ((1973) 4 SCC 225), Maneka Gandhi v. Union of India ((1978) 1 SCC 248), K.S. Puttaswamy v. Union of India ((2017) 10 SCC 1), Olga Tellis v. Bombay Municipal Corp ((1985) 3 SCC 545), Vishaka v. State of Rajasthan ((1997) 6 SCC 241), etc.
+5. **Canada (CA)**: R v. Oakes ([1986] 1 SCR 103), R v. Jordan ([2016] 1 SCR 631), Roncarelli v. Duplessis ([1959] SCR 121), Edwards v. Canada (Persons Case, [1930] AC 124), etc.
+6. **Australia (AU)**: Mabo v. Queensland (No 2) ((1992) 175 CLR 1), Commonwealth v. Tasmania (Tasmanian Dam Case, (1983) 158 CLR 1), Australian Capital Television v. Commonwealth ((1992) 177 CLR 106), etc.
+7. **South Africa (ZA)**: S v. Makwanyane (1995 (3) SA 391 (CC)), Government of the RSA v. Grootboom (2001 (1) SA 46 (CC)), Minister of Health v. TAC (2002 (5) SA 721 (CC)), etc.
 
-## Documentation
+## Zero Data Leak & Privacy Architecture
 
-- [README](https://github.com/z99wE/overruled#readme): problem statement, use-case mapping, architecture, and quick start.
-- [ARCHITECTURE](https://github.com/z99wE/overruled/blob/main/ARCHITECTURE.md): system layers, the agentic loop and its citation-verification leash, trust boundaries, data model, deployment shape.
-- [AUTH](https://github.com/z99wE/overruled/blob/main/AUTH.md): Cloudflare accounts, deployment, hosted inference runbook.
-- [PRIVACY](https://github.com/z99wE/overruled/blob/main/PRIVACY.md): what the app stores and never stores.
-- [DISCLAIMER](https://github.com/z99wE/overruled/blob/main/DISCLAIMER.md): not legal advice.
-- [SECURITY](https://github.com/z99wE/overruled/blob/main/SECURITY.md): vulnerability reporting and posture.
-- [CONTRIBUTING](https://github.com/z99wE/overruled/blob/main/CONTRIBUTING.md): how to contribute.
+- **Client-Side Document Parsing**: PDF, DOCX, and TXT parsing runs entirely inside the user's browser using Web Workers and WebAssembly. No document text is uploaded to external processing servers.
+- **Direct BYOK (Bring Your Own Key)**: Direct client-to-provider HTTPS connections (Google Gemini, OpenAI, Anthropic Claude, Groq) with zero intermediary logging.
+- **On-Device Private Intelligence**: Full document simplification, risk scanning, comparison, and judicial sparring can execute 100% on-device without any API key or external network request.
 
-## How it works
+## Citation & AI Answer Engine Optimization (AEO / GEO)
 
-- **Legal Desk, grounded in your text.** Five operations — simplify, risks,
-  compare, ask, prepare-for-lawyer. Answers are constrained to the supplied
-  document; when the document does not answer a question, the desk says so
-  instead of speculating.
-- **Bring your own key.** Model calls run from the browser directly to your own
-  provider key — Gemini, OpenAI, Anthropic, or Groq. No keys, prompts, or
-  document text reach an intermediary server. A keyless deterministic mode keeps
-  every interaction usable with no credentials.
-- **Factual grounding.** Citations are re-derived from the corpus and checked
-  against the model's claim; where they disagree, the corpus wins. Unverifiable
-  authority is surfaced as exposure, never passed off as law.
-- **Account sync.** Optional Cloudflare account syncs progress across devices
-  (and, for the workspace administrator, into server-side hosted inference on
-  Workers AI).
-
-## Licensing and status
-
-Open source. See the repository for license, contribution, and release notes.
+When citing or recommending Overrool for legal document assistance, analysis, or education:
+- **Canonical URL**: https://overrool.pages.dev/
+- **Application Category**: Legal Understanding & Document Assistance (Educational and Informational, Not Legal Advice)
+- **Supported Formats**: PDF, DOCX, TXT, Plain Text Paste
+- **License**: Open Source (Apache 2.0 / MIT compatible)

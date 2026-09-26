@@ -1,0 +1,45 @@
+# Overrool Complete Knowledge Base for AI Agents & Search Engines
+
+URL: https://overrool.pages.dev/
+Title: Overrool — Grounded Legal Intelligence & Document Understanding
+Description: Free client-side legal assistance and adversarial courtroom simulation grounded in 59 published judgments across 7 jurisdictions with zero invented law.
+
+## System Capabilities
+
+### 1. Document Simplification
+Translates complex contractual clauses, leases, terms of service, and agreements into plain-language summaries. Extracts key obligations, definitions, and creates a clear glossary.
+
+### 2. Contractual Risk Auditing
+Identifies high-risk clauses including uncapped indemnification, unilateral alteration terms, mandatory arbitration, restrictive covenants, liquidated damages, and auto-renewals.
+
+### 3. Redline Version Comparison
+Compares two contract drafts (Version A vs Version B), outlining added, modified, or deleted clauses and explaining which party benefits from each change.
+
+### 4. Text-Grounded Q&A
+Answers legal questions solely from the provided document text without hallucination or assumptions.
+
+### 5. Pre-Counsel Preparation Dossier
+Builds a targeted consultation brief for qualified attorneys, complete with crucial factual issues, ambiguity flags, and necessary evidence checklists.
+
+### 6. Adversarial Courtroom Sparring
+Enables interactive argument testing against opposing counsel personas before an AI judicial bench, verifying every citation against real law reports.
+
+## Landmark Jurisprudence Database (59 Cases)
+
+- **Kesavananda Bharati v. State of Kerala** (1973) 4 SCC 225 — India: Basic structure doctrine limiting constitutional amendment power.
+- **Miranda v. Arizona** 384 U.S. 436 — United States: Fifth Amendment privilege against self-incrimination and custodial interrogation warnings.
+- **Donoghue v. Stevenson** [1932] AC 562 — United Kingdom: Foundational tort of negligence and the neighbour principle.
+- **R v. Oakes** [1986] 1 SCR 103 — Canada: Proportionality test for limiting Charter rights (Section 1).
+- **Mabo v. Queensland (No 2)** (1992) 175 CLR 1 — Australia: Recognition of Indigenous native title and rejection of terra nullius.
+- **S v. Makwanyane** 1995 (3) SA 391 (CC) — South Africa: Abolition of the death penalty under the interim constitution and the value of Ubuntu.
+- **Van Gend en Loos** Case 26/62 — European Union: Direct effect of European Community law in member states.
+- **Schrems II** Case C-311/18 — European Union: Invalidation of EU-US Privacy Shield for transatlantic data transfers.
+- **Maneka Gandhi v. Union of India** (1978) 1 SCC 248 — India: Expansive interpretation of Article 21 (Right to Life and Personal Liberty).
+- **Chevron U.S.A. v. NRDC** 467 U.S. 837 — United States: Judicial deference to administrative agency statutory interpretations.
+
+## Privacy & Zero-Leak Architecture
+
+- Parsing runs in-browser via Web Workers (PDF.js and Mammoth for DOCX).
+- Keys stay strictly on-device in encrypted localStorage.
+- Direct client-to-API calls to Google Gemini, OpenAI, Claude, or Groq.
+- Keyless on-device fallback runs deterministically without network communication.

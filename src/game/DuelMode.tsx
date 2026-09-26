@@ -7,16 +7,6 @@ import { sfx } from './sfx';
 
 type Phase = 'handoff' | 'pick' | 'reveal' | 'done';
 
-/**
- * PASS-AND-PLAY DUEL — two lawyers, one device.
- *
- * Phase flow per round:
- *   handoff → the phone is handed to player X ("pass the device")
- *   pick    → X secretly picks a card, then taps "Lock & Pass"
- *   reveal  → both cards hit the felt; the pure judge explains the outcome
- *   done    → majority reached; rematch or exit
- */
-
 const NAMES: Record<DuelSide, string> = { A: 'Counsel A', B: 'Counsel B' };
 
 export function DuelMode({
@@ -46,12 +36,10 @@ export function DuelMode({
 
   const lockAndPass = () => {
     if (!pick) return;
-    // Both locked — the cards collide on the felt.
     sfx.gavel();
     resolveBoth();
   };
 
-  // A's pick rides in state between handoffs via a ref-like slot.
   const [aPick, setAPick] = useState<string | null>(null);
 
   const lockA = (id: string) => {
@@ -82,29 +70,32 @@ export function DuelMode({
   const opponentCard = reveal ? state.deck.find((c) => c.id === reveal.bId) ?? null : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-ink/80 p-3 backdrop-blur-sm">
-      <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col overflow-hidden rounded-2xl border-2 border-ink bg-felt-900 shadow-[0_8px_0_0_var(--color-ink)]">
+    <div className="fixed inset-0 z-50 flex flex-col bg-slate-950/85 p-4 backdrop-blur-md">
+      <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col overflow-hidden rounded-3xl border border-white/15 bg-slate-900/95 shadow-2xl backdrop-blur-2xl">
         {/* Header */}
-        <header className="flex items-center justify-between border-b-2 border-ink px-4 py-3">
-          <div className="flex items-center gap-2">
-            <Swords className="h-4 w-4 text-chip-gold" />
-            <h2 className="font-display text-sm uppercase tracking-widest text-chip-gold">Counsel Duel</h2>
-            <span className="font-mono text-[10px] text-cream/50">
-              {state.scoreA} — {state.scoreB} · first to {majority}
-            </span>
+        <header className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300">
+              <Swords className="h-4 w-4" />
+            </div>
+            <div>
+              <h2 className="font-display text-base font-bold text-white">Counsel Duel Arena</h2>
+              <span className="font-mono text-xs text-slate-400">
+                Score: {state.scoreA} — {state.scoreB} · First to {majority}
+              </span>
+            </div>
           </div>
           <button
-          aria-label="Close duel"
+            aria-label="Close duel"
             type="button"
             onClick={onClose}
-            className="btn-3d flex h-8 w-8 items-center justify-center rounded-lg border-2 border-ink bg-felt-800 text-cream"
-
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white"
           >
-            <X className="h-4 w-4" strokeWidth={2.5} />
+            <X className="h-4 w-4" />
           </button>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto p-4">
+        <div className="min-h-0 flex-1 overflow-y-auto p-6 space-y-4">
           {/* Felt table */}
           <CardTableCanvas
             dealKey={`${state.history.length}-${reveal?.aId ?? 'none'}-${reveal?.bId ?? 'none'}`}
@@ -114,42 +105,42 @@ export function DuelMode({
           />
 
           {phase === 'handoff' && (
-            <div className="mt-4 space-y-3 text-center">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-cream/50">Round {state.round} · pass the device</p>
+            <div className="mt-6 space-y-4 text-center">
+              <p className="font-mono text-xs text-slate-400">Round {state.round} · Pass the device</p>
               <button
                 aria-label={`${NAMES.A}: take the deck`}
                 type="button"
                 onClick={() => startPicking('A')}
-                className="btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-chip-gold px-5 py-3 font-display text-sm uppercase tracking-wider text-ink"
+                className="m3-btn m3-btn-primary px-7 py-3 text-sm font-semibold"
               >
-                <Hand className="h-4 w-4" /> {NAMES.A}: take the deck
+                <Hand className="h-4 w-4 mr-1.5" /> {NAMES.A}: Take the Deck
               </button>
-              <p className="text-[12px] text-cream/60">
-                Pick in secret, lock, then hand over. Cards collide on the felt; the bench explains who cut deeper.
+              <p className="text-xs text-slate-300 max-w-md mx-auto">
+                Select in secret, lock, then pass the screen. Precedents clash on the table and the Bench rules on authority.
               </p>
             </div>
           )}
 
           {phase === 'pick' && (
-            <div className="mt-4 space-y-3">
+            <div className="mt-4 space-y-3.5">
               <div className="flex items-center justify-between">
-                <p className="font-display text-sm uppercase tracking-wider text-cream">
-                  {NAMES[turn]} — choose your authority
+                <p className="font-display text-sm font-bold text-amber-200">
+                  {NAMES[turn]} — Choose your Authority
                 </p>
                 <button
                   aria-label={hidden ? 'Show cards' : 'Hide cards'}
                   type="button"
                   onClick={() => setHidden((h) => !h)}
-                  className="btn-3d inline-flex items-center gap-1.5 rounded-lg border-2 border-ink bg-felt-800 px-3 py-1.5 font-display text-[10px] uppercase text-cream"
+                  className="m3-btn m3-btn-tonal px-3 py-1 text-xs"
                 >
-                  {hidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  {hidden ? <EyeOff className="h-3.5 w-3.5 mr-1" /> : <Eye className="h-3.5 w-3.5 mr-1" />}
                   {hidden ? 'Hidden' : 'Visible'}
                 </button>
               </div>
-              <p className="font-mono text-[10px] uppercase tracking-widest text-cream/45">
-                {turn === 'B' && hidden ? 'Counsel B picking — A, look away.' : 'Pick the case that cuts the deepest.'}
+              <p className="font-sans text-xs text-slate-400">
+                {turn === 'B' && hidden ? 'Counsel B selecting — Counsel A, look away.' : 'Select the precedent that cuts deepest into the legal dispute.'}
               </p>
-              <div className={`grid gap-2 sm:grid-cols-2 ${hidden ? 'blur-sm select-none' : ''}`}>
+              <div className={`grid gap-3 sm:grid-cols-2 ${hidden ? 'blur-sm select-none' : ''}`}>
                 {remaining.map((c) => (
                   <button
                     aria-label={`Pick ${c.caseName} for ${NAMES[turn]}`}
@@ -162,61 +153,59 @@ export function DuelMode({
                         sfx.tap();
                       }
                     }}
-                    className={`card-3d rounded-xl border-2 border-ink bg-felt-800 p-3 text-left ${
-                      pick === c.id ? 'ring-2 ring-chip-gold' : ''
+                    className={`rounded-2xl border p-4 text-left transition-all ${
+                      pick === c.id ? 'border-amber-400 bg-slate-850 ring-2 ring-amber-400/40' : 'border-white/10 bg-slate-950/70 hover:border-amber-400/40'
                     }`}
                   >
-                    <p className="font-mono text-[9px] text-cream/50">{c.citation} · {c.year}</p>
-                    <p className="truncate font-display text-[12px] text-cream">{c.caseName}</p>
-                    <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-cream/60">{c.ratioDecidendi}</p>
+                    <p className="font-mono text-[10px] text-amber-300/80">{c.citation} · {c.year}</p>
+                    <p className="truncate font-display text-sm font-bold text-white mt-0.5">{c.caseName}</p>
+                    <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-300">{c.ratioDecidendi}</p>
                   </button>
                 ))}
               </div>
               {turn === 'B' && pick && (
                 <button
-          aria-label="Lock selection and pass"
+                  aria-label="Lock selection and pass"
                   type="button"
                   onClick={lockAndPass}
-
-                  className="btn-3d w-full rounded-lg border-2 border-ink bg-poker-red px-4 py-3 font-display text-sm uppercase tracking-wider text-cream"
+                  className="m3-btn m3-btn-primary w-full py-3 text-sm font-bold"
                 >
-                  Lock &amp; collide <ArrowRight className="inline h-4 w-4" />
+                  Lock &amp; Clash Arguments <ArrowRight className="inline h-4 w-4 ml-1.5" />
                 </button>
               )}
             </div>
           )}
 
           {phase === 'reveal' && reveal && (
-            <div className="mt-4 space-y-3 text-center">
+            <div className="mt-4 space-y-4 text-center">
               <p
-                className={`font-display text-2xl uppercase ${reveal.winner === 'A' ? 'text-chip-gold' : reveal.winner === 'B' ? 'text-poker-red' : 'text-cream/70'}`}
+                className={`font-display text-2xl font-bold ${reveal.winner === 'A' ? 'text-amber-300' : reveal.winner === 'B' ? 'text-rose-300' : 'text-slate-300'}`}
               >
-                {reveal.winner === 'tie' ? 'Bench splits' : `${NAMES[reveal.winner]} takes the round`}
+                {reveal.winner === 'tie' ? 'Bench Splits Evenly' : `${NAMES[reveal.winner]} Takes the Round`}
               </p>
-              <p className="mx-auto max-w-md text-[13px] leading-relaxed text-cream/80">{reveal.reason}</p>
+              <p className="mx-auto max-w-lg text-xs leading-relaxed text-slate-200">{reveal.reason}</p>
               <button
-          aria-label={state.done ? 'See duel result' : 'Next round'}
+                aria-label={state.done ? 'See duel result' : 'Next round'}
                 type="button"
                 onClick={nextRound}
-
-                className="btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-chip-gold px-5 py-3 font-display text-sm uppercase tracking-wider text-ink"
+                className="m3-btn m3-btn-primary px-7 py-3 text-sm"
               >
-                {state.done ? 'See result' : 'Next round'} <ArrowRight className="h-4 w-4" />
+                {state.done ? 'Review Result' : 'Next Round'} <ArrowRight className="h-4 w-4 ml-1.5" />
               </button>
             </div>
           )}
 
           {phase === 'done' && (
             <div className="mt-6 space-y-4 text-center">
-              <p className="font-display text-3xl uppercase text-chip-gold" style={{ textShadow: '2px 2px 0 var(--color-ink)' }}>
-                {state.scoreA === state.scoreB ? 'Dead heat' : state.scoreA > state.scoreB ? 'Counsel A wins' : 'Counsel B wins'}
+              <p className="font-display text-3xl font-bold text-amber-300">
+                {state.scoreA === state.scoreB ? 'Dead Heat' : state.scoreA > state.scoreB ? 'Counsel A Victorious' : 'Counsel B Victorious'}
               </p>
-              <p className="font-mono text-sm text-cream/70">
-                Final score {state.scoreA} — {state.scoreB} over {state.history.length} rounds
+              <p className="font-mono text-xs text-slate-400">
+                Final Score {state.scoreA} — {state.scoreB} across {state.history.length} rounds
               </p>
-              <div className="flex justify-center gap-2">
+              <div className="flex justify-center gap-3 pt-2">
                 <button
-          aria-label="Rematch"
+                  aria-label="Rematch"
                   type="button"
                   onClick={() => {
                     setState(newDuel(deck, 5));
@@ -226,19 +215,17 @@ export function DuelMode({
                     setPhase('handoff');
                     sfx.deal();
                   }}
-
-                  className="btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-felt-700 px-4 py-2.5 font-display text-[12px] uppercase text-cream"
+                  className="m3-btn m3-btn-tonal px-5 py-2.5 text-xs text-white"
                 >
-                  <RotateCcw className="h-4 w-4" /> Rematch
+                  <RotateCcw className="h-4 w-4 mr-1.5" /> Rematch
                 </button>
                 <button
-          aria-label="Back to the table"
+                  aria-label="Back to the table"
                   type="button"
                   onClick={onClose}
-
-                  className="btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-chip-gold px-4 py-2.5 font-display text-[12px] uppercase text-ink"
+                  className="m3-btn m3-btn-primary px-5 py-2.5 text-xs"
                 >
-                  Back to the table
+                  Return to Docket
                 </button>
               </div>
             </div>

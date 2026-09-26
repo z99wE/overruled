@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Check, ChevronLeft, Copy, Download, KeyRound, Landmark, Loader2, Save, Share2, X } from 'lucide-react';
+import { Check, ChevronLeft, Copy, Download, KeyRound, Landmark, Loader2, Save, Share2, Sparkles, X, FileText, ShieldAlert, GitCompare, FileSearch, Gavel } from 'lucide-react';
 import type { LLMConfig, LLMProvider } from '../types/legal';
 import { PROVIDERS, HOSTED_ENTRY, createKeyManager } from '../core/storage';
-import type { AskResult, CompareResult, DeskAnalysis, DeskOp, LawyerResult, RisksResult, SimplifyResult } from '../core/docEngine';
+import type { AskResult, CompareResult, DeskAnalysis, DeskOp, DeskResult, LawyerResult, RisksResult, SimplifyResult } from '../core/docEngine';
 import { genDeskAnalysis, localDeskAnalysis } from '../core/docEngine';
 import { DESK_SAMPLES } from '../core/deskSamples';
 import { CREDIT_COSTS, creditsToday, spendCredits } from '../core/meter';
@@ -16,36 +16,32 @@ import { docKey, loadReadingLog, recordUnderstood, saveReadingLog } from '../cor
 interface LegalDeskProps {
   onClose: () => void;
   onOpenKeys: () => void;
-  /**
-   * `page` makes the Desk a first-class destination rather than a dialog over
-   * the game. The courtroom is the practice layer; this is the product.
-   */
   page?: boolean;
 }
 
 type SourceTab = 'paste' | 'upload' | 'library' | 'sample';
 
 const SOURCES: { id: SourceTab; label: string }[] = [
-  { id: 'paste', label: 'Paste' },
-  { id: 'upload', label: 'Upload' },
-  { id: 'library', label: 'My documents' },
+  { id: 'paste', label: 'Paste Text' },
+  { id: 'upload', label: 'Upload File' },
+  { id: 'library', label: 'Saved Vault' },
   { id: 'sample', label: 'Samples' },
 ];
 
-const OPS: { id: DeskOp; label: string }[] = [
-  { id: 'simplify', label: 'Simplify' },
-  { id: 'risks', label: 'Risks & obligations' },
-  { id: 'compare', label: 'Compare' },
-  { id: 'ask', label: 'Ask the text' },
-  { id: 'lawyer', label: 'For your lawyer' },
+const OPS: { id: DeskOp; label: string; icon: typeof FileText }[] = [
+  { id: 'simplify', label: 'Plain Language', icon: FileText },
+  { id: 'risks', label: 'Risk & Traps', icon: ShieldAlert },
+  { id: 'compare', label: 'Version Diff', icon: GitCompare },
+  { id: 'ask', label: 'Ask Document', icon: FileSearch },
+  { id: 'lawyer', label: 'Counsel Prep', icon: Gavel },
 ];
 
-const KIND_LABEL: Record<string, string> = {
-  obligation: 'Obligation',
-  risk: 'Risk',
-  inconsistency: 'Inconsistency',
-  opportunity: 'Opportunity',
-  unclear: 'Unclear',
+const KIND_LABEL: Record<string, { label: string; badge: string }> = {
+  obligation: { label: 'Obligation', badge: 'm3-chip-cyan' },
+  risk: { label: 'High Risk', badge: 'm3-chip-rose' },
+  inconsistency: { label: 'Inconsistency', badge: 'm3-chip-primary' },
+  opportunity: { label: 'Opportunity', badge: 'm3-chip-emerald' },
+  unclear: { label: 'Ambiguous', badge: 'm3-chip-lavender' },
 };
 
 const providerLabel = (p: LLMProvider): string => PROVIDERS.find((x) => x.id === p)?.label ?? HOSTED_ENTRY.label;
@@ -59,7 +55,7 @@ function deskToMarkdown(a: DeskAnalysis): string {
     }
     case 'risks': {
       const r = a.result as RisksResult;
-      return `${h('Read of the document')}${r.bottomLine}\n\n${h('Findings')}${r.findings.map((f) => `- [${KIND_LABEL[f.kind] ?? f.kind} · severity ${f.severity}/5] "${f.sentence}" — ${f.note}`).join('\n')}\n`;
+      return `${h('Read of the document')}${r.bottomLine}\n\n${h('Findings')}${r.findings.map((f) => `- [${KIND_LABEL[f.kind]?.label ?? f.kind} · severity ${f.severity}/5] "${f.sentence}" — ${f.note}`).join('\n')}\n`;
     }
     case 'compare': {
       const r = a.result as CompareResult;
@@ -142,156 +138,196 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
     const target = saveTo || library.files[0]?.id;
     if (!target || !doc.trim()) return;
     const existing = docAId ? findDoc(docAId, library) : null;
-    const name = existing?.name ?? (source === 'upload' ? 'Uploaded document' : 'Pasted document');
-    if (existing) {
-      // already in the library — just make sure it is linked to the chosen case file
-      if (!library.files.find((f) => f.id === target)?.docIds.includes(existing.id)) {
-        persistLibrary(addDoc(target, { name, kind: existing.kind, text: doc.trim(), bytes: existing.bytes }, library));
-      }
-    } else {
-      persistLibrary(addDoc(target, { name, kind: 'text', text: doc.trim(), bytes: doc.trim().length }, library));
-    }
+    const name = existing?.name ?? (doc.slice(0, 32).trim() || 'Untitled Note');
+    const updated = addDoc(target, { name, text: doc, kind: 'text', bytes: new Blob([doc]).size }, library);
+    persistLibrary(updated);
     setSaved(true);
-    setTimeout(() => setSaved(false), 1800);
   };
 
   const pickSample = (id: string) => {
-    const s = DESK_SAMPLES.find((x) => x.id === id);
-    if (!s) return;
     setSampleId(id);
-    setDoc(s.text);
-    setDocAId(null);
+    const s = DESK_SAMPLES.find((x) => x.id === id);
+    if (s) {
+      setDoc(s.text);
+      setDocAId(null);
+      setSaved(false);
+    }
   };
 
   const run = async () => {
     if (!doc.trim()) {
-      setError('Paste a legal document to analyse.');
+      setError('Please provide text or upload a document to analyze.');
       return;
     }
     if (op === 'compare' && !docB.trim()) {
-      setError('Paste the second document to compare against.');
+      setError('Version B is required for a comparative diff.');
       return;
     }
     if (op === 'ask' && !question.trim()) {
-      setError('Type your question.');
+      setError('Please type a question about this document.');
       return;
     }
+
     setBusy(true);
     setError(null);
+
     try {
-      if (cfg) {
-        const spend = spendCredits(CREDIT_COSTS.deskOp);
-        if (!spend.ok) {
-          setError(`Daily credit limit reached (${spend.used}/${spend.cap} used). The Local Rules Analyst still runs free — or try again tomorrow.`);
-          return;
-        }
-        const result = await genDeskAnalysis(cfg, op, doc.trim(), op === 'compare' ? { docB: docB.trim() } : op === 'ask' ? { question: question.trim() } : undefined);
-        setAnalysis({ op, origin: 'genai', provider: providerLabel(cfg.provider), result });
+      let analysisResult: DeskResult;
+      let origin: 'genai' | 'local' = 'local';
+      if (cfg && cfg.apiKey) {
+        spendCredits(CREDIT_COSTS.deskOp);
+        analysisResult = await genDeskAnalysis(cfg, op, doc, {
+          docB: op === 'compare' ? docB : undefined,
+          question: op === 'ask' ? question : undefined,
+        });
+        origin = 'genai';
       } else {
-        setAnalysis({ op, origin: 'local', result: localDeskAnalysis(op, doc.trim(), op === 'compare' ? { docB: docB.trim() } : op === 'ask' ? { question: question.trim() } : undefined) });
+        analysisResult = localDeskAnalysis(op, doc, {
+          docB: op === 'compare' ? docB : undefined,
+          question: op === 'ask' ? question : undefined,
+        });
       }
-      // Count the document only once an analysis actually completed, and only
-      // once per distinct document.
-      const next = recordUnderstood(reading, docKey(doc, docAId));
-      if (next !== reading) {
-        setReading(next);
-        saveReadingLog(next);
+      const fullAnalysis: DeskAnalysis = {
+        op,
+        origin,
+        provider: cfg?.provider,
+        result: analysisResult,
+      };
+      setAnalysis(fullAnalysis);
+      const k = docKey(doc);
+      if (k) {
+        const next = recordUnderstood(reading, k);
+        if (next !== reading) {
+          setReading(next);
+          saveReadingLog(next);
+        }
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Document analysis failed.');
     } finally {
       setBusy(false);
     }
   };
 
-  const exportMd = async (mode: 'copy' | 'download' | 'share') => {
+  const exportMd = async (mode: 'copy' | 'share' | 'download') => {
     if (!analysis) return;
-    const md = `# Legal Desk — ${analysis.op}\n\n*Analysed ${analysis.origin === 'genai' ? `by ${analysis.provider ?? 'your model'}` : 'by the Local Rules Analyst (keyless)'}. Educational assistance, not legal advice.*\n\n${deskToMarkdown(analysis)}`;
+    const md = deskToMarkdown(analysis);
     if (mode === 'copy') {
       await navigator.clipboard.writeText(md);
       setCopied(true);
-      setTimeout(() => setCopied(false), 1200);
+      setTimeout(() => setCopied(false), 2000);
       return;
     }
-    if (mode === 'share' && typeof navigator.share === 'function') {
+    if (mode === 'download') {
+      const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `overrool-${analysis.op}-analysis.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+      return;
+    }
+    if (mode === 'share' && navigator.share) {
       try {
-        await navigator.share({ title: 'Legal Desk analysis', text: md });
-        return;
+        await navigator.share({
+          title: `Overrool — ${analysis.op} Analysis`,
+          text: md,
+        });
       } catch {
-        /* user cancelled — fall through to copy */
+        // User aborted share sheet
       }
     }
-    const blob = new Blob([md], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `legal-desk-${analysis.op}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
-  const r = analysis?.result;
   const met = creditsToday();
+  const r = analysis?.result;
 
   return (
-    <div className={page ? 'min-h-full w-full overflow-y-auto bg-ink/95 p-4 sm:p-6' : 'fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm'}>
-      <div className={page ? 'mx-auto flex min-h-full w-full max-w-6xl flex-col overflow-hidden bg-felt-900' : 'flex h-[min(88vh,860px)] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-ink bg-felt-900 shadow-2xl'}>
-        <header className="flex items-center justify-between border-b border-ink bg-felt-800 px-5 py-3">
-          <div className="flex items-center gap-2">
-            <Landmark className="h-5 w-5 text-dgold" />
+    <div className={`fixed inset-0 z-50 flex flex-col bg-slate-950/85 p-3 backdrop-blur-md ${page ? 'relative p-0' : ''}`}>
+      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col overflow-hidden rounded-3xl border border-white/15 bg-slate-900/95 shadow-2xl backdrop-blur-2xl">
+        {/* ── Top Header Strip ────────────────────────────────────── */}
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-md">
+              <Landmark className="h-5 w-5" strokeWidth={2.2} />
+            </div>
             <div>
-              <h2 className="font-display text-lg font-bold tracking-wide text-cream">The Legal Desk</h2>
-              <p className="font-mono text-[10px] uppercase tracking-widest text-cream/50">Simplify · risks · compare · ask · prepare for your lawyer</p>
+              <h2 className="font-display text-base font-bold text-white">
+                Overrool Legal Workbench
+              </h2>
+              <p className="font-sans text-xs text-slate-400">
+                Plain language · Risk audit · Redline diff · Grounded Q&amp;A
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={onOpenKeys}
-              className="flex items-center gap-1.5 rounded-lg border border-ink bg-felt-700 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-cream/80 transition hover:bg-felt-600"
+              className="m3-btn m3-btn-tonal px-3.5 py-1.5 text-xs text-slate-300"
             >
-              <KeyRound className="h-3.5 w-3.5 text-dgold" />
-              {cfg ? providerLabel(cfg.provider) : 'No key'}
+              <KeyRound className="mr-1.5 h-3.5 w-3.5 text-amber-300" />
+              {cfg ? providerLabel(cfg.provider) : 'Keyless (Local Engine)'}
             </button>
-            <button onClick={onClose} className="rounded-lg p-1.5 text-cream/60 transition hover:bg-felt-700 hover:text-cream" aria-label={page ? 'Back' : 'Close legal desk'}>
-              {page ? <ChevronLeft className="h-5 w-5" /> : <X className="h-5 w-5" />}
+            <button
+              onClick={onClose}
+              className="m3-btn m3-btn-tonal h-9 w-9 p-0 text-slate-300 hover:text-white"
+              aria-label={page ? 'Back' : 'Close legal desk'}
+            >
+              {page ? <ChevronLeft className="h-4 w-4" /> : <X className="h-4 w-4" />}
             </button>
           </div>
         </header>
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto p-5 lg:grid-cols-[minmax(0,42fr)_minmax(0,58fr)]">
-          <div className="flex min-h-0 flex-col gap-3">
+        {/* ── Main Workbench Grid ────────────────────────────────── */}
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 overflow-y-auto p-6 lg:grid-cols-[minmax(0,45fr)_minmax(0,55fr)]">
+          {/* Left Column: Input & Options */}
+          <div className="flex min-h-0 flex-col gap-4">
             <Docketling documentsUnderstood={readCount} />
-            <div className="flex flex-wrap gap-1.5">
-              {OPS.map((o) => (
-                <button
-                  key={o.id}
-                  onClick={() => setOp(o.id)}
-                  className={`rounded-lg px-3 py-1.5 text-[13px] font-medium transition ${
-                    op === o.id ? 'btn-gold text-ink' : 'border border-ink bg-felt-800 text-cream/75 hover:bg-felt-700'
-                  }`}
-                >
-                  {o.label}
-                </button>
-              ))}
+
+            {/* Operation Tabs */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {OPS.map((o) => {
+                const Icon = o.icon;
+                const active = op === o.id;
+                return (
+                  <button
+                    key={o.id}
+                    onClick={() => setOp(o.id)}
+                    className={`m3-btn py-2 px-3 text-xs gap-1.5 justify-start ${
+                      active ? 'm3-btn-primary' : 'm3-btn-tonal text-slate-300'
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{o.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="flex flex-wrap gap-1">
-              {SOURCES.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => setSource(s.id)}
-                  className={`rounded-md px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider transition ${
-                    source === s.id ? 'bg-dgold/20 text-dgold ring-1 ring-dgold/40' : 'text-cream/45 hover:text-cream'
-                  }`}
-                >
-                  {s.label}
-                </button>
-              ))}
-              <span className="ml-auto self-center font-mono text-[10px] text-cream/30">
-                {libraryStats(library).docs} saved
+            {/* Source Selectors */}
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+              <div className="flex gap-1.5">
+                {SOURCES.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setSource(s.id)}
+                    className={`rounded-full border px-3 py-1 font-mono text-[10px] font-medium transition-all ${
+                      source === s.id
+                        ? 'border-amber-400 bg-amber-400/20 text-amber-200'
+                        : 'border-white/10 bg-slate-950/60 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+              <span className="font-mono text-[10px] text-slate-400">
+                {libraryStats(library).docs} items in vault
               </span>
             </div>
 
+            {/* Source Editor Panels */}
             {source === 'paste' && (
               <textarea
                 value={doc}
@@ -299,8 +335,8 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                   setDoc(e.target.value);
                   setDocAId(null);
                 }}
-                placeholder="Paste a contract, policy, lease, judgement excerpt, or terms page here…"
-                className="min-h-[180px] flex-1 resize-none rounded-xl border border-ink bg-felt-800 p-3 text-[13px] leading-relaxed text-cream placeholder:text-cream/30 focus:border-dgold focus:outline-none"
+                placeholder="Paste contract, NDA, lease clause, privacy policy, or legal excerpt here…"
+                className="m3-input min-h-[190px] flex-1 resize-none font-mono text-xs leading-relaxed"
               />
             )}
 
@@ -313,15 +349,15 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                     setSource('paste');
                   }}
                 />
-                {docAId && <p className="mt-2 text-[12px] text-cream/50">Loaded from your library.</p>}
+                {docAId && <p className="mt-2 font-mono text-[11px] text-slate-400">Loaded from local library.</p>}
               </div>
             )}
 
             {source === 'library' && (
               <div className="flex-1">
                 <DocumentLibraryPanel library={library} persist={persistLibrary} onPick={(d) => loadInto('A', d)} pickedId={docAId} />
-                <p className="mt-2 font-mono text-[10px] leading-relaxed text-cream/35">
-                  Stored on this device only — in your browser, never uploaded. Clearing site data removes it.
+                <p className="mt-2 font-mono text-[10px] text-slate-500">
+                  Client-side encrypted local vault. Never transmitted to Overrool servers.
                 </p>
               </div>
             )}
@@ -331,10 +367,10 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                 <select
                   value={sampleId}
                   onChange={(e) => pickSample(e.target.value)}
-                  className="w-full rounded-lg border border-ink bg-felt-800 px-2 py-1.5 text-[13px] text-cream focus:border-dgold focus:outline-none"
+                  className="m3-input font-mono text-xs"
                 >
                   {DESK_SAMPLES.map((s) => (
-                    <option key={s.id} value={s.id}>
+                    <option key={s.id} value={s.id} className="bg-slate-900 text-white">
                       {s.label}
                     </option>
                   ))}
@@ -342,45 +378,47 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                 <textarea
                   value={doc}
                   readOnly
-                  className="min-h-[140px] w-full resize-none rounded-xl border border-ink bg-felt-800 p-3 text-[13px] leading-relaxed text-cream/80 focus:border-dgold focus:outline-none"
+                  className="m3-input min-h-[150px] w-full resize-none font-mono text-xs text-slate-300"
                 />
               </div>
             )}
 
+            {/* Save to library row */}
             {library.files.length > 0 && source !== 'library' && (
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-cream/40">Save to</span>
+              <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-slate-950/80 p-3">
+                <span className="font-mono text-[10px] text-slate-400">Vault Target:</span>
                 <select
                   value={saveTo}
                   onChange={(e) => setSaveTo(e.target.value)}
-                  className="min-w-0 flex-1 rounded-lg border border-ink bg-felt-800 px-2 py-1 text-[12px] text-cream focus:border-dgold focus:outline-none"
+                  className="flex-1 rounded-xl border border-white/10 bg-slate-900 px-3 py-1 font-mono text-xs text-white"
                 >
                   {library.files.map((f) => (
-                    <option key={f.id} value={f.id}>
+                    <option key={f.id} value={f.id} className="bg-slate-900 text-white">
                       {f.name}
                     </option>
                   ))}
                 </select>
                 <button
                   onClick={saveIntoLibrary}
-                  className="flex items-center gap-1 rounded-lg border border-ink bg-felt-800 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-cream/70 transition hover:bg-felt-700 hover:text-cream"
+                  className="m3-btn m3-btn-emerald px-3.5 py-1 text-xs"
                 >
-                  {saved ? <Check className="h-3 w-3 text-emerald-400" /> : <Save className="h-3 w-3" />}
+                  {saved ? <Check className="mr-1 h-3 w-3" /> : <Save className="mr-1 h-3 w-3" />}
                   {saved ? 'Saved' : 'Save'}
                 </button>
               </div>
             )}
 
+            {/* Compare doc B panel */}
             {op === 'compare' && (
-              <div className="space-y-2 rounded-xl border border-ink/60 bg-ink/20 p-2">
-                <div className="flex items-center gap-1">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-cream/40">Version B</span>
+              <div className="space-y-2 m3-card p-4">
+                <div className="flex items-center gap-2">
+                  <span className="m3-chip m3-chip-primary text-[8px]">Version B</span>
                   {(['paste', 'upload', 'library'] as const).map((t) => (
                     <button
                       key={t}
                       onClick={() => setBSource(t)}
-                      className={`rounded px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider transition ${
-                        bSource === t ? 'bg-dgold/20 text-dgold' : 'text-cream/40 hover:text-cream'
+                      className={`rounded-full px-2.5 py-0.5 font-mono text-[9px] ${
+                        bSource === t ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40' : 'text-slate-400 hover:text-white'
                       }`}
                     >
                       {t}
@@ -399,8 +437,8 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                       setDocB(e.target.value);
                       setDocBId(null);
                     }}
-                    placeholder="Paste the second document to compare…"
-                    className="min-h-[100px] w-full resize-none rounded-xl border border-ink bg-felt-800 p-3 text-[13px] leading-relaxed text-cream placeholder:text-cream/30 focus:border-dgold focus:outline-none"
+                    placeholder="Paste the revised/opposing version B to compare…"
+                    className="m3-input min-h-[100px] font-mono text-xs"
                   />
                 )}
                 {bSource === 'upload' && (
@@ -428,156 +466,228 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
               </div>
             )}
 
+            {/* Ask text question */}
             {op === 'ask' && (
               <input
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && void run()}
-                placeholder="Your question about this document…"
-                className="rounded-xl border border-ink bg-felt-800 px-3 py-2.5 text-[13px] text-cream placeholder:text-cream/30 focus:border-dgold focus:outline-none"
+                placeholder="Ask any specific question about this document (e.g. Can I terminate early?)…"
+                className="m3-input text-xs font-mono"
               />
             )}
 
-            <button onClick={() => void run()} disabled={busy} className="btn-gold flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-semibold text-ink disabled:opacity-60">
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Landmark className="h-4 w-4" />}
-              {busy ? `Analysing${cfg ? '' : ' with Local Rules'}…` : `Analyse with ${cfg ? providerLabel(cfg.provider) : 'Local Rules Analyst'}`}
+            {/* Run Action Button */}
+            <button
+              onClick={() => void run()}
+              disabled={busy}
+              className="m3-btn m3-btn-primary w-full py-3.5 text-sm font-semibold"
+            >
+              {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+              {busy
+                ? `Executing Analysis${cfg ? '' : ' (Local Engine)'}…`
+                : `Run Analysis with ${cfg ? providerLabel(cfg.provider) : 'Local Rules Analyst'}`}
             </button>
 
-            <p className="font-mono text-[10px] leading-relaxed text-cream/40">
-              Daily credits: <span className="text-cream/70">{met.used} / {met.cap} used</span> · model analysis costs {CREDIT_COSTS.deskOp} credits · resets at midnight UTC · Local Rules runs free
+            <p className="font-mono text-[10px] leading-relaxed text-slate-400">
+              Daily Credits: <span className="text-amber-300 font-semibold">{met.used} / {met.cap}</span> · Model analysis costs {CREDIT_COSTS.deskOp} credits · Local Rules run free
             </p>
 
             {error && (
-              <p className="rounded-lg border border-poker-red/40 bg-poker-red-deep/30 px-3 py-2 text-[13px] text-poker-red">{error}</p>
+              <div className="rounded-2xl border border-rose-500/30 bg-rose-950/70 p-3.5 text-xs text-rose-200">
+                <p className="font-semibold">{error}</p>
+              </div>
             )}
-
-            <p className="font-mono text-[10px] leading-relaxed text-cream/40">
-              Your text is read in-browser. With a key, it goes direct to your chosen model provider (or Overrool's hosted
-              bench for admins) — never into a product datastore. No key: the deterministic Local Rules Analyst stands in,
-              clearly labeled.
-            </p>
           </div>
 
-          <div className="flex min-h-0 flex-col gap-3">
+          {/* Right Column: Analysis Output & Hand-Off */}
+          <div className="flex min-h-0 flex-col gap-4">
             {analysis && r && (
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider ${
-                      analysis.origin === 'genai' ? 'bg-dgold/15 text-dgold ring-1 ring-dgold/40' : 'bg-cream/10 text-cream/60 ring-1 ring-cream/20'
-                    }`}
-                  >
-                    {analysis.origin === 'genai' ? `GenAI · ${analysis.provider ?? 'model'}` : 'Local Rules Analyst · no key'}
-                  </span>
-                </div>
+                <span className={`m3-chip ${analysis.origin === 'genai' ? 'm3-chip-primary' : 'm3-chip-emerald'} text-[10px]`}>
+                  {analysis.origin === 'genai' ? `Cloud Neural · ${analysis.provider ?? 'Model'}` : 'Private Native Intelligence · On-Device'}
+                </span>
                 <div className="flex gap-1.5">
-                  <button onClick={() => void exportMd('copy')} aria-label="Copy analysis as markdown" className="rounded-lg border border-ink bg-felt-800 p-2 text-cream/70 transition hover:bg-felt-700 hover:text-cream" title="Copy as markdown">
-                    {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+                  <button
+                    onClick={() => void exportMd('copy')}
+                    aria-label="Copy analysis as markdown"
+                    className="m3-btn m3-btn-tonal h-8 w-8 p-0"
+                    title="Copy Markdown"
+                  >
+                    {copied ? <Check className="h-3.5 w-3.5 text-emerald-300" /> : <Copy className="h-3.5 w-3.5" />}
                   </button>
-                  <button onClick={() => void exportMd('share')} aria-label="Share analysis" className="rounded-lg border border-ink bg-felt-800 p-2 text-cream/70 transition hover:bg-felt-700 hover:text-cream" title="Share">
-                    <Share2 className="h-4 w-4" />
+                  <button
+                    onClick={() => void exportMd('share')}
+                    aria-label="Share analysis"
+                    className="m3-btn m3-btn-tonal h-8 w-8 p-0"
+                    title="Share"
+                  >
+                    <Share2 className="h-3.5 w-3.5" />
                   </button>
-                  <button onClick={() => void exportMd('download')} aria-label="Download analysis as markdown" className="rounded-lg border border-ink bg-felt-800 p-2 text-cream/70 transition hover:bg-felt-700 hover:text-cream" title="Download markdown">
-                    <Download className="h-4 w-4" />
+                  <button
+                    onClick={() => void exportMd('download')}
+                    aria-label="Download analysis as markdown"
+                    className="m3-btn m3-btn-tonal h-8 w-8 p-0"
+                    title="Download Markdown"
+                  >
+                    <Download className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
             )}
 
-            <div className="min-h-[240px] flex-1 overflow-y-auto rounded-xl border border-ink bg-felt-800 p-4">
+            <div className="min-h-[260px] flex-1 overflow-y-auto m3-card p-5">
               {!analysis && (
-                <div className="flex h-full flex-col items-center justify-center gap-2 text-center text-cream/40">
-                  <Landmark className="h-8 w-8 text-cream/20" />
-                  <p className="max-w-xs text-[13px]">
-                    Run any operation on a legal document in plain language. Findings export as markdown you can hand to a
-                    lawyer.
-                  </p>
+                <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-slate-400 py-12">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-md">
+                    <Landmark className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="font-display text-base font-bold text-white">Workbench Standing By</p>
+                    <p className="max-w-xs text-xs text-slate-400 mt-1">
+                      Choose an operation and run analysis. Findings can be copied or downloaded as a consultation pack.
+                    </p>
+                  </div>
                 </div>
               )}
 
+              {/* Simplify View */}
               {analysis?.op === 'simplify' && r && (
-                <div className="space-y-3">
-                  <p className="rounded-xl bg-ink/40 p-3 text-[14px] font-medium leading-relaxed text-cream">{(r as SimplifyResult).bottomLine}</p>
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4">
+                    <span className="m3-chip m3-chip-primary text-[8px] mb-2">Bottom Line</span>
+                    <p className="text-sm font-semibold text-white leading-relaxed">
+                      {(r as SimplifyResult).bottomLine}
+                    </p>
+                  </div>
+
                   <div>
-                    <h4 className="mb-1 font-mono text-[10px] uppercase tracking-widest text-dgold">What this means</h4>
-                    <ul className="space-y-1 text-[13px] leading-relaxed text-cream/85">
+                    <h4 className="mb-2 font-sans text-xs font-semibold text-amber-200">
+                      Core Implications
+                    </h4>
+                    <ul className="space-y-1.5 text-xs leading-relaxed text-slate-200">
                       {(r as SimplifyResult).overview.map((o, i) => (
                         <li key={i} className="flex gap-2">
-                          <span className="text-dgold">•</span>
+                          <span className="text-amber-300 font-bold">•</span>
                           <span>{o}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
+
                   <div>
-                    <h4 className="mb-1 font-mono text-[10px] uppercase tracking-widest text-dgold">Who it affects</h4>
-                    <p className="text-[13px] text-cream/85">{(r as SimplifyResult).whoAffects}</p>
+                    <h4 className="mb-1 font-sans text-xs font-semibold text-amber-200">
+                      Who It Affects
+                    </h4>
+                    <p className="text-xs text-slate-300">{(r as SimplifyResult).whoAffects}</p>
                   </div>
+
                   <div>
-                    <h4 className="mb-1 font-mono text-[10px] uppercase tracking-widest text-dgold">Plain-language glossary</h4>
-                    <div className="space-y-1">
+                    <h4 className="mb-2 font-sans text-xs font-semibold text-amber-200">
+                      Plain-Language Legal Glossary
+                    </h4>
+                    <div className="space-y-2">
                       {(r as SimplifyResult).glossary.map((g, i) => (
-                        <p key={i} className="text-[13px] text-cream/85">
-                          <span className="font-semibold text-cream">{g.term}</span> — {g.means}
-                        </p>
+                        <div key={i} className="rounded-xl border border-white/10 bg-slate-950/60 p-3 text-xs text-slate-200">
+                          <span className="font-bold text-amber-300">{g.term}</span> — {g.means}
+                        </div>
                       ))}
                     </div>
                   </div>
                 </div>
               )}
 
+              {/* Risks View */}
               {analysis?.op === 'risks' && r && (
-                <div className="space-y-3">
-                  <p className="rounded-xl bg-ink/40 p-3 text-[14px] font-medium leading-relaxed text-cream">{(r as RisksResult).bottomLine}</p>
-                  <p className="text-[13px] text-cream/75">{(r as RisksResult).summary}</p>
-                  <div className="space-y-2">
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-rose-500/30 bg-rose-950/40 p-4">
+                    <span className="m3-chip m3-chip-rose text-[8px] mb-2">Assessment</span>
+                    <p className="text-sm font-semibold text-white leading-relaxed">
+                      {(r as RisksResult).bottomLine}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2.5">
                     {(r as RisksResult).findings.map((f, i) => (
-                      <div key={i} className={`rounded-xl border p-3 ${f.severity >= 4 ? 'border-poker-red/50 bg-poker-red-deep/20' : 'border-ink bg-ink/30'}`}>
-                        <div className="mb-1 flex items-center gap-2">
-                          <span className="rounded bg-cream/10 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cream/70">{KIND_LABEL[f.kind] ?? f.kind}</span>
-                          <span className="font-mono text-[10px] text-cream/50">severity {f.severity}/5</span>
+                      <div
+                        key={i}
+                        className={`rounded-2xl border p-3.5 ${
+                          f.severity >= 4 ? 'bg-rose-950/30 border-rose-500/40' : 'bg-slate-950/60 border-white/10'
+                        }`}
+                      >
+                        <div className="mb-1.5 flex items-center justify-between">
+                          <span className={`m3-chip ${KIND_LABEL[f.kind]?.badge ?? 'm3-chip'} text-[8px]`}>
+                            {KIND_LABEL[f.kind]?.label ?? f.kind}
+                          </span>
+                          <span className="font-mono text-[10px] text-slate-400">
+                            Severity {f.severity}/5
+                          </span>
                         </div>
-                        <p className="text-[13px] leading-relaxed text-cream/90">“{f.sentence}”</p>
-                        <p className="mt-1 text-[12px] text-cream/60">{f.note}</p>
+                        <p className="text-xs font-semibold text-white">“{f.sentence}”</p>
+                        <p className="mt-1 text-xs text-slate-300">{f.note}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
+              {/* Compare View */}
               {analysis?.op === 'compare' && r && (
-                <div className="space-y-2">
-                  <p className="rounded-xl bg-ink/40 p-3 text-[14px] font-medium leading-relaxed text-cream">{(r as CompareResult).bottomLine}</p>
-                  {(r as CompareResult).differences.map((d, i) => (
-                    <div key={i} className="rounded-xl border border-ink bg-ink/30 p-3">
-                      <p className="mb-1 font-mono text-[10px] uppercase tracking-widest text-dgold">{d.area}</p>
-                      <p className="text-[13px] text-cream/90">
-                        <span className="font-semibold text-cream">A:</span> {d.sideA}
-                      </p>
-                      <p className="text-[13px] text-cream/90">
-                        <span className="font-semibold text-cream">B:</span> {d.sideB}
-                      </p>
-                      <p className="mt-1 text-[12px] text-cream/60">{d.note}</p>
-                    </div>
-                  ))}
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-sky-400/30 bg-sky-950/30 p-4">
+                    <span className="m3-chip m3-chip-cyan text-[8px] mb-2">Comparison Summary</span>
+                    <p className="text-sm font-semibold text-white leading-relaxed">
+                      {(r as CompareResult).bottomLine}
+                    </p>
+                  </div>
+                  <div className="space-y-3">
+                    {(r as CompareResult).differences.map((d, i) => (
+                      <div key={i} className="rounded-2xl border border-white/10 bg-slate-950/60 p-3.5">
+                        <span className="m3-chip m3-chip-primary text-[8px] mb-2">{d.area}</span>
+                        <div className="grid gap-2 text-xs">
+                          <div className="rounded-xl bg-slate-900/80 p-2.5 border border-white/5">
+                            <span className="font-bold text-emerald-300">Version A: </span>
+                            <span className="text-slate-200">{d.sideA}</span>
+                          </div>
+                          <div className="rounded-xl bg-slate-900/80 p-2.5 border border-white/5">
+                            <span className="font-bold text-rose-300">Version B: </span>
+                            <span className="text-slate-200">{d.sideB}</span>
+                          </div>
+                        </div>
+                        <p className="mt-2 text-xs text-slate-400 italic">{d.note}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
+              {/* Ask View */}
               {analysis?.op === 'ask' && r && (
-                <div className="space-y-3">
-                  <p className="text-[14px] leading-relaxed text-cream">{(r as AskResult).answer}</p>
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-emerald-400/30 bg-emerald-950/30 p-4">
+                    <span className="m3-chip m3-chip-emerald text-[8px] mb-2">Grounded Answer</span>
+                    <p className="text-sm font-semibold text-white leading-relaxed">
+                      {(r as AskResult).answer}
+                    </p>
+                  </div>
                   {(r as AskResult).evidence && (
-                    <p className="rounded-xl border border-ink bg-ink/30 p-3 text-[13px] italic text-cream/80">“{(r as AskResult).evidence}”</p>
+                    <div className="rounded-2xl border border-amber-400/30 bg-amber-950/20 p-3.5">
+                      <span className="font-mono text-[9px] font-semibold text-amber-300 block mb-1">Textual Proof:</span>
+                      <p className="text-xs italic text-amber-100">“{(r as AskResult).evidence}”</p>
+                    </div>
                   )}
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-dgold">
-                    Confidence — {(r as AskResult).confidence}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-slate-400">Confidence:</span>
+                    <span className="m3-chip m3-chip-primary text-[8px]">{(r as AskResult).confidence}</span>
+                  </div>
                   <div>
-                    <h4 className="mb-1 font-mono text-[10px] uppercase tracking-widest text-dgold">Next steps</h4>
-                    <ul className="space-y-1 text-[13px] text-cream/85">
+                    <h4 className="mb-1.5 font-sans text-xs font-semibold text-amber-200">
+                      Recommended Next Steps
+                    </h4>
+                    <ul className="space-y-1.5 text-xs text-slate-200">
                       {(r as AskResult).nextSteps.map((s, i) => (
                         <li key={i} className="flex gap-2">
-                          <span className="text-dgold">•</span>
+                          <span className="text-amber-300 font-bold">•</span>
                           <span>{s}</span>
                         </li>
                       ))}
@@ -586,26 +696,36 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                 </div>
               )}
 
+              {/* Lawyer View */}
               {analysis?.op === 'lawyer' && r && (
-                <div className="space-y-3">
-                  <p className="rounded-xl bg-ink/40 p-3 text-[14px] leading-relaxed text-cream">{(r as LawyerResult).whyThisMatters}</p>
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4">
+                    <span className="m3-chip m3-chip-primary text-[8px] mb-2">Strategic Context</span>
+                    <p className="text-sm font-semibold text-white leading-relaxed">
+                      {(r as LawyerResult).whyThisMatters}
+                    </p>
+                  </div>
                   <div>
-                    <h4 className="mb-1 font-mono text-[10px] uppercase tracking-widest text-dgold">Questions to put to your lawyer</h4>
-                    <div className="space-y-2">
+                    <h4 className="mb-2 font-sans text-xs font-semibold text-amber-200">
+                      Questions for Legal Counsel
+                    </h4>
+                    <div className="space-y-2.5">
                       {(r as LawyerResult).questions.map((q, i) => (
-                        <div key={i} className="rounded-xl border border-ink bg-ink/30 p-3">
-                          <p className="text-[13px] font-medium text-cream">{q.question}</p>
-                          <p className="mt-0.5 text-[12px] text-cream/60">Why: {q.why}</p>
+                        <div key={i} className="rounded-2xl border border-white/10 bg-slate-950/60 p-3.5">
+                          <p className="text-xs font-bold text-white">{q.question}</p>
+                          <p className="mt-1 text-xs text-slate-300"><span className="text-amber-300 font-semibold">Why:</span> {q.why}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <h4 className="mb-1 font-mono text-[10px] uppercase tracking-widest text-dgold">Bring along</h4>
-                    <ul className="space-y-1 text-[13px] text-cream/85">
+                    <h4 className="mb-1.5 font-sans text-xs font-semibold text-amber-200">
+                      Documents &amp; Evidence to Bring
+                    </h4>
+                    <ul className="space-y-1.5 text-xs text-slate-200">
                       {(r as LawyerResult).bringDocuments.map((b, i) => (
                         <li key={i} className="flex gap-2">
-                          <span className="text-dgold">•</span>
+                          <span className="text-amber-300 font-bold">•</span>
                           <span>{b}</span>
                         </li>
                       ))}

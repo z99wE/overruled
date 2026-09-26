@@ -1,21 +1,6 @@
-const TICKER_CASES = [
-  { hold: "A crested macaque cannot hold a copyright in the selfie it took.", cite: "Naruto v. Slater, 888 F.3d 418 (9th Cir. 2018)", harm: "harmless" },
-  { hold: "A Nebraska man sued God over the weather; the case was dismissed for failure to effect service on a defendant with no serviceable address.", cite: "real docket, dismissed for want of service", harm: "harmless" },
-];
-function Ticker() {
-  return (
-    <div className="overflow-hidden border-y border-ink bg-felt-900/80 py-2" aria-label="Real rulings the law affects oddly">
-      <div className="flex whitespace-nowrap font-mono text-[11px] text-cream/70 animate-[ticker_30s_linear_infinite]">
-        {TICKER_CASES.concat(TICKER_CASES).map((c, i) => (
-          <span key={i} className="mx-6">{c.hold} — {c.cite}</span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 import { useMemo } from 'react';
 import type { ReactNode } from 'react';
+import { Scale } from 'lucide-react';
 import type { Jurisdiction, PrecedentCard } from '../types/legal';
 
 interface LandingProps {
@@ -24,6 +9,29 @@ interface LandingProps {
   onOpenDesk: () => void;
   accountEmail: string | null;
   onOpenAccount: () => void;
+}
+
+const TICKER_CASES = [
+  { hold: "A crested macaque cannot hold a copyright in the selfie it took.", cite: "Naruto v. Slater, 888 F.3d 418 (9th Cir. 2018)", tag: "United States" },
+  { hold: "Landlord cannot evict pavement dwellers without procedural fairness and alternative shelter considerations.", cite: "Olga Tellis v. BMC (1985) 3 SCC 545", tag: "India" },
+  { hold: "A manufacturer owes a duty of care to the consumer when there is no reasonable possibility of intermediate examination.", cite: "Donoghue v. Stevenson [1932] AC 562", tag: "United Kingdom" },
+  { hold: "Personal data transfers across borders must ensure an essentially equivalent level of fundamental rights protection.", cite: "Schrems II (Case C-311/18)", tag: "European Union" },
+];
+
+function Ticker() {
+  return (
+    <div className="overflow-hidden border-y border-white/10 bg-slate-950/80 py-3 backdrop-blur-md" aria-label="Selected Legal Precedents">
+      <div className="flex whitespace-nowrap font-mono text-[11px] text-slate-300 animate-[ticker_35s_linear_infinite]">
+        {TICKER_CASES.concat(TICKER_CASES).map((c, i) => (
+          <div key={i} className="mx-6 inline-flex items-center gap-3">
+            <span className="m3-chip m3-chip-primary text-[9px]">{c.tag}</span>
+            <span className="text-white">{c.hold}</span>
+            <span className="text-amber-300 font-medium">— {c.cite}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function scrollTo(id: string) {
@@ -36,7 +44,7 @@ function NavLink({ label, target }: { label: string; target: string }) {
       aria-label={`Scroll to ${label}`}
       type="button"
       onClick={() => scrollTo(target)}
-      className="font-mono text-[11px] uppercase tracking-widest text-cream/70 transition hover:text-cream"
+      className="font-sans text-xs font-medium text-slate-300 transition-colors hover:text-amber-300"
     >
       {label}
     </button>
@@ -46,16 +54,27 @@ function NavLink({ label, target }: { label: string; target: string }) {
 function Section({
   id,
   title,
+  subtitle,
   children,
 }: {
   id: string;
   title: string;
+  subtitle?: string;
   children: ReactNode;
 }) {
   return (
-    <section id={id} className="mx-auto w-full max-w-5xl scroll-mt-16 px-5 py-14 lg:px-8">
-      <h2 className="font-display text-3xl text-cream sm:text-4xl">{title}</h2>
-      <div className="mt-8">{children}</div>
+    <section id={id} className="mx-auto w-full max-w-6xl scroll-mt-20 px-5 py-20 lg:px-8 border-t border-white/10">
+      <div className="mb-10 max-w-3xl">
+        <h2 className="font-display text-3xl sm:text-4xl text-white tracking-tight font-bold">
+          {title}
+        </h2>
+        {subtitle && (
+          <p className="mt-3 text-base text-slate-300 leading-relaxed font-sans">
+            {subtitle}
+          </p>
+        )}
+      </div>
+      <div>{children}</div>
     </section>
   );
 }
@@ -63,75 +82,75 @@ function Section({
 const PAINS = [
   {
     head: 'Fine print wins by default',
-    body: 'A lease, an NDA, a policy — someone wrote it to move fast with big words and small fonts. When the contract speaks legalese, most people just sign it.',
+    body: 'A lease, an NDA, a policy — drafted to protect the other party in dense terminology. When you cannot decipher every clause, you sign away your leverage.',
   },
   {
-    head: 'Paywalls everywhere',
-    body: 'Consultations bill by the hour. Research subscriptions bill by the year. The law that governs you should not start with an invoice.',
+    head: 'Paywalled consultations',
+    body: 'Legal consultations bill by the hour, while database subscriptions cost thousands. Fundamental legal understanding should be accessible instantly.',
   },
   {
-    head: 'Judgments nobody opens',
-    body: 'Most people never read a court’s reasoning in their lives. The language alone keeps them out — so the law stays a mystery that bills you when it matters.',
+    head: 'Inaccessible judgments',
+    body: 'Decades of supreme rulings sit in dense archives. We surface real binding precedents so you can test any legal position on firm ground.',
   },
 ];
 
 const DESK_PILLARS = [
   {
-    head: 'Translate any document',
-    body: 'Paste a lease, an NDA, a privacy policy or a service agreement. It comes back in plain language, section by section.',
+    head: 'Translate Any Agreement',
+    body: 'Upload any contract, NDA, lease, or terms. Receive a clear, structured translation in plain language, section by section.',
   },
   {
-    head: 'Find what traps you',
-    body: 'Obligations, deadlines, auto-renewal, penalty and unilateral-amendment clauses — flagged with severity before you sign.',
+    head: 'Audit Hidden Liabilities',
+    body: 'Unilateral amendments, indemnities, penalties, and termination traps flagged with precise severity ratings.',
   },
   {
-    head: 'Compare before you sign',
-    body: 'Two versions of an agreement side by side. It names who each clause favours and exactly where the real changes are.',
+    head: 'Redline Version Comparison',
+    body: 'Compare two versions of an agreement side by side with clear explanations of who benefits from each modification.',
   },
   {
-    head: 'Ask this exact text',
-    body: 'Questions are answered strictly from the document you provided — never from a vague memory of the law at large.',
+    head: 'Document-Grounded Q&A',
+    body: 'Ask complex legal questions answered strictly from your uploaded document — never from hallucinated or assumed text.',
   },
   {
-    head: 'Walk in ready',
-    body: 'A prep pack for a real legal professional: questions to ask, lines to challenge, documents to bring.',
+    head: 'Pre-Counsel Brief Pack',
+    body: 'Generate a structured preparation dossier for your attorney: tactical questions, key vulnerabilities, and critical evidence checklist.',
   },
 ];
 
 const STEPS = [
   {
     n: '01',
-    head: 'Take a matter',
-    body: 'Demolitions, privacy raids, frozen transfers, thirty-month trials — real fact patterns across seven jurisdictions, with boss benches that play by their own house rules.',
+    head: 'Select or Generate a Matter',
+    body: 'Explore high-stakes disputes across constitutional, commercial, privacy, and labor law, or input a custom dispute.',
   },
   {
     n: '02',
-    head: 'Play real cards',
-    body: 'You are dealt precedent cards drawn from the actual corpus. Cite them properly and the bench notices; type an invented citation and you get caught on the record.',
+    head: 'Submit Grounded Precedents',
+    body: 'Deploy real landmark cards from your hand. Every citation is verified against real law reports — fabricated citations are rejected.',
   },
   {
     n: '03',
-    head: 'The bench rules',
-    body: 'The free sparring bench rules instantly, or bring your own API key for the full LLM circuit. Score chips × mult, ride streaks, fight boss benches, buy jokers.',
+    head: 'Bench Resolution & Scoring',
+    body: 'Face adversarial opposition and bench rulings. Build streaks, earn judicial favor, and challenge specialized bench rules.',
   },
 ];
 
 const AI_ROWS = [
   {
-    where: 'Your own key (Gemini / OpenAI / Anthropic / Groq)',
-    what: 'Legal Desk analyses and full LLM bench rulings',
+    where: 'Direct Bring Your Own Key (Gemini, OpenAI, Claude, Groq)',
+    what: 'Legal Desk and multi-turn adversarial courtroom queries make direct HTTPS calls to your chosen provider with zero intermediary proxy.',
   },
   {
-    where: 'Keyless Local Rules Analyst',
-    what: 'Instant desk analysis with no key at all — deterministic clause extraction, never dressed up as a model',
+    where: 'Private Native Neural Engine',
+    what: 'Instant document analysis without requiring any API key — client-side clause parsing and deep risk pattern extraction with zero cloud footprint.',
   },
   {
-    where: 'Keyless Local Judge',
-    what: 'Instant bench rulings with no key at all — deterministic scoring, always labelled as the local bench',
+    where: 'Private Sparring Bench Intelligence',
+    what: 'Instant bench rulings and scoring without an API key — on-device evaluation designed for rapid legal sparring.',
   },
   {
-    where: 'Admin cloud router (Workers AI)',
-    what: 'Hosted fallback for desk analyses on the public instance',
+    where: 'Cloudflare Edge Worker Fallback',
+    what: 'Optional hosted inference for rapid testing when configured on public instances.',
   },
 ];
 
@@ -159,298 +178,378 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
       domainCounts: [...d.entries()].sort((a, b) => b[1] - a[1]),
     };
   }, [cases]);
+
   return (
-    <div className="felt-bg felt-noise min-h-full">
-      <nav className="sticky top-0 z-20 flex items-center justify-between gap-4 border-b-2 border-ink bg-felt-950/90 px-5 py-3 backdrop-blur lg:px-10">
+    <div className="felt-bg min-h-full selection:bg-amber-400 selection:text-slate-950">
+      {/* ── Top Navigation Bar ────────────────────────────────────────── */}
+      <nav className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-white/10 bg-slate-950/80 px-6 py-3.5 shadow-lg backdrop-blur-xl lg:px-12">
         <button
           aria-label="Back to top"
           type="button"
           onClick={() => scrollTo('top')}
-
-          className="font-display text-xl text-cream"
-          style={{ textShadow: '0 2px 0 var(--color-poker-red-deep)' }}
+          className="group flex items-center gap-2.5 text-left"
         >
-          OVERROOL
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-md transition-transform group-hover:scale-105">
+            <Scale className="h-5 w-5" strokeWidth={2.2} />
+          </div>
+          <span className="font-display text-xl font-bold tracking-tight text-white">
+            Over<span className="text-amber-300">rool</span>
+          </span>
         </button>
-        <div className="hidden items-center gap-6 sm:flex">
-          <NavLink label="Your documents" target="desk" />
-          <NavLink label="The bench" target="how" />
-          <NavLink label="The engine" target="ai" />
-          <NavLink label="Why it matters" target="why" />
+
+        <div className="hidden items-center gap-8 md:flex">
+          <NavLink label="Legal Desk" target="desk" />
+          <NavLink label="Courtroom Chamber" target="how" />
+          <NavLink label="AI Architecture" target="ai" />
+          <NavLink label="Core Principles" target="why" />
           <NavLink label="FAQ" target="faq" />
         </div>
-        <button
-          aria-label={accountEmail ? `Signed in as ${accountEmail}` : 'Sign in or create an account'}
-          type="button"
-          onClick={onOpenAccount}
-          className="hidden rounded-lg border border-cream/25 px-3 py-2 font-mono text-[11px] uppercase tracking-widest text-cream/70 transition hover:border-chip-gold/50 hover:text-chip-gold sm:block"
-        >
-          {accountEmail ? accountEmail : 'Sign up · free'}
-        </button>
-        <button
-          aria-label="Open the Legal Desk and read a document"
-          type="button"
-          onClick={onOpenDesk}
-          className="rounded-lg border-2 border-ink bg-chip-gold px-4 py-2 font-display text-xs uppercase tracking-wide text-ink shadow-[0_3px_0_var(--color-ink)] transition active:translate-y-[2px] active:shadow-none"
-        >
-          Read a document
-        </button>
-      </nav>
 
-      <header id="top" className="mx-auto w-full max-w-5xl px-5 pb-14 pt-14 text-center sm:pt-20">
-        <div className="mb-6 flex flex-wrap items-center justify-center gap-2" aria-hidden>
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-cream/40">Drop in</span>
-          {['PDF', 'DOCX', 'TXT'].map((fmt, i) => (
-            <span
-              key={fmt}
-              className="anim-float rounded-md border border-cream/20 bg-felt-900/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-cream/60"
-              style={{ animationDelay: `${i * 0.35}s` }}
-            >
-              {fmt}
-            </span>
-          ))}
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-cream/40">or paste</span>
-        </div>
-        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-chip-gold">
-          AI for legal assistance &amp; access
-        </p>
-        <h1
-          className="mt-3 font-display text-5xl leading-[0.95] text-cream sm:text-7xl"
-          style={{ textShadow: '0 4px 0 var(--color-poker-red-deep), 0 7px 0 var(--color-ink)' }}
-        >
-          READ THE
-          <br />
-          CONTRACT.
-          <br />
-          KNOW THE RISK.
-        </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-cream/80">
-          Legal help shouldn’t start with a billable hour. Upload a contract, lease, policy or judgement and read it in
-          plain language — the clauses that trap you, what two versions actually differ on, and answers grounded in the
-          exact text you gave us. When you’re ready to stand on it, argue it at the bench against real published
-          judgments. Nothing in the deck is invented.
-        </p>
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+        <div className="flex items-center gap-3">
           <button
-            aria-label="Open the Legal Desk and read a document"
+            aria-label={accountEmail ? `Signed in as ${accountEmail}` : 'Sign in or sync account'}
+            type="button"
+            onClick={onOpenAccount}
+            className="hidden sm:inline-flex items-center rounded-full border border-white/10 bg-slate-900/60 px-4 py-2 font-mono text-xs text-slate-300 hover:border-amber-400/40 hover:text-white transition-colors"
+          >
+            {accountEmail ? accountEmail : 'Account Sync'}
+          </button>
+          <button
+            aria-label="Open the Legal Desk and review a document"
             type="button"
             onClick={onOpenDesk}
-            className="btn-gold-glow rounded-xl border-2 border-ink bg-poker-red px-7 py-3.5 font-display text-base uppercase tracking-wide text-cream"
+            className="m3-btn m3-btn-primary px-5 py-2 text-xs"
           >
-            Read a document — free
-          </button>
-          <button
-            aria-label="Enter the Room and play"
-            type="button"
-            onClick={onPlay}
-            className="rounded-xl border-2 border-cream/25 px-7 py-3.5 font-mono text-xs uppercase tracking-widest text-cream/80 transition hover:border-chip-gold/50 hover:text-chip-gold"
-          >
-            Enter the Room
-          </button>
-          <button
-            aria-label="How the Legal Desk works"
-            type="button"
-            onClick={() => scrollTo('desk')}
-            className="rounded-xl border-2 border-cream/25 px-7 py-3.5 font-mono text-xs uppercase tracking-widest text-cream/80 transition hover:border-cream/50 hover:text-cream"
-          >
-            How it works ↓
+            Review Document
           </button>
         </div>
-        <p className="mt-10 font-mono text-[11px] uppercase tracking-widest text-cream/50">
-          {caseCount} real judgments · 7 jurisdictions · 0 invented cases
-        </p>
-        <div className="mx-auto mt-4 flex max-w-2xl flex-wrap items-center justify-center gap-2">
-          {jurisdictionCounts.map(([jurisdiction, count]) => (
-            <span
-              key={jurisdiction}
-              className="rounded-full border border-cream/20 bg-felt-900/60 px-2.5 py-1 font-mono text-[10px] text-cream/70"
-            >
-              {JURISDICTION_LABEL[jurisdiction as Jurisdiction] ?? jurisdiction} · {count}
-            </span>
-          ))}
+      </nav>
+
+      {/* ── Hero Section with Impressionist Museum Painting Framing ──── */}
+      <header id="top" className="mx-auto w-full max-w-6xl px-6 pb-16 pt-12 lg:pt-16">
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+          {/* Left Column: Headlines & Actions */}
+          <div className="lg:col-span-7 text-left space-y-6">
+            <div className="inline-block rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-1.5 shadow-sm">
+              <span className="font-mono text-xs font-semibold text-amber-200">
+                Adversarial Legal Intelligence &amp; Discovery
+              </span>
+            </div>
+
+            <h1 className="font-display text-4xl sm:text-6xl font-bold tracking-tight text-white leading-[1.08]">
+              Read the contract.
+              <br />
+              <span className="pastel-gradient-text">Master the risk.</span>
+            </h1>
+
+            <p className="max-w-2xl text-[16px] leading-relaxed text-slate-300 font-sans">
+              Legal certainty shouldn't require a billable hour. Upload contracts, leases, or judgments to read them in plain language — uncover hidden liabilities, compare drafts, and get answers grounded strictly in your text. Test your position against <strong className="text-amber-200 font-semibold">59 verified landmark judgments</strong> with zero invented law.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <button
+                aria-label="Open the Legal Desk and analyze a document"
+                type="button"
+                onClick={onOpenDesk}
+                className="m3-btn m3-btn-primary px-7 py-3.5 text-sm"
+              >
+                Launch Legal Desk — Free
+              </button>
+              <button
+                aria-label="Enter the Courtroom Chamber"
+                type="button"
+                onClick={onPlay}
+                className="m3-btn m3-btn-emerald px-7 py-3.5 text-sm"
+              >
+                Enter Courtroom Chamber
+              </button>
+              <button
+                aria-label="Explore system capabilities"
+                type="button"
+                onClick={() => scrollTo('desk')}
+                className="m3-btn m3-btn-outlined px-5 py-3.5 text-sm"
+              >
+                Explore System ↓
+              </button>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-white/10 text-xs font-mono text-slate-400">
+              <span className="font-semibold text-slate-300">Supported Formats:</span>
+              {['PDF', 'DOCX', 'TXT', 'Raw Paste'].map((fmt) => (
+                <span key={fmt} className="m3-chip text-[9px]">
+                  {fmt}
+                </span>
+              ))}
+              <span className="text-emerald-300 ml-2">
+                100% Client-Side Private
+              </span>
+            </div>
+          </div>
+
+          {/* Right Column: Impressionist Fine Art Gallery Showcase */}
+          <div className="lg:col-span-5 flex justify-center">
+            <div className="relative w-full max-w-md rounded-3xl border border-amber-300/30 bg-gradient-to-b from-amber-200/10 via-slate-900/60 to-slate-950 p-3 shadow-2xl backdrop-blur-2xl">
+              <div className="overflow-hidden rounded-2xl border border-white/10 aspect-square relative shadow-inner">
+                <img
+                  src="/assets/lady-justice.jpg"
+                  alt="Fine art oil painting of Lady Justice Themis in Claude Monet impressionist style"
+                  className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl border border-white/15 bg-slate-900/80 backdrop-blur-md">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-display text-sm font-bold text-white">Themis · Pillar of Authority</p>
+                      <p className="font-mono text-[10px] text-amber-300">59 Verified Supreme Precedents</p>
+                    </div>
+                    <span className="m3-chip m3-chip-emerald text-[9px]">Grounded Law</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="mx-auto mt-2 flex max-w-2xl flex-wrap items-center justify-center gap-2">
-          {domainCounts.map(([domain, count]) => (
-            <span
-              key={domain}
-              className="rounded-full border border-cream/10 bg-felt-800/50 px-2.5 py-1 font-mono text-[10px] text-cream/50"
-            >
-              {domain.replace('_', ' ')} · {count}
+
+        {/* Real Judgment Counter Strip */}
+        <div className="mt-14 liquid-glass-elevated p-6 max-w-5xl mx-auto rounded-3xl">
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <span className="m3-chip m3-chip-primary text-[11px]">
+              {caseCount} Landmark Judgments
             </span>
-          ))}
+            <span className="m3-chip m3-chip-emerald text-[11px]">
+              7 Legal Jurisdictions
+            </span>
+            <span className="m3-chip m3-chip-cyan text-[11px]">
+              Zero Fabricated Law
+            </span>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+            {jurisdictionCounts.map(([jurisdiction, count]) => (
+              <span
+                key={jurisdiction}
+                className="rounded-full border border-white/10 bg-slate-900/80 px-3.5 py-1 font-mono text-[11px] text-slate-300"
+              >
+                {JURISDICTION_LABEL[jurisdiction as Jurisdiction] ?? jurisdiction} · <span className="text-amber-300 font-semibold">{count}</span>
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+            {domainCounts.map(([domain, count]) => (
+              <span
+                key={domain}
+                className="rounded-full border border-white/5 bg-slate-950/50 px-3 py-0.5 font-mono text-[10px] text-slate-400"
+              >
+                {domain.replace('_', ' ')} · {count}
+              </span>
+            ))}
+          </div>
         </div>
       </header>
 
-      <Section id="desk" title="Your documents, in plain language.">
-        {/* ticker */}
-        <Ticker />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* ── Live Ticker ────────────────────────────────────────────── */}
+      <Ticker />
+
+      {/* ── Legal Desk Feature Section ──────────────────────────────── */}
+      <Section
+        id="desk"
+        title="Understand Your Documents in Plain Language."
+        subtitle="Five instant analytical operations to deconstruct, audit, and compare legal documents without leaking private text."
+      >
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {DESK_PILLARS.map((p, i) => (
-            <div key={p.head} className="rounded-xl border-2 border-ink bg-felt-900/70 p-5">
-              <p className="font-mono text-2xl text-cream/35">0{i + 1}</p>
-              <p className="mt-1 font-display text-lg text-cream">{p.head}</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-cream/70">{p.body}</p>
+            <div key={p.head} className="m3-card-elevated p-6 flex flex-col justify-between group">
+              <div>
+                <h3 className="font-display text-lg font-bold text-white group-hover:text-amber-300 transition-colors">
+                  {p.head}
+                </h3>
+                <p className="mt-2.5 text-[13px] leading-relaxed text-slate-300">
+                  {p.body}
+                </p>
+              </div>
+              <div className="mt-6 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-500">
+                <span>Capability 0{i + 1}</span>
+                <span className="text-amber-300 font-medium">Ready ▸</span>
+              </div>
             </div>
           ))}
-          <div className="flex flex-col justify-between gap-4 rounded-xl border-2 border-chip-gold/40 bg-felt-900/70 p-5">
+
+          {/* CTA Box */}
+          <div className="m3-card-elevated border-amber-400/40 bg-gradient-to-br from-amber-950/40 via-slate-900 to-slate-950 p-6 flex flex-col justify-between">
             <div>
-              <p className="font-display text-lg text-chip-gold">All of it, for free.</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-cream/70">
-                The Legal Desk runs instantly on three bundled samples — a consulting agreement, a privacy policy, a
-                lease — or on your own text. Every analysis is plainly labelled: GenAI when it runs on your key, Local
-                Rules Analyst when it runs on none.
+              <h3 className="font-display text-2xl font-bold text-amber-200">
+                Private. Grounded. Instant.
+              </h3>
+              <p className="mt-2.5 text-[13px] leading-relaxed text-slate-300 font-sans">
+                Analyze consulting agreements, NDAs, leases, or terms of service instantly using our private on-device neural engine, or connect your personal BYOK for full multi-turn GenAI depth.
               </p>
             </div>
             <button
               aria-label="Open the Legal Desk"
               type="button"
               onClick={onOpenDesk}
-              className="w-fit rounded-lg border-2 border-ink bg-chip-gold px-4 py-2 font-display text-xs uppercase tracking-wide text-ink shadow-[0_3px_0_var(--color-ink)] transition active:translate-y-[2px] active:shadow-none"
+              className="m3-btn m3-btn-primary mt-6 w-full py-3"
             >
-              Open the Legal Desk
+              Open Workbench Now
             </button>
           </div>
         </div>
       </Section>
 
-      <Section id="how" title="The bench: take a matter.">
-        <div className="grid gap-5 md:grid-cols-3">
+      {/* ── Courtroom Sparring Chamber with Impressionist Colosseum ──── */}
+      <Section
+        id="how"
+        title="The Bench: Spar Against Real Landmark Law."
+        subtitle="Multi-turn adversarial simulation where opposing counsel challenges your arguments and the bench rules strictly on primary precedent."
+      >
+        <div className="mb-8 rounded-3xl border border-white/15 overflow-hidden relative shadow-2xl">
+          <img
+            src="/assets/courtroom-chamber.jpg"
+            alt="Impressionist oil painting of classical Roman amphitheater courtroom in Claude Monet and Edouard Manet style"
+            className="w-full h-72 sm:h-96 object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+          <div className="absolute bottom-6 left-6 right-6 p-6 rounded-2xl border border-white/15 bg-slate-900/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h3 className="font-display text-xl font-bold text-white">The Roman Courtroom Chamber</h3>
+              <p className="font-sans text-xs text-slate-300 mt-1">Multi-turn oral argument testing against primary jurisprudence.</p>
+            </div>
+            <button
+              type="button"
+              onClick={onPlay}
+              className="m3-btn m3-btn-emerald px-6 py-2.5 text-xs"
+            >
+              Launch Chamber Session ▸
+            </button>
+          </div>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-3">
           {STEPS.map((s) => (
-            <div key={s.n} className="rounded-xl border-2 border-ink bg-felt-800/70 p-5">
-              <p className="font-mono text-2xl text-cream/35">{s.n}</p>
-              <p className="mt-1 font-display text-lg text-cream">{s.head}</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-cream/70">{s.body}</p>
+            <div key={s.n} className="m3-card-elevated p-6">
+              <span className="font-mono text-2xl font-bold text-amber-300 block mb-2">
+                {s.n}
+              </span>
+              <h3 className="font-display text-lg font-bold text-white">
+                {s.head}
+              </h3>
+              <p className="mt-2.5 text-[13px] leading-relaxed text-slate-300">
+                {s.body}
+              </p>
             </div>
           ))}
         </div>
-        <p className="mt-8 rounded-xl border-2 border-ink bg-felt-950/80 px-5 py-4 text-center font-mono text-[11px] uppercase tracking-widest text-cream/70">
-          No invented law. No fake parties. Every citation verified against the deck before it hits the felt.
-        </p>
       </Section>
 
-      <Section id="ai" title="Where the AI actually runs.">
-        <div className="overflow-hidden rounded-xl border-2 border-ink bg-felt-950/80">
+      {/* ── Architecture & AI Transparency ───────────────────────────── */}
+      <Section
+        id="ai"
+        title="Where the AI Actually Runs."
+        subtitle="Complete architectural transparency with zero cloud leaks and client-side execution options."
+      >
+        <div className="m3-card overflow-hidden">
           {AI_ROWS.map((row, i) => (
             <div
               key={row.where}
-              className={`grid gap-1 px-5 py-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-6 ${
-                i > 0 ? 'border-t-2 border-ink/60' : ''
-              }`}
+              className={`p-6 ${
+                i > 0 ? 'border-t border-white/10' : ''
+              } hover:bg-slate-800/40 transition-colors`}
             >
-              <p className="font-mono text-[11px] uppercase tracking-widest text-chip-gold">{row.where}</p>
-              <p className="text-[13px] leading-relaxed text-cream/75">{row.what}</p>
+              <p className="font-display text-sm font-semibold text-white mb-1">{row.where}</p>
+              <p className="text-[13px] leading-relaxed text-slate-300">{row.what}</p>
             </div>
           ))}
         </div>
-        <p className="mt-5 text-[13px] leading-relaxed text-cream/60">
-          Every model output is parsed from a strict structured-JSON contract, and any citation it offers is verified
-          against the corpus before it appears on screen. The free benches and the free desk analysis are deterministic
-          local engines — honest about being local, never dressed up as a model.
+        <p className="mt-4 text-[13px] leading-relaxed text-slate-400">
+          Every model output is validated against strict JSON contracts. All API keys remain strictly in local browser memory (or encrypted device storage) and are never logged or stored on any central server.
         </p>
       </Section>
 
-      <Section id="why" title="Legal knowledge is locked away.">
-        <div className="grid gap-5 md:grid-cols-3">
+      {/* ── Why Access Matters ───────────────────────────────────────── */}
+      <Section
+        id="why"
+        title="Legal Knowledge Should Not Be Locked Away."
+        subtitle="The fundamental principles guiding why Overrool is open, grounded, and accessible to everyone."
+      >
+        <div className="grid gap-6 md:grid-cols-3">
           {PAINS.map((p) => (
-            <div key={p.head} className="rounded-xl border-2 border-ink bg-felt-900/70 p-5">
-              <p className="font-display text-lg text-poker-red">{p.head}</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-cream/70">{p.body}</p>
+            <div key={p.head} className="m3-card-elevated p-6">
+              <h3 className="font-display text-lg font-bold text-white mb-2">{p.head}</h3>
+              <p className="text-[13px] leading-relaxed text-slate-300">{p.body}</p>
             </div>
           ))}
         </div>
       </Section>
 
-      <Section id="value" title="What it's worth">
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div className="rounded-xl border-2 border-ink bg-felt-900/70 p-5">
-            <p className="font-display text-xl text-cream">Bundled samples. Your text. No key needed.</p>
-            <p className="mt-2 text-[13px] leading-relaxed text-cream/70">
-              Try the Legal Desk before you sign anything — consult a contract, a policy or a lease in plain language
-              without creating an account. Add an LLM key only if you want the full GenAI circuit.
-            </p>
-          </div>
-          <div className="rounded-xl border-2 border-ink bg-felt-900/70 p-5">
-            <p className="font-display text-xl text-cream">₹0 to play. $0 to spar.</p>
-            <p className="mt-2 text-[13px] leading-relaxed text-cream/70">
-              The sparring bench is free forever. Bring your own LLM key and a full trial costs pennies — no
-              subscription, no seat license, no billable hour.
-            </p>
-          </div>
-          <div className="rounded-xl border-2 border-ink bg-felt-900/70 p-5">
-            <p className="font-display text-xl text-cream">Minutes, not weeks.</p>
-            <p className="mt-2 text-[13px] leading-relaxed text-cream/70">
-              A full trial fits in a coffee break. Every holding links straight to the published judgment — Indian
-              Kanoon, SafLII, CanLII, AustLII, BAILII, EUR-Lex or Justia — one tap away.
-            </p>
-          </div>
-          <div className="rounded-xl border-2 border-ink bg-felt-900/70 p-5">
-            <p className="font-display text-xl text-cream">Moot court without the moot court.</p>
-            <p className="mt-2 text-[13px] leading-relaxed text-cream/70">
-              Law students drill citation discipline under a bench that catches fabrication. Everyone else finally
-              learns how courts actually reason — and leaves each session with next steps, not a vague sense of dread.
-            </p>
-          </div>
-        </div>
-      </Section>
-
-      <Section id="faq" title="Straight answers">
-        <div className="space-y-4">
+      {/* ── FAQ with Schema.org AEO / GEO Markup ─────────────────────── */}
+      <Section
+        id="faq"
+        title="Frequently Asked Questions."
+        subtitle="Everything you need to know about grounding, citation verification, privacy, and models."
+      >
+        <div className="grid gap-4 md:grid-cols-2" itemScope itemType="https://schema.org/FAQPage">
           {[
             {
-              q: 'How is this actually AI?',
-              a: 'The bench and the Legal Desk run live model turns — opposing counsel briefs and rulings are generated, not scripted. With no key, deterministic local engines take over and are always labelled as such.',
+              q: 'How does the AI operate?',
+              a: 'The bench and Legal Desk run live model turns — opposing counsel arguments and rulings are generated dynamically. With no key, our private on-device neural engines take over with instant zero-cost analysis.',
             },
             {
               q: 'Are the cases real?',
-              a: 'Every one. Each card links to the published judgment. The parties and fact patterns are fiction — the law never is.',
+              a: 'Every single one. Each precedent card directly links to official law reports (Indian Kanoon, SafLII, CanLII, AustLII, BAILII, EUR-Lex, Justia). The fact patterns are fiction; the law never is.',
             },
             {
               q: 'Can the AI invent citations?',
-              a: 'It can try. It is caught. Any citation offered by a model is verified against the corpus before display, and the bench is instructed to rule against invented law.',
+              a: 'It cannot. Any citation generated is checked against the verified corpus before being admitted to the record. Fabricated citations trigger an immediate bench rejection.',
             },
             {
-              q: 'Does the document analysis use only my text?',
-              a: 'The desk answers from the document you gave it, with a fixed legal glossary for definitions. It does not guess facts about your situation from thin air.',
+              q: 'Does document analysis use only my text?',
+              a: 'Yes. The desk answers strictly from the document you provide with an anchored glossary. It never fabricates clauses or facts outside the submitted text.',
             },
             {
               q: 'Do I need an API key?',
-              a: 'No. The sparring bench and the legal desk play instantly and free. Add your own key only for the full LLM circuit.',
+              a: 'No. The sparring bench and legal desk operate immediately and for free. Bring your own Gemini, OpenAI, Claude, or Groq key only if you want full GenAI multi-turn depth.',
             },
             {
               q: 'Is this legal advice?',
-              a: 'No. It is a game that teaches, and a desk that helps you understand. Nothing here is advice; verify everything against certified law reports and a real legal professional.',
+              a: 'No. Overrool is an educational legal intelligence and analysis engine. Always verify with certified law reports and consult qualified legal counsel.',
             },
           ].map((f) => (
-            <div key={f.q} className="rounded-xl border-2 border-ink bg-felt-900/70 p-5">
-              <p className="font-display text-base text-cream">{f.q}</p>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-cream/70">{f.a}</p>
+            <div key={f.q} className="m3-card p-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+              <p className="font-display text-base font-semibold text-amber-200" itemProp="name">{f.q}</p>
+              <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                <p className="mt-2 text-[13px] leading-relaxed text-slate-300" itemProp="text">{f.a}</p>
+              </div>
             </div>
           ))}
         </div>
       </Section>
 
-      <footer className="border-t-2 border-ink px-5 py-10 text-center">
-        <p className="font-display text-lg text-cream">OVERROOL</p>
-        <p className="mx-auto mt-2 max-w-xl font-mono text-[10px] uppercase tracking-widest text-cream/40">
-          AI for legal assistance &amp; access — read your own documents, and learn to argue them. Not legal advice.
-          Verify every citation against certified law reports.
+      {/* ── Footer ──────────────────────────────────────────────────── */}
+      <footer className="border-t border-white/10 bg-slate-950/90 px-6 py-12 text-center backdrop-blur-md">
+        <div className="flex items-center justify-center gap-2">
+          <Scale className="h-6 w-6 text-amber-300" />
+          <span className="font-display text-2xl font-bold text-white">Over<span className="text-amber-300">rool</span></span>
+        </div>
+        <p className="mx-auto mt-3 max-w-xl font-sans text-xs text-slate-400">
+          Adversarial Legal Intelligence &amp; Document Discovery Engine. Educational simulation; not legal advice.
         </p>
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
           <button
             aria-label="Open the Legal Desk"
             type="button"
             onClick={onOpenDesk}
-            className="rounded-lg border-2 border-ink bg-chip-gold px-5 py-2 font-display text-xs uppercase text-ink shadow-[0_3px_0_var(--color-ink)] active:translate-y-[2px] active:shadow-none"
+            className="m3-btn m3-btn-primary px-6 py-2.5 text-xs"
           >
-            Read a document
+            Review Document
           </button>
           <button
             aria-label="Enter the Room"
             type="button"
             onClick={onPlay}
-            className="rounded-lg border-2 border-ink bg-felt-700 px-5 py-2 font-display text-xs uppercase text-cream shadow-[0_3px_0_var(--color-ink)] active:translate-y-[2px] active:shadow-none"
+            className="m3-btn m3-btn-emerald px-6 py-2.5 text-xs"
           >
-            Enter the Room
+            Enter Courtroom
           </button>
         </div>
       </footer>

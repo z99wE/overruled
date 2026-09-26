@@ -190,14 +190,12 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
       <ChamberHeader scenario={scenario} state={state} onExit={() => onExit(run)} />
 
       {boss && (
-        <div className="border-b-2 border-ink bg-ink/30 px-4 py-1.5">
-          {/* The special rule is a sentence. Setting it in uppercase mono with
-              wide tracking made it unreadable and pushed it off the edge. */}
-          <p className="text-[11px] leading-snug">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-poker-red">
-              {boss.name} · target {boss.target} chips
+        <div className="border-b border-white/10 bg-slate-950/70 px-4 py-2 backdrop-blur">
+          <p className="text-xs leading-snug font-sans">
+            <span className="font-mono text-[11px] font-semibold text-rose-300">
+              {boss.name} · Target {boss.target} chips
             </span>
-            <span className="text-cream/60"> — {boss.special}</span>
+            <span className="text-slate-300"> — {boss.special}</span>
           </p>
         </div>
       )}
@@ -206,23 +204,23 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
         {/* ── The table strip ─────────────────────────────────────── */}
         <div className="shrink-0 space-y-2.5 px-3 pt-3 lg:px-6">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-poker-red-deep font-display text-[11px] text-cream">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-rose-400/40 bg-rose-950/60 font-sans text-xs font-bold text-rose-200 shadow-sm">
                 {scenario.opposingCounselPersona.name.slice(0, 2).toUpperCase()}
               </span>
               <div className="min-w-0">
-                <p className="truncate font-display text-[11px] uppercase tracking-wider text-poker-red">
+                <p className="truncate font-sans text-xs font-semibold text-rose-300">
                   {scenario.opposingCounselPersona.name}
                 </p>
-                <p className="truncate text-[10px] leading-snug text-cream/50">
+                <p className="truncate font-mono text-[10px] text-slate-400">
                   Style · {scenario.opposingCounselPersona.style.replace(/_/g, ' ')}
                   {scenario.opposingCounselPersona.interlocutoryAttackTheme
-                    ? ` · hits at ${scenario.opposingCounselPersona.interlocutoryAttackTheme}`
+                    ? ` · targeting ${scenario.opposingCounselPersona.interlocutoryAttackTheme}`
                     : ''}
                 </p>
               </div>
             </div>
-            <span className="min-w-0 max-w-[42%] shrink-0 truncate rounded border border-cream/20 bg-ink/40 px-2 py-1 text-right font-mono text-[9px] uppercase tracking-wider text-cream/60">
+            <span className="min-w-0 max-w-[45%] shrink-0 truncate rounded-full border border-white/10 bg-slate-900/80 px-3 py-1 text-right font-mono text-[10px] text-slate-300">
               {scenario.bench}
             </span>
           </div>
@@ -241,15 +239,15 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
         {/* ── Case file toggle + trial transcript ─────────────────── */}
         <div className="shrink-0 px-3 pt-3 lg:px-6">
           {error && (
-            <div className="mb-3 flex items-start gap-3 rounded-xl border-2 border-ink bg-poker-red p-3 shadow-[0_4px_0_0_var(--color-ink)]">
-              <div className="flex-1 text-[12px] leading-relaxed text-cream">
-                <strong className="font-display uppercase">Argue failed:</strong> {error}
+            <div className="mb-3 flex items-start gap-3 rounded-2xl border border-rose-500/40 bg-rose-950/80 p-3.5 shadow-lg backdrop-blur text-rose-200">
+              <div className="flex-1 text-xs leading-relaxed">
+                <strong className="font-semibold">Submission Note:</strong> {error}
               </div>
-              <div className="flex shrink-0 gap-1.5">
-                <button type="button" onClick={onOpenKeys} aria-label="Open key vault" className="rounded-lg border-2 border-ink bg-felt-800 px-2 py-1 font-display text-[10px] uppercase text-cream">
+              <div className="flex shrink-0 gap-2">
+                <button type="button" onClick={onOpenKeys} aria-label="Open key vault" className="m3-btn m3-btn-tonal px-3 py-1 text-xs text-white">
                   <KeyRound className="inline h-3 w-3" /> Key Vault
                 </button>
-                <button type="button" onClick={clearError} aria-label="Dismiss error" className="rounded-lg border-2 border-ink bg-ink/40 px-2 py-1 font-display text-[10px] uppercase text-cream">
+                <button type="button" onClick={clearError} aria-label="Dismiss error" className="m3-btn m3-btn-outlined px-3 py-1 text-xs text-slate-300">
                   Dismiss
                 </button>
               </div>
@@ -259,14 +257,13 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
             aria-label={fileOpen ? 'Close the case file' : 'Open the case file and authority board'}
             type="button"
             onClick={() => { void notifyTap(); setFileOpen((v) => !v); }}
-            className="btn-3d flex items-center justify-center gap-2 rounded-lg border-2 border-ink bg-felt-800 py-2 font-display text-[10px] uppercase tracking-wider text-chip-gold"
+            className="m3-btn m3-btn-tonal w-full py-2.5 text-xs text-amber-300 shadow-sm"
           >
-            <FileText className="h-3.5 w-3.5" /> {fileOpen ? 'Close the case file' : 'Open the case file'}
+            <FileText className="h-3.5 w-3.5" /> {fileOpen ? 'Close the Case File' : 'Open the Case File & Precedent Archive'}
           </button>
         </div>
 
-        {/* Capped: the record was taking every spare pixel, squeezing the table
-            and the hand. It stays scrollable, but the table and hand now win. */}
+        {/* Capped scrollable transcript */}
         <div ref={transcriptRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-4 lg:max-h-[34vh] lg:px-6">
           <OpponentMessage
             from={scenario.opposingCounselPersona.name ?? 'Opposing Senior Advocate'}
@@ -304,8 +301,8 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
 
           {state.phase === 'resolving' && (
             <div className="flex items-center gap-3 py-4">
-              <Gavel className="anim-float h-5 w-5 text-chip-gold" />
-              <span className="font-display text-sm uppercase tracking-widest text-cream/70">Clerk · the Bench is recording your authority…</span>
+              <Gavel className="anim-float h-5 w-5 text-amber-300" />
+              <span className="font-sans text-xs font-medium text-slate-300">Clerk · the Bench is recording your authority…</span>
             </div>
           )}
 
@@ -344,20 +341,20 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
       {/* ── Case file drawer ──────────────────────────────────────── */}
       <div className={`fixed inset-0 z-40 ${fileOpen ? '' : 'pointer-events-none'}`} aria-hidden={!fileOpen}>
         <div
-          className={`absolute inset-0 bg-ink/70 transition-opacity ${fileOpen ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 bg-slate-950/80 backdrop-blur-md transition-opacity ${fileOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setFileOpen(false)}
           aria-hidden
         />
         <aside
-          className={`absolute right-0 top-0 flex h-full w-[min(92vw,380px)] flex-col border-l-2 border-ink bg-felt-900 shadow-2xl transition-transform duration-300 ${fileOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`absolute right-0 top-0 flex h-full w-[min(92vw,400px)] flex-col border-l border-white/10 bg-slate-950/95 shadow-2xl backdrop-blur-2xl transition-transform duration-300 ${fileOpen ? 'translate-x-0' : 'translate-x-full'}`}
         >
-          <div className="flex items-center justify-between border-b-2 border-ink px-4 py-3">
-            <p className="font-display text-xs uppercase tracking-widest text-chip-gold">The Case File</p>
+          <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+            <p className="font-display text-sm font-bold text-amber-300">The Case File &amp; Authorities</p>
             <button
               type="button"
               aria-label="Close the case file"
               onClick={() => setFileOpen(false)}
-              className="flex h-8 w-8 items-center justify-center rounded-md border border-ink text-cream/60 hover:text-cream"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white"
             >
               <X className="h-4 w-4" />
             </button>

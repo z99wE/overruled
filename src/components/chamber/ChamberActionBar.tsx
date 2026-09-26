@@ -33,28 +33,28 @@ export function ChamberActionBar({
   onRetry,
 }: ChamberActionBarProps) {
   return (
-    <div className="shrink-0 border-t-2 border-ink bg-felt-950/95 p-3 backdrop-blur lg:p-4">
+    <div className="shrink-0 border-t border-white/10 bg-slate-950/90 p-3.5 shadow-2xl backdrop-blur-xl lg:p-4">
       <div className="mx-auto max-w-3xl space-y-3">
         {state.phase === 'awaiting' ? (
           <>
-            <div className="flex gap-2">
+            <div className="flex gap-2.5">
               <button
                 aria-label="Play a precedent card from your hand"
                 type="button"
                 onClick={() => onSetMode('cards')}
-                className={`btn-3d flex flex-1 items-center justify-center gap-1.5 rounded-lg border-2 border-ink px-2 py-2 font-display text-[11px] uppercase tracking-wider ${
-                  mode === 'cards' ? 'bg-chip-gold text-ink' : 'bg-felt-800 text-cream/70'
+                className={`m3-btn flex-1 py-2 text-xs gap-1.5 ${
+                  mode === 'cards' ? 'm3-btn-primary' : 'm3-btn-tonal text-slate-300'
                 }`}
               >
-                <BookOpen className="h-3.5 w-3.5" /> Play Card · {handLeft} in hand
+                <BookOpen className="h-3.5 w-3.5" /> Deploy Precedent · {handLeft} in hand
               </button>
               {allowFreeform && (
                 <button
                   aria-label="File a freeform motion"
                   type="button"
                   onClick={() => onSetMode('freeform')}
-                  className={`btn-3d flex flex-1 items-center justify-center gap-1.5 rounded-lg border-2 border-ink px-2 py-2 font-display text-[11px] uppercase tracking-wider ${
-                    mode === 'freeform' ? 'bg-chip-gold text-ink' : 'bg-felt-800 text-cream/70'
+                  className={`m3-btn flex-1 py-2 text-xs gap-1.5 ${
+                    mode === 'freeform' ? 'm3-btn-primary' : 'm3-btn-tonal text-slate-300'
                   }`}
                 >
                   <MessageSquareQuote className="h-3.5 w-3.5" /> Freeform Motion
@@ -63,8 +63,8 @@ export function ChamberActionBar({
             </div>
 
             {mode === 'cards' ? (
-              <p className="text-center text-[11px] leading-snug text-cream/60">
-                Tap a card from your hand — the Bench reads the record, opposing counsel answers with a counter-card.
+              <p className="text-center font-sans text-xs text-slate-400">
+                Select a precedent card from your deck below to advance your submission.
               </p>
             ) : (
               <textarea
@@ -73,49 +73,48 @@ export function ChamberActionBar({
                 onKeyDown={onKeyDown}
                 placeholder={`Compose a motion for the record. Anchor it in authorities on this table — e.g. "Miranda v. Arizona requires suppression of the statement..."`}
                 rows={3}
-                className="w-full resize-none rounded-xl border-2 border-ink bg-felt-800 p-3 text-[13px] leading-relaxed text-cream outline-none placeholder:text-cream/35 focus:border-chip-gold"
+                className="m3-input font-mono text-xs"
               />
             )}
 
             <div className="flex items-center justify-between gap-3">
-              <p className="min-w-0 text-[11px] leading-snug text-cream/55">
+              <p className="min-w-0 font-mono text-[11px] text-slate-400">
                 {mode === 'freeform'
                   ? `${motion.trim().length} chars · cite an authority precisely`
-                  : 'One verified card per turn'}
-                {mode === 'freeform' && <span className="mx-1 text-cream/20">·</span>}
-                {mode === 'freeform' && <kbd className="rounded border border-ink bg-felt-800 px-1 py-0.5">⌘/Ctrl+Enter</kbd>}
+                  : '1 verified card per turn'}
+                {mode === 'freeform' && <span className="mx-1 text-slate-600">·</span>}
+                {mode === 'freeform' && <kbd className="rounded border border-slate-700 bg-slate-900 px-1 py-0.5 text-[10px]">⌘/Ctrl+Enter</kbd>}
               </p>
               <button
                 aria-label={isFinalTurn ? 'Submit final submission' : 'Play the hand and address the bench'}
                 type="button"
                 onClick={onSubmit}
                 disabled={!canSubmit}
-                className={[
-                  'btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink px-4 py-2 font-display text-xs uppercase tracking-wider',
-                  canSubmit ? 'bg-poker-red text-cream' : 'cursor-not-allowed bg-felt-800 text-cream/30',
-                ].join(' ')}
+                className={`m3-btn px-6 py-2.5 text-xs ${
+                  canSubmit ? 'm3-btn-primary' : 'm3-btn-outlined'
+                }`}
               >
-                {isFinalTurn ? 'Final Submission' : 'Play the hand'} <ArrowRight className="h-3.5 w-3.5" />
+                {isFinalTurn ? 'Final Submission' : 'Submit Argument'} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
               </button>
             </div>
           </>
         ) : state.phase === 'verdict' && state.last ? (
           <div className="flex items-center justify-between gap-3">
-            <p className="min-w-0 text-[11px] leading-snug text-cream/70">
+            <p className="min-w-0 font-sans text-xs font-semibold text-amber-300">
               {state.turn >= state.maxTurns ? 'Final turn recorded. The Clerk will read the verdict.' : 'The Bench has ruled on the record.'}
             </p>
             <button
               aria-label="Continue to next turn"
               type="button"
               onClick={onContinue}
-              className="btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-chip-gold px-4 py-2 font-display text-xs uppercase tracking-wider text-ink"
+              className="m3-btn m3-btn-primary px-6 py-2 text-xs"
             >
-              Continue <ArrowRight className="h-3.5 w-3.5" />
+              Continue <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
             </button>
           </div>
         ) : state.phase === 'resolving' ? (
-          <div className="flex items-center justify-center gap-2 py-2 text-center text-xs leading-snug text-cream/70">
-            <Loader2 className="h-4 w-4 animate-spin text-chip-gold" /> Opposing counsel answers · the Bench deliberates…
+          <div className="flex items-center justify-center gap-2 py-2 text-center font-sans text-xs font-medium text-amber-300">
+            <Loader2 className="h-4 w-4 animate-spin text-amber-300" /> Opposing counsel answers · Bench deliberating…
           </div>
         ) : (
           <div className="flex items-center justify-center gap-4 py-2">
@@ -123,9 +122,9 @@ export function ChamberActionBar({
               aria-label="Retry trial"
               type="button"
               onClick={onRetry}
-              className="btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-felt-800 px-4 py-2 font-display text-xs uppercase tracking-wider text-cream"
+              className="m3-btn m3-btn-tonal px-5 py-2 text-xs text-white"
             >
-              <RotateCcw className="h-3.5 w-3.5" /> Retry trial
+              <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Retry Trial
             </button>
           </div>
         )}

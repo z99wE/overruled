@@ -34,7 +34,22 @@ const JURISDICTION_LABEL: Record<Jurisdiction, string> = {
   IN: 'India',
 };
 
-export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, onOpenShop, onOpenDuel, onOpenDesk, onSelect, onOpenKeys, onOpenAccount, accountEmail, onGenerate, onOpenHowItWorks }: CaseSelectProps) {
+export function CaseSelect({
+  scenarios,
+  hasKey,
+  run,
+  caseOfDayId,
+  onRunChange,
+  onOpenShop,
+  onOpenDuel,
+  onOpenDesk,
+  onSelect,
+  onOpenKeys,
+  onOpenAccount,
+  accountEmail,
+  onGenerate,
+  onOpenHowItWorks,
+}: CaseSelectProps) {
   const [genOpen, setGenOpen] = useState(false);
   const [generated, setGenerated] = useState<ScenarioBundle | null>(null);
 
@@ -47,237 +62,246 @@ export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, o
   };
 
   return (
-    <div className="felt-bg felt-noise flex min-h-full flex-col">
-      <header className="flex items-center justify-between gap-4 px-5 pb-2 pt-6 lg:px-10">
-        <div className="flex items-baseline gap-2">
-          <h1
-            className="font-display text-4xl text-cream lg:text-5xl"
-            style={{ textShadow: '0 4px 0 var(--color-poker-red-deep), 0 6px 0 var(--color-ink)' }}
-          >
-            OVERROOL
-          </h1>
-          <span className="anim-float hidden rounded-full border-2 border-ink bg-chip-gold px-2 py-0.5 font-display text-[10px] text-ink shadow-[0_3px_0_0_var(--color-ink)] sm:inline-block">
-            ANTE · LAW
-          </span>
+    <div className="felt-bg min-h-full flex flex-col selection:bg-amber-400 selection:text-slate-950">
+      {/* ── Top Header ────────────────────────────────────────── */}
+      <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-slate-950/80 px-6 py-3.5 shadow-lg backdrop-blur-xl lg:px-12">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-md">
+            <Scale className="h-5 w-5" strokeWidth={2.2} />
+          </div>
+          <div>
+            <h1 className="font-display text-xl font-bold tracking-tight text-white">
+              Over<span className="text-amber-300">rool</span>
+            </h1>
+            <p className="font-sans text-[11px] text-slate-400">
+              Courtroom Chambers · Active Dockets
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             aria-label={accountEmail ? `Account for ${accountEmail}` : 'Sign up or log in to sync your progress'}
             type="button"
             onClick={onOpenAccount}
-            className="hidden items-center gap-1.5 rounded-lg border border-cream/25 px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-cream/70 transition hover:border-chip-gold/50 hover:text-chip-gold sm:inline-flex"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-slate-900/60 px-3.5 py-1.5 font-mono text-xs text-slate-300 hover:border-amber-400/40 hover:text-white transition-colors"
           >
-            <ShieldCheck className="h-3.5 w-3.5" /> {accountEmail ? accountEmail : 'Sign up'}
+            <ShieldCheck className="h-3.5 w-3.5 text-amber-300" />
+            {accountEmail ? accountEmail : 'Account Sync'}
           </button>
+
           <button
-          aria-label="Open shop"
+            aria-label="Open shop"
             type="button"
             onClick={onOpenShop}
-
-            className="btn-3d inline-flex items-center gap-1.5 rounded-lg border-2 border-ink bg-chip-gold px-3 py-2 font-display text-[11px] uppercase tracking-wider text-ink"
+            className="m3-btn m3-btn-primary px-4 py-1.5 text-xs"
           >
-            <ShoppingBag className="h-4 w-4" /> 🪙 {run.chips}
+            <ShoppingBag className="h-3.5 w-3.5 mr-0.5" />
+            🪙 {run.chips}
           </button>
+
           <button
             aria-label="Open the Legal Desk to understand any legal document"
             type="button"
             onClick={onOpenDesk}
-            className="btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-felt-800 px-3 py-2 font-display text-[11px] uppercase tracking-wider text-cream"
+            className="m3-btn m3-btn-tonal px-4 py-1.5 text-xs text-slate-200"
           >
-            <Landmark className="h-4 w-4" /> Desk
+            <Landmark className="h-3.5 w-3.5 mr-1" />
+            Legal Desk
           </button>
+
           <button
-          aria-label={hasKey ? 'Open key vault' : 'Open key vault to see key options'}
+            aria-label={hasKey ? 'Open key vault' : 'Open key vault to see key options'}
             type="button"
             onClick={onOpenKeys}
-
-            className={`btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink px-3 py-2 font-display text-[11px] uppercase tracking-wider ${
-              hasKey ? 'bg-felt-600 text-cream' : 'bg-felt-700 text-cream/80'
+            className={`m3-btn px-4 py-1.5 text-xs ${
+              hasKey ? 'm3-btn-emerald' : 'm3-btn-outlined text-slate-300'
             }`}
           >
-            {hasKey ? <ShieldCheck className="h-4 w-4" /> : <KeyRound className="h-4 w-4" />}
-            {hasKey ? 'Key Armed' : 'No Key'}
+            {hasKey ? <ShieldCheck className="h-3.5 w-3.5 mr-1" /> : <KeyRound className="h-3.5 w-3.5 mr-1" />}
+            {hasKey ? 'Key Active' : 'Keyless (Local)'}
           </button>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-5 pb-10 pt-4 lg:px-10">
-        <p className="mb-6 max-w-2xl text-[15px] leading-relaxed text-cream/85">
-          <strong className="text-chip-gold">Your problem:</strong> you cannot practise adversarial argument safely or free — and most
-          legal AI just fabricates cases.
-          <br className="hidden sm:block" />
-          <strong className="text-chip-gold">Your hand:</strong> every matter deals you five{' '}
-          <em className="text-cream">verified, real judgments</em> as playing cards. Play one each turn — the opposing-counsel
-          agent reads your deck and strikes back with a counter-card, and the Bench rewards verified authority. Invented law is exposure on
-          the record, which ships home as a consultation docket.
-        </p>
-
+      {/* ── Main Content Area ────────────────────────────────────── */}
+      <main className="mx-auto w-full max-w-6xl flex-1 px-6 pb-12 pt-6 lg:px-12">
+        {/* Run / Score Stats Panel */}
         <div className="mb-6">
-          <RunPanel run={run} onChange={onRunChange} />
+          <RunPanel run={run} onChange={onRunChange} onOpenShop={onOpenShop} />
         </div>
 
-        <NewsFeed onNeedAccount={onOpenAccount} />
+        {/* Global News Feed */}
+        <div className="mb-6">
+          <NewsFeed onNeedAccount={onOpenAccount} />
+        </div>
 
+        {/* Local Bench info banner */}
         {!hasKey && (
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-ink bg-felt-700/40 p-4">
-            <div>
-              <p className="font-display text-sm uppercase tracking-wider text-cream">
-                Playing with the local bench
-              </p>
-              <p className="mt-0.5 text-[12px] text-cream/70">
-                No key? Every case still plays: the rules-only Bench resolves turns instantly.
-                Add a Gemini, OpenAI, Anthropic or Groq key (kept on this device, scoped to your
-                account) to call live multi-role models instead. Your trial never needs a key.
+          <div className="mb-6 m3-card p-5 border-amber-400/30 flex flex-wrap items-center justify-between gap-4">
+            <div className="max-w-2xl">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="m3-chip m3-chip-primary text-[8px]">Active Mode</span>
+                <p className="font-display text-sm font-bold text-white">
+                  Private Native Bench (Zero Key Required)
+                </p>
+              </div>
+              <p className="text-xs leading-relaxed text-slate-300">
+                100% private and on-device: turns resolve instantly with verified precedent rules. Connect your personal Gemini, OpenAI, Claude, or Groq key for full multi-turn adversarial AI briefs.
               </p>
             </div>
             <button
-          aria-label="Open the key vault"
+              aria-label="Open the key vault"
               type="button"
               onClick={onOpenKeys}
-
-              className="btn-3d inline-flex shrink-0 items-center gap-2 rounded-lg border-2 border-ink bg-chip-gold px-4 py-2 font-display text-xs uppercase tracking-wider text-ink"
+              className="m3-btn m3-btn-primary shrink-0 px-4 py-2 text-xs"
             >
-              <KeyRound className="h-4 w-4" /> Open the Key Vault
+              <KeyRound className="h-3.5 w-3.5 mr-1" />
+              Configure BYOK Vault
             </button>
           </div>
         )}
 
+        {/* Matter Generator Panel */}
         {onGenerate && (
-          <section className="mb-8 rounded-2xl border-2 border-ink bg-felt-800 p-5">
+          <section className="mb-6 m3-card-elevated p-6 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-amber-950/30">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="max-w-xl">
-                <h2 className="flex items-center gap-2 font-display text-lg uppercase tracking-wide text-chip-gold">
-                  <Wand2 className="h-5 w-5" /> Deal Me a Fresh Matter
-                </h2>
-                <p className="mt-1 text-[13px] leading-relaxed text-cream/75">
-                  Generate an endless supply of new cases: fictional parties, fresh fact patterns, but a
-                  deck of <span className="text-cream">real, citable precedent cards only</span> — drawn from the
-                  same verified corpus the bench enforces.
+              <div className="max-w-2xl">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Wand2 className="h-4 w-4 text-amber-300" />
+                  <h2 className="font-display text-base font-bold text-amber-200">
+                    Procedural Matter Generator
+                  </h2>
+                </div>
+                <p className="text-xs leading-relaxed text-slate-300">
+                  Generate unlimited dispute scenarios with novel fact patterns while testing against a verified deck of <strong className="text-white">real, certified precedent cards only</strong>.
                 </p>
               </div>
               <button
-          aria-label="Generate a new case"
+                aria-label="Generate a new case"
                 type="button"
                 onClick={handleGenerate}
-
-                className="btn-3d inline-flex shrink-0 items-center gap-2 rounded-lg border-2 border-ink bg-poker-red px-5 py-3 font-display text-sm uppercase tracking-wider text-cream"
+                className="m3-btn m3-btn-primary shrink-0 px-5 py-2.5 text-xs"
               >
-                <Dices className="h-4 w-4" /> Generate Case
+                <Dices className="h-4 w-4 mr-1.5" />
+                Generate New Matter
               </button>
             </div>
           </section>
         )}
 
-        <section className="mb-8 rounded-2xl border-2 border-ink bg-poker-red-deep/30 p-5">
+        {/* Counsel Duel Section */}
+        <section className="mb-8 m3-card-elevated p-6 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-rose-950/25 border-rose-500/20">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="max-w-xl">
-              <h2 className="flex items-center gap-2 font-display text-lg uppercase tracking-wide text-chip-gold">
-                <Swords className="h-5 w-5" /> Counsel Duel — pass &amp; play
-              </h2>
-              <p className="mt-1 text-[13px] leading-relaxed text-cream/75">
-                Two lawyers, one device. Pick real cases in secret, hand the phone over, and let the
-                cards collide on the felt. Best of five — the bench explains every verdict.
+            <div className="max-w-2xl">
+              <div className="flex items-center gap-2 mb-1.5">
+                <Swords className="h-4 w-4 text-rose-300" />
+                <h2 className="font-display text-base font-bold text-rose-200">
+                  Counsel Duel — Pass &amp; Play Arena
+                </h2>
+              </div>
+              <p className="text-xs leading-relaxed text-slate-300">
+                Two advocates, one device. Select real precedent cards in secret, pass the screen, and clash arguments in a best-of-five showdown.
               </p>
             </div>
             <button
-          aria-label="Start a counsel duel"
+              aria-label="Start a counsel duel"
               type="button"
               onClick={onOpenDuel}
-
-              className="btn-3d inline-flex shrink-0 items-center gap-2 rounded-lg border-2 border-ink bg-poker-red px-5 py-3 font-display text-sm uppercase tracking-wider text-cream"
+              className="m3-btn m3-btn-tonal border-rose-400/30 text-rose-200 shrink-0 px-5 py-2.5 text-xs hover:border-rose-400"
             >
-              <Swords className="h-4 w-4" /> Start a Duel
+              <Swords className="h-4 w-4 mr-1.5" />
+              Launch Duel Arena
             </button>
           </div>
         </section>
 
+        {/* Case of the day notification */}
         {caseOfDayId && (
-          <div className="mb-6 flex items-center gap-2 rounded-xl border-2 border-ink bg-ink/30 px-4 py-2.5">
-            <CalendarDays className="h-4 w-4 shrink-0 text-chip-gold" />
-            <p className="font-mono text-[11px] uppercase tracking-widest text-cream/70">
-              Case of the day — a fresh boss scalp pays +100 chips
+          <div className="mb-6 flex items-center gap-2.5 rounded-2xl border border-amber-400/30 bg-slate-950/80 px-4 py-2.5 backdrop-blur">
+            <CalendarDays className="h-4 w-4 shrink-0 text-amber-300" />
+            <p className="font-sans text-xs text-amber-200">
+              Case of the Day — Overcoming today's featured Bench grants <span className="font-semibold">+100 bonus chips</span>
             </p>
           </div>
         )}
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          {scenarios.map((s, i) => {
+        {/* ── Matter Cards Grid ──────────────────────────────────── */}
+        <div className="grid gap-6 sm:grid-cols-2">
+          {scenarios.map((s) => {
             const isGenerated = s.id.startsWith('generated-');
             const isBoss = !isGenerated;
             const boss = isBoss ? bossForJurisdiction(s.jurisdiction) : null;
             const scalped = isBoss && run.bossesDefeated.includes(`static-${s.id}`);
             const isCaseOfDay = `static-${s.id}` === caseOfDayId;
+
             return (
               <button
                 aria-label={`Play ${s.title}`}
                 key={s.id}
                 type="button"
                 onClick={() => onSelect(s.id)}
-                className="card-3d group relative overflow-hidden rounded-2xl border-2 border-ink bg-gradient-to-b from-felt-700/70 via-felt-800 to-felt-900 text-left focus-visible:border-chip-gold hover:border-chip-gold"
+                className="m3-card-elevated group relative overflow-hidden p-6 text-left transition-all focus-visible:outline-none"
               >
-                {/* Playing-card corner pips */}
-                <span className="pointer-events-none absolute left-2.5 top-2.5 font-mono text-[13px] font-bold text-chip-gold">
-                  {s.jurisdiction}
-                </span>
-                <span className="pointer-events-none absolute left-2.5 top-7 font-mono text-[9px] uppercase tracking-widest text-chip-gold/70">
-                  {s.bench.slice(0, 6)}
-                </span>
-                <span className="pointer-events-none absolute bottom-2.5 right-2.5 rotate-180 font-mono text-[13px] font-bold text-chip-gold">
-                  {s.jurisdiction}
-                </span>
-
-                {/* Faint watermark mark */}
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute -right-5 top-1/2 -translate-y-1/2 select-none font-display text-[7rem] leading-none text-cream/[0.05]"
-                >
-                  {s.jurisdiction}
-                </span>
+                {/* Playing-card corner tags */}
+                <div className="pointer-events-none absolute right-4 top-4 flex items-center gap-1.5">
+                  <span className="m3-chip text-[9px]">
+                    {s.jurisdiction}
+                  </span>
+                  <span className="m3-chip m3-chip-primary text-[9px]">
+                    {s.bench.slice(0, 12)}
+                  </span>
+                </div>
 
                 {isGenerated && (
-                  <div className="pointer-events-none absolute right-0 top-0 h-0 w-0 border-l-[46px] border-t-[46px] border-l-transparent border-t-chip-gold">
-                    <Sparkles className="absolute -right-[44px] top-[6px] h-3.5 w-3.5 text-ink" />
+                  <div className="pointer-events-none absolute left-0 top-0 rounded-br-xl border-b border-r border-amber-400/30 bg-amber-400/20 px-3 py-1 font-mono text-[9px] font-semibold text-amber-200">
+                    <Sparkles className="inline-block mr-1 h-3 w-3" /> Custom Matter
                   </div>
                 )}
                 {isBoss && (
-                  <div className="pointer-events-none absolute left-0 top-0 h-0 w-0 border-r-[46px] border-t-[46px] border-r-transparent border-t-poker-red">
-                    <Skull className="absolute -left-[44px] top-[6px] h-3.5 w-3.5 text-cream" />
+                  <div className="pointer-events-none absolute left-0 top-0 rounded-br-xl border-b border-r border-rose-500/30 bg-rose-950/60 px-3 py-1 font-mono text-[9px] font-semibold text-rose-200">
+                    <Skull className="inline-block mr-1 h-3 w-3" /> Boss Bench
                   </div>
                 )}
-                <div className="relative space-y-3 p-5 pl-9 pt-8">
-                  <div className="flex items-center justify-between">
-                    <span className="rounded border-2 border-ink bg-poker-red px-2 py-0.5 font-display text-[10px] tracking-wider text-cream">
-                      {JURISDICTION_LABEL[s.jurisdiction] ?? 'GLOBAL'}
+
+                <div className="space-y-3 pt-3">
+                  <div className="flex items-center gap-2">
+                    <span className="m3-chip m3-chip-emerald text-[9px]">
+                      {JURISDICTION_LABEL[s.jurisdiction] ?? 'Global'}
                     </span>
-                    <span className="flex items-center gap-1.5 font-mono text-[10px] text-cream/40">
-                      {isCaseOfDay && <span className="rounded bg-chip-gold px-1 py-0.5 font-display text-[8px] uppercase text-ink">Today</span>}
-                      {scalped && <span className="rounded bg-felt-600 px-1 py-0.5 font-display text-[8px] uppercase text-cream">Scalped ✓</span>}
-                      {isGenerated ? `seed ${s.id.replace('generated-', '')}` : `#${String(i + 1).padStart(2, '0')}`}
-                    </span>
+                    {isCaseOfDay && (
+                      <span className="m3-chip m3-chip-primary text-[9px]">Daily Special</span>
+                    )}
+                    {scalped && (
+                      <span className="m3-chip text-[9px] text-emerald-300">Victory ✓</span>
+                    )}
                   </div>
+
                   {boss && (
-                    <p className="font-mono text-[10px] uppercase tracking-wider text-poker-red/90">
-                      ☠ {boss.name} · {boss.target} chips · {boss.special}
+                    <p className="font-mono text-[11px] text-rose-300">
+                      Bench Justice: {boss.name} · Target {boss.target} pts · {boss.special}
                     </p>
                   )}
-                  <h3
-                    className="font-display text-xl leading-tight text-cream group-hover:text-chip-gold"
-                    style={{ textShadow: '2px 2px 0 var(--color-ink)' }}
-                  >
+
+                  <h3 className="font-display text-xl font-bold leading-snug text-white group-hover:text-amber-200 transition-colors">
                     {s.title}
                   </h3>
-                  <p className="line-clamp-3 text-[13px] leading-relaxed text-cream/70">{s.coreDispute}</p>
-                  <div className="flex items-center justify-between pt-1">
-                    <div className="flex flex-wrap items-center gap-2 font-mono text-[10px] text-cream/60">
+
+                  <p className="line-clamp-3 text-xs leading-relaxed text-slate-300">
+                    {s.coreDispute}
+                  </p>
+
+                  <div className="flex items-center justify-between border-t border-white/10 pt-3">
+                    <div className="flex items-center gap-3 font-mono text-[10px] text-slate-400">
                       <span className="inline-flex items-center gap-1">
-                        <Scale className="h-3 w-3 text-chip-gold" /> {s.maxTurns} turns
+                        <Scale className="h-3 w-3 text-amber-300" /> {s.maxTurns} turns
                       </span>
                       <span className="inline-flex items-center gap-1">
-                        <Layers className="h-3 w-3 text-chip-gold" /> {s.availablePrecedents.length} cards
+                        <Layers className="h-3 w-3 text-amber-300" /> {s.availablePrecedents.length} precedents
                       </span>
                     </div>
-                    <span className="inline-flex items-center gap-1 font-display text-[11px] tracking-wider text-chip-gold opacity-0 transition-opacity group-hover:opacity-100">
-                      PLAY <ArrowRight className="h-3.5 w-3.5" />
+                    <span className="inline-flex items-center gap-1 font-sans text-xs font-semibold text-amber-300 transition-transform group-hover:translate-x-1">
+                      Enter Chamber <ArrowRight className="h-3.5 w-3.5" />
                     </span>
                   </div>
                 </div>
@@ -289,52 +313,57 @@ export function CaseSelect({ scenarios, hasKey, run, caseOfDayId, onRunChange, o
         <StatutoryNotice />
       </main>
 
-      <footer className="px-5 pb-5 text-center font-mono text-[10px] text-cream/35 lg:px-10">
-        <button type="button" onClick={() => onOpenHowItWorks?.()} aria-label="How it works" className="mb-2 font-mono text-[10px] uppercase tracking-widest text-cream/60 underline decoration-dotted transition hover:text-cream">
-          How it works ↺
+      {/* ── Footer ──────────────────────────────────────────────── */}
+      <footer className="border-t border-white/10 bg-slate-950/80 px-6 py-8 text-center font-sans text-xs text-slate-400 backdrop-blur-md">
+        <button
+          type="button"
+          onClick={() => onOpenHowItWorks?.()}
+          aria-label="How it works"
+          className="mb-2 text-amber-300 underline decoration-dotted hover:text-white transition-colors"
+        >
+          View System Architecture ↺
         </button>
         <br />
-        offline corpus · client-side citation verification · keys never leave this device · {scenarios.length} matters on the table
+        Offline Verified Corpus · Zero-Leak Local Privacy · {scenarios.length} Live Matters on Docket
       </footer>
 
+      {/* ── Generated Case Modal ─────────────────────────────────── */}
       {genOpen && generated && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-ink/70 p-4">
-          <div className="anim-slam w-full max-w-md rounded-2xl border-2 border-ink bg-felt-800 p-6 shadow-[0_10px_0_0_var(--color-ink)]">
-            <p className="font-mono text-[10px] uppercase tracking-widest text-cream/50">
-              Matter dealt · seed {generated.id.replace('generated-', '')}
-            </p>
-            <h3 className="mt-1 font-display text-2xl leading-tight text-cream" style={{ textShadow: '2px 2px 0 var(--color-ink)' }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md">
+          <div className="anim-slam w-full max-w-lg m3-card-elevated p-6 border-amber-400/40">
+            <span className="m3-chip m3-chip-primary text-[9px]">
+              Matter Seed: {generated.id.replace('generated-', '')}
+            </span>
+            <h3 className="mt-3 font-display text-2xl font-bold text-white">
               {generated.title}
             </h3>
-            <p className="mt-3 text-[13px] leading-relaxed text-cream/75">{generated.factualBackground}</p>
-            <p className="mt-3 rounded-lg border-2 border-dashed border-cream/30 bg-ink/30 p-3 text-[12px] italic text-cream/70">
-              {generated.opposingCounselPersona.name} opens for the other side: “{generated.opposingCounselPersona.initialOpeningStatement}”
+            <p className="mt-3 text-xs leading-relaxed text-slate-300">
+              {generated.factualBackground}
             </p>
-            <div className="mt-4 flex items-center justify-between gap-3">
-              <p className="font-mono text-[10px] text-cream/50">
-                {generated.jurisdiction} · {generated.availablePrecedents.length} real precedent cards · {generated.maxTurns} turns
-              </p>
+            <div className="mt-3 rounded-xl border border-white/10 bg-slate-950/80 p-3.5 text-xs italic text-amber-200">
+              <strong className="text-white not-italic">{generated.opposingCounselPersona.name} (Opposing Counsel):</strong> “{generated.opposingCounselPersona.initialOpeningStatement}”
+            </div>
+            <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/10 pt-4">
+              <span className="font-mono text-[10px] text-slate-400">
+                {generated.jurisdiction} · {generated.availablePrecedents.length} precedents · {generated.maxTurns} turns
+              </span>
               <div className="flex gap-2">
                 <button
-          aria-label="Keep generated case on the table"
                   type="button"
                   onClick={() => setGenOpen(false)}
-
-                  className="btn-3d rounded-lg border-2 border-ink bg-felt-700 px-3 py-2 font-display text-[11px] uppercase text-cream"
+                  className="m3-btn m3-btn-outlined px-4 py-2 text-xs"
                 >
-                  Keep on table
+                  Close
                 </button>
                 <button
-          aria-label="Enter the chamber with this case"
                   type="button"
                   onClick={() => {
                     setGenOpen(false);
                     onSelect(generated.id);
                   }}
-
-                  className="btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-chip-gold px-3 py-2 font-display text-[11px] uppercase text-ink"
+                  className="m3-btn m3-btn-primary px-5 py-2 text-xs"
                 >
-                  Enter the chamber <ArrowRight className="h-3.5 w-3.5" />
+                  Enter Chamber <ArrowRight className="ml-1 h-3.5 w-3.5" />
                 </button>
               </div>
             </div>

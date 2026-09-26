@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#06130d" />
     <meta
       name="description"
-      content="Free GenAI legal assistance: simplify a contract, compare two versions, audit risks, and ask questions answered only from your own document. Grounded in 59 real judgments. Not legal advice."
+      content="Free client-side GenAI legal assistance: simplify contracts, compare draft versions, audit liabilities, and ask questions strictly grounded in your text. Grounded in 59 landmark judgments across 7 jurisdictions. Not legal advice."
     />
     <link rel="canonical" href="https://overrool.pages.dev/" />
 
@@ -14,52 +14,91 @@
     <meta property="og:site_name" content="Overrool" />
     <meta property="og:locale" content="en" />
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Overrool",
-      "url": "https://overrool.pages.dev/",
-      "applicationCategory": "BusinessApplication",
-      "applicationSubCategory": "LegalAssistanceAndEducation",
-      "operatingSystem": "Any (browser; native Tauri/Capacitor shell)",
-      "browserRequirements": "Requires JavaScript",
-      "genre": "legal assistance, legal education, and legal strategy simulation",
-      "isAccessibleForFree": true,
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "audience": { "@type": "Audience", "audienceType": "people seeking legal assistance, law students, and legal-simulation players" },
-      "isPartOf": { "@type": "WebSite", "name": "Overrool", "url": "https://overrool.pages.dev/" },
-      "description": "Free GenAI assistant for legal assistance and access: simplify, compare and audit legal documents, answer questions strictly from the reader.s own text, and prepare a consultation pack. Grounded in 59 published judgments across seven legal systems. Provides information and education, not legal advice.",
-      "inLanguage": "en",
-      "potentialAction": { "@type": "SearchAction", "target": "https://overrool.pages.dev/?q={search_term_string}", "query-input": "required name=search_term_string" },
-      "creator": { "@type": "Organization", "name": "Overrool" },
-      "license": "https://github.com/z99wE/overruled/blob/main/LICENSE"
-    }
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Overrool",
+        "url": "https://overrool.pages.dev/",
+        "applicationCategory": "BusinessApplication",
+        "applicationSubCategory": "LegalAssistanceAndEducation",
+        "operatingSystem": "Any modern web browser, iOS, Android, macOS, Linux, Windows",
+        "browserRequirements": "Requires JavaScript",
+        "genre": "Legal Document Intelligence, Contract Analysis & Strategy Simulation",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "audience": { "@type": "Audience", "audienceType": "Individuals, small business owners, tenants, researchers, law students" },
+        "description": "Free, zero-data-leak legal assistant to simplify contracts, audit risks, perform redline comparisons, answer questions from documents, and simulate adversarial courtroom arguments grounded in 59 published judgments.",
+        "inLanguage": "en",
+        "creator": { "@type": "Organization", "name": "Overrool", "url": "https://overrool.pages.dev/" }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "Dataset",
+        "name": "Overrool Landmark Jurisprudence Corpus",
+        "description": "Verified corpus of 59 landmark judicial decisions spanning the United States, United Kingdom, European Union, Canada, Australia, South Africa, and India.",
+        "license": "https://creativecommons.org/publicdomain/mark/1.0/",
+        "isAccessibleForFree": true,
+        "keywords": ["constitutional law", "contract law", "privacy", "negligence", "human rights", "landmark precedents"]
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How does Overrool analyze legal documents without privacy leaks?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Overrool processes documents 100% client-side inside the user's browser using Web Workers. Document text is never uploaded to an intermediary server. In direct BYOK mode, calls go directly to the user's selected AI provider."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Are the legal cases in Overrool real precedents?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, every precedent in Overrool is a verified published judgment from official law reporting bodies (Justia, Indian Kanoon, SafLII, CanLII, AustLII, BAILII, EUR-Lex)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can Overrool invent or hallucinate citations?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Citations are verified against an embedded ground-truth database. Any citation generated outside verified authorities triggers an immediate rejection."
+            }
+          }
+        ]
+      }
+    ]
     </script>
-    <meta property="og:title" content="Overrool — Understand your legal documents, free" />
+    <meta property="og:title" content="Overrool — Grounded Legal Intelligence &amp; Document Understanding" />
     <meta
       property="og:description"
-      content="Understand the legal documents in front of you — simplify, compare, audit risks, and get a pre-consultation pack for your lawyer. Grounded in 59 published judgments. Bring your own key."
+      content="Understand your contracts and legal documents in plain language — simplify clauses, compare drafts, audit risks, and spar against 59 real landmark judgments. 100% private."
     />
     <meta property="og:url" content="https://overrool.pages.dev/" />
-    <meta property="og:image" content="https://overrool.pages.dev/icons/icon-512.png" />
-    <meta property="og:image:width" content="512" />
-    <meta property="og:image:height" content="512" />
+    <meta property="og:image" content="https://overrool.pages.dev/assets/lady-justice.jpg" />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="1024" />
 
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Overrool — Play the World's Judgments" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Overrool — Grounded Legal Intelligence" />
     <meta
       name="twitter:description"
-      content="Adversarial legal-strategy courtroom card game grounded in real judgments. Educational simulation only; not legal advice."
+      content="Client-side legal document analysis and courtroom strategy simulation grounded in 59 published judgments."
     />
-    <meta name="twitter:image" content="https://overrool.pages.dev/icons/icon-512.png" />
+    <meta name="twitter:image" content="https://overrool.pages.dev/assets/lady-justice.jpg" />
 
-    <link rel="icon" href="/icons/icon-192.png" />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/jpeg" href="/assets/favicon.jpg" />
+    <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="/assets/favicon.jpg" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="sitemap" href="/sitemap.xml" />
     <link rel="llms.txt" href="/llms.txt" />
     <link rel="robots" href="/robots.txt" />
-    <title>Overrool — Free GenAI Legal Assistance &amp; Document Understanding</title>
+    <title>Overrool — Grounded Legal Assistance &amp; Document Understanding</title>
   </head>
   <body>
     <div id="root"></div>

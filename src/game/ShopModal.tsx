@@ -14,44 +14,44 @@ export function ShopModal({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-2xl rounded-2xl border-2 border-ink bg-felt-900 shadow-[0_8px_0_0_var(--color-ink)]">
-        <header className="flex items-center justify-between border-b-2 border-ink px-4 py-3">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md">
+      <div className="w-full max-w-2xl rounded-3xl border border-white/15 bg-slate-900/95 shadow-2xl backdrop-blur-2xl">
+        <header className="flex items-center justify-between border-b border-white/10 px-6 py-4">
           <div>
-            <h2 className="font-display text-sm uppercase tracking-widest text-chip-gold">Chambers Shop</h2>
-            <p className="font-mono text-[9px] uppercase tracking-widest text-cream/40">Jokers reshape how every verdict scores</p>
+            <h2 className="font-display text-base font-bold text-amber-300">Chambers Emporium</h2>
+            <p className="font-sans text-xs text-slate-400">Jokers reshape how every precedent and verdict scores</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-lg border-2 border-ink bg-chip-gold px-2 py-1 font-display text-[11px] text-ink">
-              🪙 {chips}
+            <span className="rounded-full border border-amber-400/40 bg-amber-400/15 px-3 py-1 font-mono text-xs font-semibold text-amber-300">
+              🪙 {chips} chips
             </span>
             <button
-            aria-label="Close shop"
-            type="button"
-            onClick={onClose}
-            className="btn-3d flex h-8 w-8 items-center justify-center rounded-lg border-2 border-ink bg-felt-800 text-cream"
+              aria-label="Close shop"
+              type="button"
+              onClick={onClose}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white"
             >
-              <X className="h-4 w-4" strokeWidth={2.5} />
+              <X className="h-4 w-4" />
             </button>
           </div>
         </header>
-        <div className="grid max-h-[65vh] gap-2.5 overflow-y-auto p-4 sm:grid-cols-2">
+        <div className="grid max-h-[65vh] gap-3.5 overflow-y-auto p-6 sm:grid-cols-2">
           {JOKERS.map((j) => {
             const isOwned = owned.includes(j.id);
             const afford = chips >= j.cost;
             return (
               <div
                 key={j.id}
-                className="flex flex-col justify-between rounded-xl border-2 border-ink bg-felt-800/70 p-3"
+                className="flex flex-col justify-between rounded-2xl border border-white/10 bg-slate-950/60 p-4 shadow-sm"
               >
                 <div>
-                  <div className="mb-1 flex items-center justify-between gap-2">
-                    <p className="font-display text-[12px] text-cream">{j.name}{isOwned ? ' ✓' : ''}</p>
-                    <span className={`rounded border-2 border-ink px-1.5 py-0.5 font-display text-[8px] uppercase tracking-widest ${rarityCls(j.rarity)}`}>
+                  <div className="mb-1.5 flex items-center justify-between gap-2">
+                    <p className="font-display text-sm font-bold text-white">{j.name}{isOwned ? ' ✓' : ''}</p>
+                    <span className={`rounded-full border px-2 py-0.5 font-mono text-[9px] ${rarityCls(j.rarity)}`}>
                       {j.rarity}
                     </span>
                   </div>
-                  <p className="text-[11px] leading-snug text-cream/65">{j.blurb}</p>
+                  <p className="text-xs leading-relaxed text-slate-300">{j.blurb}</p>
                 </div>
                 <button
                   aria-label={isOwned ? `In play: ${j.name}` : `Buy ${j.name} for ${j.cost} chips`}
@@ -62,15 +62,15 @@ export function ShopModal({
                     onBuy(j.id as JokerId, j.cost);
                   }}
                   className={[
-                    'btn-3d mt-2.5 rounded-lg border-2 border-ink px-3 py-1.5 font-display text-[11px] uppercase tracking-wider',
+                    'm3-btn mt-3.5 w-full py-2 text-xs',
                     isOwned
-                      ? 'cursor-default bg-felt-950 text-cream/40'
+                      ? 'cursor-default bg-slate-900 text-slate-500 border border-white/5'
                       : afford
-                        ? 'bg-chip-gold text-ink'
-                        : 'cursor-not-allowed bg-felt-950 text-cream/30',
+                        ? 'm3-btn-primary'
+                        : 'cursor-not-allowed bg-slate-900/50 text-slate-600 border border-white/5',
                   ].join(' ')}
                 >
-                  {isOwned ? 'In play' : `🪙 ${j.cost}`}
+                  {isOwned ? 'Admitted to Deck' : `🪙 ${j.cost} Chips`}
                 </button>
               </div>
             );

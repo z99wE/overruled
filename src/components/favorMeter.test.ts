@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { favorColor, lerpColor } from '../components/FavorMeter';
 
 describe('favorColor', () => {
-  it('interpolates through the danger → amber → gold ramp across 0–100', () => {
-    expect(favorColor(0)).toBe('rgb(208, 48, 48)');
-    expect(favorColor(50)).toBe('rgb(232, 131, 58)');
-    expect(favorColor(100)).toBe('rgb(244, 180, 27)');
+  it('interpolates through the pastel coral → amber → mint ramp across 0–100', () => {
+    expect(favorColor(0)).toBe('rgb(251, 113, 133)');
+    expect(favorColor(50)).toBe('rgb(251, 191, 36)');
+    expect(favorColor(100)).toBe('rgb(110, 231, 183)');
   });
 
   it('moves monotonically toward gold as favor rises', () => {

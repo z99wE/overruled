@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Check, Cloud, KeyRound, Loader2, Lock, Trash2, X } from 'lucide-react';
+import { Check, Cloud, KeyRound, Loader2, Lock, ShieldCheck, Trash2, X } from 'lucide-react';
 import type { LLMConfig, LLMProvider } from '../types/legal';
 import { PROVIDERS, HOSTED_ENTRY, createKeyManager, defaultModel, isHostedProvider } from '../core/storage';
 import { requestChat } from '../core/providerCall';
@@ -58,7 +58,7 @@ export function KeySettings({ onClose }: KeySettingsProps) {
     try {
       await km.saveConfig({ provider, model: model.trim() || defaultModel(provider), apiKey: apiKey.trim() });
       setConfig({ provider, model, apiKey });
-      setStatus(isHostedProvider(provider) ? 'ok|Hosted inference enabled. Your trials run through the Overrool server.' : 'ok|Key secured in the local key vault. Requests go direct to the provider.');
+      setStatus(isHostedProvider(provider) ? 'ok|Hosted inference enabled. Your trials run through the Overrool server.' : 'ok|Key secured in local vault. Direct HTTPS to provider.');
     } catch (err) {
       setStatus(`error|${err instanceof Error ? err.message : String(err)}`);
     } finally {
@@ -120,94 +120,121 @@ export function KeySettings({ onClose }: KeySettingsProps) {
   const met = creditsToday();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-ink bg-felt-900 shadow-2xl">
-        <header className="flex items-center justify-between border-b border-ink px-5 py-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm selection:bg-amber-400 selection:text-black">
+      <div className="w-full max-w-lg overflow-hidden neo-card-elevated bg-slate-900 border-2 border-black shadow-[8px_8px_0_#000]">
+        {/* ── Modal Header ────────────────────────────────────── */}
+        <header className="flex items-center justify-between border-b-2 border-black bg-slate-950 px-5 py-4 shadow-[0_2px_0_#000]">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chip-gold/15 text-chip-gold">
-              <KeyRound className="h-5 w-5" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-black bg-amber-400 text-black shadow-[2px_2px_0_#000]">
+              <KeyRound className="h-5 w-5" strokeWidth={2.5} />
             </div>
             <div>
-              <h2 className="font-display text-sm font-bold uppercase tracking-widest text-cream">Key Vault</h2>
-              <p className="text-[11px] text-cream/50">Bring Your Own Key · zero-knowledge, direct HTTPS</p>
+              <h2 className="font-display text-sm uppercase tracking-wider text-white">KEY VAULT</h2>
+              <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
+                BRING YOUR OWN KEY · ZERO-KNOWLEDGE DIRECT HTTPS
+              </p>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-md border border-ink text-cream/50 hover:text-cream" aria-label="Close">
+          <button
+            type="button"
+            onClick={onClose}
+            className="neo-btn neo-btn-dark px-2 py-1"
+            aria-label="Close"
+          >
             <X className="h-4 w-4" />
           </button>
         </header>
 
-        <div className="space-y-4 px-5 py-5">
-          {!loaded && <div className="flex justify-center py-4"><Loader2 className="h-5 w-5 animate-spin text-chip-gold" /></div>}
+        {/* ── Modal Body ──────────────────────────────────────── */}
+        <div className="max-h-[80vh] overflow-y-auto space-y-4 px-6 py-5">
+          {!loaded && (
+            <div className="flex justify-center py-6">
+              <Loader2 className="h-6 w-6 animate-spin text-amber-400" />
+            </div>
+          )}
           {loaded && (
             <>
+              {/* Provider Selection Grid */}
               <div>
-                <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-cream/50">Provider engine</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[...PROVIDERS, ...(admin ? [HOSTED_ENTRY] : [])].map((p) => (
-                    <button
-                      aria-label={`Use ${p.label} as provider`}
-                      key={p.id}
-                      type="button"
-                      onClick={() => selectProvider(p.id)}
-                      aria-pressed={provider === p.id}
-                      className={`rounded-lg border px-3 py-2.5 text-left transition-colors ${
-                        provider === p.id ? 'border-chip-gold bg-chip-gold/10' : 'border-ink hover:border-cream/30'
-                      }`}
-                    >
-                      <span className={`block text-[12px] font-semibold ${provider === p.id ? 'text-chip-gold' : 'text-cream/80'}`}>
-                        {p.label}
-                        {p.id === 'gemini' && (
-                          <span className="ml-1.5 align-middle rounded bg-chip-gold/15 px-1 py-0.5 font-mono text-[8px] uppercase tracking-wider text-chip-gold">Free tier</span>
-                        )}
-                      </span>
-                      <span className="block font-mono text-[9px] text-cream/50">{p.envHint}</span>
-                    </button>
-                  ))}
+                <label className="mb-2 block font-mono text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  Select Provider Engine
+                </label>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {[...PROVIDERS, ...(admin ? [HOSTED_ENTRY] : [])].map((p) => {
+                    const selected = provider === p.id;
+                    return (
+                      <button
+                        aria-label={`Use ${p.label} as provider`}
+                        key={p.id}
+                        type="button"
+                        onClick={() => selectProvider(p.id)}
+                        aria-pressed={selected}
+                        className={`rounded-lg border-2 text-left p-3 transition-all ${
+                          selected
+                            ? 'border-black bg-amber-400 text-black shadow-[3px_3px_0_#000]'
+                            : 'border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-600 shadow-[2px_2px_0_#000]'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-display text-xs">
+                            {p.label}
+                          </span>
+                          {p.id === 'gemini' && (
+                            <span className="neo-badge neo-badge-chrome text-[7px]">Free Tier</span>
+                          )}
+                        </div>
+                        <span className={`block mt-1 font-mono text-[9px] ${selected ? 'text-black/80 font-bold' : 'text-slate-500'}`}>
+                          {p.envHint}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
-                {!admin && (
-                  <p className="mt-1.5 text-[10px] text-cream/50">Hosted inference is available to the workspace administrator — everyone else brings their own key.</p>
-                )}
-                <p className="mt-1.5 text-[10px] leading-relaxed text-cream/50">
-                  Accounts are unlimited — there is no per-user cost on this platform. Your cheapest, fully free path:
-                  Gemini via <span className="text-chip-gold/80">Google AI Studio</span>{' '}
-                  (generativelanguage.googleapis.com). Your key calls Google directly from this browser; Overrool is never in the loop.
+                <p className="mt-2 font-mono text-[10px] leading-relaxed text-slate-400">
+                  Zero per-user cost. Direct client-to-API calls. Keys are never logged, proxied, or saved server-side.
                 </p>
               </div>
 
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-cream/50">Model id</label>
-                  <input
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
-                    placeholder={defaultModel(provider)}
-                    className="w-full rounded-lg border border-ink bg-ink px-3 py-2 font-mono text-[12px] text-cream outline-none focus:border-chip-gold/50"
-                  />
-                </div>
+              {/* Model ID Input */}
+              <div>
+                <label className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  Target Model Override
+                </label>
+                <input
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  placeholder={defaultModel(provider)}
+                  className="neo-input font-mono text-xs"
+                />
               </div>
 
+              {/* API Key Input */}
               {!isHostedProvider(provider) && (
                 <>
                   <div>
-                    <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-cream/50">API key</label>
+                    <label className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                      API Key
+                    </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cream/50" />
+                      <Lock className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
                       <input
                         type="password"
                         value={apiKey}
                         onChange={(e) => setApiKey(e.target.value)}
-                        placeholder="sk-…"
+                        placeholder="Paste your provider key (e.g. gsk_… / sk-…)…"
                         autoComplete="off"
-                        className="w-full rounded-lg border border-ink bg-ink py-2 pl-9 pr-3 font-mono text-[12px] text-cream outline-none focus:border-chip-gold/50"
+                        className="neo-input pl-9 font-mono text-xs"
                       />
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-3 rounded-lg border border-ink bg-ink/50 px-3 py-2.5">
+                  {/* Persist across sessions */}
+                  <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-black bg-slate-950 p-3 shadow-[2px_2px_0_#000]">
                     <div>
-                      <p className="text-[12px] font-medium text-cream/80">Persist across sessions</p>
-                      <p className="text-[10px] text-cream/50">{persist ? 'Web: stored in your browser storage' : 'Web: session-only, wiped on tab close'}</p>
+                      <p className="font-display text-xs text-white">Persist in Local Storage</p>
+                      <p className="font-mono text-[10px] text-slate-400">
+                        {persist ? 'Stored in encrypted/local client storage' : 'Session-only, wiped on tab close'}
+                      </p>
                     </div>
                     <button
                       aria-label="Persist API key across sessions"
@@ -215,78 +242,97 @@ export function KeySettings({ onClose }: KeySettingsProps) {
                       role="switch"
                       aria-checked={persist}
                       onClick={() => void togglePersist()}
-                      className={`relative h-5 w-9 rounded-full transition-colors ${persist ? 'bg-chip-gold' : 'bg-felt-700'}`}
+                      className={`relative h-6 w-11 rounded-full border-2 border-black transition-colors ${
+                        persist ? 'bg-amber-400' : 'bg-slate-800'
+                      }`}
                     >
-                      <span className={`absolute top-0.5 h-4 w-4 rounded-full bg-ink transition-transform ${persist ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
+                      <span
+                        className={`absolute top-0.5 h-4 w-4 rounded-full bg-black transition-transform ${
+                          persist ? 'translate-x-[20px]' : 'translate-x-0.5'
+                        }`}
+                      />
                     </button>
                   </div>
                 </>
               )}
 
+              {/* Status Message */}
               {status && (
-                <div className={`rounded-lg border px-3 py-2 text-[11px] leading-relaxed ${
-                  statusKind === 'ok' ? 'border-chip-gold/40 bg-chip-gold/5 text-chip-gold' : 'border-poker-red/40 bg-poker-red/5 text-poker-red'
-                }`}>
+                <div
+                  className={`rounded-lg border-2 border-black p-3 font-mono text-[11px] font-bold shadow-[2px_2px_0_#000] ${
+                    statusKind === 'ok'
+                      ? 'bg-emerald-950 text-emerald-300 border-emerald-500'
+                      : 'bg-rose-950 text-rose-300 border-rose-500'
+                  }`}
+                >
                   {statusMsg}
                 </div>
               )}
 
+              {/* Active Config Status */}
               {config && (
-                <p className="flex items-center gap-1.5 text-[11px] text-chip-gold">
-                  <Check className="h-3.5 w-3.5" /> Active: {labelFor(config.provider)} · {config.model}
-                </p>
+                <div className="flex items-center gap-2 rounded-lg border border-amber-500/50 bg-amber-950/20 p-2.5 font-mono text-xs text-amber-300">
+                  <ShieldCheck className="h-4 w-4 text-amber-400" />
+                  <span>ARMED: {labelFor(config.provider)} ({config.model})</span>
+                </div>
               )}
 
-              <div className="rounded-lg border border-ink bg-ink/50 px-3 py-2.5">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-cream/50">Daily credits</p>
-                  <p className="font-mono text-[11px] text-chip-gold">
-                    {met.used} / {met.cap} used
-                  </p>
+              {/* Credits Usage */}
+              <div className="rounded-lg border-2 border-black bg-slate-950 p-3 shadow-[2px_2px_0_#000]">
+                <div className="flex items-center justify-between font-mono text-[10px] uppercase font-bold text-slate-400">
+                  <span>Daily Quota Tracker</span>
+                  <span className="text-amber-400">{met.used} / {met.cap} credits</span>
                 </div>
-                <ul className="mt-1.5 space-y-0.5 font-mono text-[10px] text-cream/50">
-                  <li>· 1 trial run = {CREDIT_COSTS.trial} credits · 1 Legal Desk op = {CREDIT_COSTS.deskOp} credits</li>
-                  <li>· Resets at midnight UTC · the keyless bench &amp; Local Rules run free, never billed</li>
-                  <li>· BYOK spend is metered against your own provider quota; hosted spend is capped server-side</li>
-                </ul>
+                <p className="mt-1 font-mono text-[9px] text-slate-500">
+                  Trial = {CREDIT_COSTS.trial} credits · Desk Op = {CREDIT_COSTS.deskOp} credits · Local Rules run unlimited &amp; free
+                </p>
               </div>
 
-              <div className="flex gap-2">
+              {/* Action Buttons */}
+              <div className="flex gap-2.5 pt-2">
                 <button
-          aria-label="Save key to vault"
+                  aria-label="Save key to vault"
                   type="button"
                   onClick={() => void save()}
                   disabled={saving}
-
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-chip-gold px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-ink hover:brightness-110 disabled:opacity-50"
+                  className="neo-btn neo-btn-primary flex-1 py-2.5 text-xs"
                 >
-                  {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isHostedProvider(provider) ? <Cloud className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />} {isHostedProvider(provider) ? 'Enable hosted' : 'Save to vault'}
+                  {saving ? (
+                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  ) : isHostedProvider(provider) ? (
+                    <Cloud className="mr-1.5 h-3.5 w-3.5" />
+                  ) : (
+                    <Lock className="mr-1.5 h-3.5 w-3.5" />
+                  )}
+                  {isHostedProvider(provider) ? 'Enable Hosted' : 'Save To Vault'}
                 </button>
+
                 <button
-          aria-label="Test API key connection"
+                  aria-label="Test API key connection"
                   type="button"
                   onClick={() => void test()}
                   disabled={testing}
-
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-cream/30 px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-cream/70 hover:border-chip-gold/40 hover:text-chip-gold disabled:opacity-50"
+                  className="neo-btn neo-btn-chrome px-4 py-2.5 text-xs"
                 >
-                  {testing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />} Test
+                  {testing ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Check className="mr-1 h-3.5 w-3.5" />}
+                  Test Connection
                 </button>
+
                 <button
-          aria-label="Clear stored API key"
+                  aria-label="Clear stored API key"
                   type="button"
                   onClick={() => void clear()}
-
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-poker-red/40 px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-poker-red hover:bg-poker-red/10"
+                  className="neo-btn neo-btn-crimson px-3.5 py-2.5 text-xs"
                 >
-                  <Trash2 className="h-3.5 w-3.5" /> Clear
+                  <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>
 
-              <p className="text-[10px] leading-relaxed text-cream/50">
+              {/* Security guarantee note */}
+              <p className="font-mono text-[9px] leading-relaxed text-slate-500">
                 {isHostedProvider(provider)
-                  ? 'Hosted inference runs on the Overrool server via Cloudflare Workers AI — no key on this device. The workspace administrator can reach the model anywhere without a billing card; everyone else brings their own key.'
-                  : `Your key never leaves this device. Simulated trials call ${provider === 'gemini' ? 'Google Gemini' : provider.toUpperCase()} directly over HTTPS from your client. No chat history or case details are transmitted to any intermediary server. On the web your key rests unencrypted in browser storage — anyone using this device can read it; clear it when you're done. Keys are scoped to your signed-in account; when you are signed out they belong to this device.`}
+                  ? 'Hosted inference executes through Cloudflare Workers AI with admin privileges.'
+                  : `Direct browser-to-provider HTTPS architecture. Only generative AI requests leaving this client are transmitted to the approved official endpoints of Google, OpenAI, Anthropic, or Groq.`}
               </p>
             </>
           )}

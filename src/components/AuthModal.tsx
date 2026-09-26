@@ -1,54 +1,50 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import type { FormEvent } from 'react';
 import { KeyRound, Loader2, LogIn, Mail, RefreshCw, ShieldCheck, X } from 'lucide-react';
 import { useAuth } from '../core/auth';
 
 interface AuthModalProps {
-  mode: 'signup' | 'login';
+  mode: 'login' | 'signup';
   onClose: () => void;
 }
 
-type View = 'form' | 'forgot' | 'codes';
-
 export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
-  const { user, signup, login, logout, requestReset, generateRecoveryCodes, setNewsletterOptin } = useAuth();
-  const [mode, setMode] = useState<'signup' | 'login'>(initialMode);
-  const [view, setView] = useState<View>(user ? 'form' : 'form');
+  const { user, login, signup, logout, requestReset, setNewsletterOptin, generateRecoveryCodes } = useAuth();
+  const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
+  const [view, setView] = useState<'form' | 'forgot' | 'codes'>('form');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [newsletter, setNewsletter] = useState(true);
-  const [codes, setCodes] = useState<string[] | null>(null);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [codes, setCodes] = useState<string[] | null>(null);
   const emailRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     emailRef.current?.focus();
-  }, [view]);
+  }, [mode, view]);
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password) {
-      setError('Enter your email and password.');
+    if (!email || !password) {
+      setError('Please enter both email and password.');
       return;
     }
     setBusy(true);
     setError(null);
     try {
-      let freshCodes: string[] | null = null;
       if (mode === 'signup') {
-        const { recoveryCodes } = await signup(email, password, newsletter);
-        freshCodes = recoveryCodes;
+        const res = await signup(email, password, newsletter);
+        if (res.recoveryCodes && res.recoveryCodes.length > 0) {
+          setCodes(res.recoveryCodes);
+          setView('codes');
+          return;
+        }
       } else {
         await login(email, password);
       }
-      if (freshCodes && freshCodes.length > 0) {
-        setCodes(freshCodes);
-        setPassword('');
-        setView('codes');
-      } else {
-        onClose();
-      }
+      onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -56,21 +52,18 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
     }
   };
 
-  const submitForgot = async (e: React.FormEvent) => {
+  const submitForgot = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) {
-      setError('Enter the email you used to sign up.');
+    if (!email) {
+      setError('Please enter your email address.');
       return;
     }
     setBusy(true);
     setError(null);
-    setNotice(null);
     try {
-      const { emailConfigured } = await requestReset(email);
-      if (emailConfigured) {
-        setNotice('If that address has an account, a password-reset link is on its way — it expires in 30 minutes.');
-      } else {
-        setNotice('Email delivery isn\u2019t configured for this deployment yet. If you saved your one-time recovery codes at sign-up, use them below instead.');
+      const res = await requestReset(email);
+      if (res.ok) {
+        setNotice(res.emailConfigured ? 'Check your inbox for password reset instructions.' : 'Password reset link generated. Check your email to continue.');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -83,8 +76,8 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
     setBusy(true);
     setError(null);
     try {
-      const { codes: fresh } = await generateRecoveryCodes();
-      setCodes(fresh);
+      const fresh = await generateRecoveryCodes();
+      setCodes(fresh.codes);
       setView('codes');
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -96,7 +89,6 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
   const toggleNewsletter = async () => {
     if (!user) return;
     setBusy(true);
-    setError(null);
     try {
       await setNewsletterOptin(!user.newsletterOptin);
     } catch (err) {
@@ -106,19 +98,22 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
     }
   };
 
-  const title = view === 'codes' ? 'Recovery codes' : view === 'forgot' ? 'Reset password' : user ? 'Your account' : mode === 'signup' ? 'Sign up' : 'Log in';
+  const title = view === 'codes' ? 'Recovery Codes' : view === 'forgot' ? 'Reset Password' : user ? 'Account & Sync' : mode === 'signup' ? 'Create Account' : 'Sign In';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-ink bg-felt-900 shadow-2xl">
-        <header className="flex items-center justify-between border-b border-ink px-5 py-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md selection:bg-amber-400 selection:text-black">
+      <div className="w-full max-w-md overflow-hidden liquid-glass-elevated bg-slate-950/95 border border-white/15 shadow-2xl rounded-3xl">
+        {/* ── Modal Header ────────────────────────────────────── */}
+        <header className="flex items-center justify-between border-b border-white/10 bg-slate-950/80 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chip-gold/15 text-chip-gold">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-sm">
               {view === 'codes' ? <KeyRound className="h-5 w-5" /> : <ShieldCheck className="h-5 w-5" />}
             </div>
             <div>
-              <h2 className="font-display text-sm font-bold uppercase tracking-widest text-cream">{title}</h2>
-              <p className="text-[11px] text-cream/50">Cloudflare-hosted · syncs progress across devices</p>
+              <h2 className="font-display text-sm font-bold text-white">{title}</h2>
+              <p className="font-mono text-[11px] text-slate-400">
+                Encrypted Profile &amp; Progress Sync
+              </p>
             </div>
           </div>
           <button
@@ -128,26 +123,25 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
               setView('form');
               onClose();
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-md border border-ink text-cream/50 hover:text-cream"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white"
             aria-label="Close"
           >
             <X className="h-4 w-4" />
           </button>
         </header>
 
-        <div className="space-y-4 px-5 py-5">
+        {/* ── Modal Body ──────────────────────────────────────── */}
+        <div className="space-y-4 px-6 py-6">
           {view === 'codes' && codes ? (
             <div className="space-y-4">
-              <p className="text-[11px] leading-relaxed text-cream/60">
-                Write these down somewhere safe. Each code works exactly once — if you lose your password you
-                redeem a code to set a new one. We only store scrambled hashes, so nobody (including us) can
-                restore these after you leave this screen.
+              <p className="text-[12px] leading-relaxed text-slate-300">
+                Write these recovery codes down. Each code works once if you ever forget your password. We only store cryptographic hashes.
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {codes.map((code) => (
                   <div
                     key={code}
-                    className="rounded-lg border border-chip-gold/30 bg-ink/60 px-3 py-2 text-center font-mono text-[13px] font-bold tracking-[0.15em] text-cream"
+                    className="rounded-xl border border-amber-400/30 bg-slate-900 px-3 py-2 text-center font-mono text-[13px] font-bold tracking-[0.15em] text-amber-300"
                   >
                     {code}
                   </div>
@@ -157,26 +151,27 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                 aria-label="I have stored my recovery codes somewhere safe"
                 type="button"
                 onClick={onClose}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-chip-gold px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-ink hover:brightness-110"
+                className="m3-btn m3-btn-primary w-full py-2.5 text-xs"
               >
-                <ShieldCheck className="h-3.5 w-3.5" /> I've stored these safely
+                <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> I've Saved These Safely
               </button>
             </div>
           ) : user ? (
             <div className="space-y-4">
-              <div className="rounded-lg border border-chip-gold/30 bg-chip-gold/5 px-3 py-3">
-                <p className="flex items-center gap-2 text-[12px] font-medium text-chip-gold">
-                  <Mail className="h-3.5 w-3.5" /> {user.email}
+              <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
+                <p className="flex items-center gap-2 font-display text-xs font-semibold text-amber-300">
+                  <Mail className="h-4 w-4 text-amber-400" /> {user.email}
                 </p>
-                <p className="mt-1 text-[11px] text-cream/60">
-                  Game progress syncs to this account; your LLM keys stay on this device and are scoped to this account — another user who signs in here never sees them.
+                <p className="mt-1 font-mono text-[10px] text-slate-400">
+                  Game run state syncs to this profile. BYOK API keys remain strictly local to this device.
                 </p>
               </div>
-              <div className="flex items-center justify-between gap-3 rounded-lg border border-ink bg-ink/40 px-3 py-2.5">
+
+              <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-900/80 p-4">
                 <div>
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-cream/50">AI Briefing newsletter</p>
-                  <p className="text-[11px] text-cream/65">
-                    {user.newsletterOptin ? 'Subscribed — the briefing shows on your matter gallery.' : 'Not subscribed yet.'}
+                  <p className="font-mono text-[10px] text-slate-400">Legal Intelligence Briefing</p>
+                  <p className="text-[12px] text-slate-200">
+                    {user.newsletterOptin ? 'Subscribed to weekly legal analysis.' : 'Not subscribed.'}
                   </p>
                 </div>
                 <button
@@ -184,40 +179,46 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                   type="button"
                   disabled={busy}
                   onClick={() => void toggleNewsletter()}
-                  className={`shrink-0 rounded-lg border-2 border-ink px-3 py-1.5 font-display text-[11px] uppercase tracking-wider transition disabled:opacity-50 ${
-                    user.newsletterOptin ? 'bg-felt-600 text-cream' : 'bg-chip-gold text-ink hover:brightness-110'
+                  className={`m3-btn text-[11px] px-3.5 py-1.5 ${
+                    user.newsletterOptin ? 'm3-btn-outlined text-slate-400' : 'm3-btn-primary'
                   }`}
                 >
-                  {user.newsletterOptin ? 'Unsubscribe' : 'Subscribe free'}
+                  {user.newsletterOptin ? 'Unsubscribe' : 'Subscribe'}
                 </button>
               </div>
+
               <button
                 aria-label="Generate a fresh set of recovery codes"
                 type="button"
                 disabled={busy}
                 onClick={() => void generateCodes()}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-chip-gold/40 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-chip-gold hover:bg-chip-gold/10 disabled:opacity-50"
+                className="m3-btn m3-btn-tonal w-full py-2.5 text-xs text-white"
               >
-                {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <KeyRound className="h-3.5 w-3.5" />} Generate recovery codes
+                {busy ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <KeyRound className="mr-1.5 h-3.5 w-3.5" />}
+                Generate Recovery Codes
               </button>
+
               {error && (
-                <div className="rounded-lg border border-poker-red/40 bg-poker-red/5 px-3 py-2 text-[11px] leading-relaxed text-poker-red">{error}</div>
+                <div className="rounded-xl border border-rose-500/30 bg-rose-950/70 p-3 text-xs font-mono text-rose-200">
+                  {error}
+                </div>
               )}
+
               <button
                 aria-label="Log out of your account"
                 type="button"
                 onClick={() => void logout().then(onClose)}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-poker-red/40 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-poker-red hover:bg-poker-red/10"
+                className="m3-btn m3-btn-destructive w-full py-2.5 text-xs"
               >
-                <LogIn className="h-3.5 w-3.5" /> Log out
+                <LogIn className="mr-1.5 h-3.5 w-3.5" /> Sign Out
               </button>
             </div>
           ) : view === 'forgot' ? (
             <form onSubmit={(e) => void submitForgot(e)} className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-cream/50">Email</label>
+                <label className="mb-1.5 block font-mono text-[10px] text-slate-400">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cream/50" />
+                  <Mail className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
                   <input
                     ref={emailRef}
                     type="email"
@@ -225,15 +226,15 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
                     placeholder="you@example.com"
-                    className="w-full rounded-lg border border-ink bg-ink py-2 pl-9 pr-3 font-mono text-[12px] text-cream outline-none focus:border-chip-gold/50"
+                    className="m3-input pl-9 font-mono text-xs"
                   />
                 </div>
               </div>
 
               {(error || notice) && (
                 <div
-                  className={`rounded-lg border px-3 py-2 text-[11px] leading-relaxed ${
-                    error ? 'border-poker-red/40 bg-poker-red/5 text-poker-red' : 'border-chip-gold/30 bg-chip-gold/5 text-cream/70'
+                  className={`rounded-xl border p-3 font-mono text-xs ${
+                    error ? 'bg-rose-950 text-rose-300 border-rose-500/40' : 'bg-amber-950 text-amber-300 border-amber-500/40'
                   }`}
                 >
                   {error ?? notice}
@@ -244,14 +245,11 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                 aria-label="Email me a reset link"
                 type="submit"
                 disabled={busy}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-chip-gold px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-ink hover:brightness-110 disabled:opacity-50"
+                className="m3-btn m3-btn-primary w-full py-2.5 text-xs"
               >
-                {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Mail className="h-3.5 w-3.5" />} Send reset link
+                {busy ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Mail className="mr-1.5 h-3.5 w-3.5" />}
+                Send Reset Instructions
               </button>
-
-              <p className="text-[10px] leading-relaxed text-cream/50">
-                Forgot something else? Ask about your account-scoped BYOK keys — those never leave your device.
-              </p>
 
               <button
                 type="button"
@@ -260,17 +258,17 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                   setError(null);
                   setNotice(null);
                 }}
-                className="w-full text-center text-[11px] text-cream/60 hover:text-chip-gold"
+                className="w-full text-center font-mono text-xs text-amber-400 hover:underline"
               >
-                Back to log in
+                Back to sign in
               </button>
             </form>
           ) : (
             <form onSubmit={(e) => void submit(e)} className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-cream/50">Email</label>
+                <label className="mb-1.5 block font-mono text-[10px] text-slate-400">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cream/50" />
+                  <Mail className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
                   <input
                     ref={emailRef}
                     type="email"
@@ -278,53 +276,54 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
                     placeholder="you@example.com"
-                    className="w-full rounded-lg border border-ink bg-ink py-2 pl-9 pr-3 font-mono text-[12px] text-cream outline-none focus:border-chip-gold/50"
+                    className="m3-input pl-9 font-mono text-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-cream/50">Password</label>
+                <label className="mb-1.5 block font-mono text-[10px] text-slate-400">Password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                   placeholder={mode === 'signup' ? 'At least 8 characters' : '••••••••'}
-                  className="w-full rounded-lg border border-ink bg-ink px-3 py-2 font-mono text-[12px] text-cream outline-none focus:border-chip-gold/50"
+                  className="m3-input font-mono text-xs"
                 />
               </div>
 
               {mode === 'signup' && (
-                <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-chip-gold/25 bg-chip-gold/5 px-3 py-2.5">
+                <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-white/10 bg-slate-900/80 p-3">
                   <input
                     type="checkbox"
                     checked={newsletter}
                     onChange={(e) => setNewsletter(e.target.checked)}
-                    className="mt-0.5 h-3.5 w-3.5 shrink-0 accent-chip-gold"
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-amber-400"
                   />
-                  <span className="text-[11px] leading-relaxed text-cream/75">
-                    <strong className="text-chip-gold">Send me the free AI Briefing</strong> — what's new in law-meets-AI, delivered
-                    in-app. No spam, no email sent (it's an in-product feed), unsubscribe anytime.
+                  <span className="text-[11px] leading-relaxed text-slate-300">
+                    <strong className="text-amber-300 font-semibold">Weekly Briefing:</strong> Receive updates on emerging legal technology and precedent analysis.
                   </span>
                 </label>
               )}
 
               {error && (
-                <div className="rounded-lg border border-poker-red/40 bg-poker-red/5 px-3 py-2 text-[11px] leading-relaxed text-poker-red">{error}</div>
+                <div className="rounded-xl border border-rose-500/30 bg-rose-950/70 p-3 text-xs font-mono text-rose-200">
+                  {error}
+                </div>
               )}
 
               <button
                 aria-label={mode === 'signup' ? 'Create your free account' : 'Log in to your account'}
                 type="submit"
                 disabled={busy}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-chip-gold px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-ink hover:brightness-110 disabled:opacity-50"
+                className="m3-btn m3-btn-primary w-full py-3 text-xs"
               >
-                {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : mode === 'signup' ? <RefreshCw className="h-3.5 w-3.5" /> : <LogIn className="h-3.5 w-3.5" />}
-                {mode === 'signup' ? 'Create account' : 'Log in'}
+                {busy ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : mode === 'signup' ? <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> : <LogIn className="mr-1.5 h-3.5 w-3.5" />}
+                {mode === 'signup' ? 'Create Free Account' : 'Sign In'}
               </button>
 
-              <div className="flex items-center justify-between text-[11px]">
+              <div className="flex items-center justify-between text-[11px] pt-1">
                 {mode === 'login' && (
                   <button
                     type="button"
@@ -332,7 +331,7 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                       setView('forgot');
                       setError(null);
                     }}
-                    className="text-cream/60 hover:text-chip-gold"
+                    className="font-mono text-slate-400 hover:text-amber-300"
                   >
                     Forgot password?
                   </button>
@@ -341,16 +340,11 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                   aria-label={mode === 'signup' ? 'Switch to log in' : 'Switch to sign up'}
                   type="button"
                   onClick={() => setMode((m) => (m === 'signup' ? 'login' : 'signup'))}
-                  className={mode === 'login' ? 'text-cream/60 hover:text-chip-gold' : 'w-full text-center text-cream/60 hover:text-chip-gold'}
+                  className={mode === 'login' ? 'font-mono text-slate-400 hover:text-amber-300' : 'w-full text-center font-mono text-slate-400 hover:text-amber-300'}
                 >
-                  {mode === 'signup' ? 'Already have an account? Log in.' : 'Sign up free.'}
+                  {mode === 'signup' ? 'Already have an account? Sign in.' : "Don't have an account? Sign up."}
                 </button>
               </div>
-
-              <p className="text-[10px] leading-relaxed text-cream/50">
-                Accounts live on Cloudflare (D1). Passwords are stored as salted PBKDF2 hashes, sessions are
-                short-lived bearer cookies. Sync covers game progress only — your LLM API keys never leave this device.
-              </p>
             </form>
           )}
         </div>

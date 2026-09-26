@@ -6,44 +6,45 @@ export function ResolutionBlock({ record }: { record: TurnRecord }) {
   const style = VERDICT_STYLE[record.resolution.bench_verdict_tag];
   const r = record.resolution;
   const sparring = isSparringBrief(record.opposingBrief);
-  // Belt-and-braces: any stale marker from a pre-honesty session must never
-  // leak into the transcript as though it were the bench speaking.
   const judgeText = r.judge_dialogue.replace(SPARRING_MARKER, '').trim();
+
   return (
-    <div className="space-y-3 border-l-4 border-ink/70 pl-4">
+    <div className="space-y-3.5 border-l-2 border-amber-400/30 pl-4">
       <div className="flex flex-wrap items-center gap-2">
-        <span className={`rounded-sm border-2 border-ink px-2 py-0.5 font-display text-[10px] tracking-wider ${style.cls}`}>
+        <span className={`rounded-full px-3 py-1 font-sans text-xs font-semibold ${style.cls}`}>
           {style.label}
         </span>
         <span
-          className={`font-display text-[11px] ${r.judicial_favor_delta > 0 ? 'text-felt-200' : r.judicial_favor_delta < 0 ? 'text-poker-red' : 'text-cream/40'}`}
+          className={`font-mono text-xs font-medium ${r.judicial_favor_delta > 0 ? 'text-emerald-300' : r.judicial_favor_delta < 0 ? 'text-rose-300' : 'text-slate-400'}`}
         >
           {r.judicial_favor_delta > 0 ? '+' : ''}{r.judicial_favor_delta} favor
         </span>
         {!r.citation_valid && (
-          <span className="rounded-sm border-2 border-ink bg-poker-red px-2 py-0.5 font-display text-[8px] uppercase tracking-wider text-cream">
-            Unverified citation flagged
+          <span className="m3-chip m3-chip-rose text-[9px]">
+            Unverified Citation Flagged
           </span>
         )}
         {sparring && (
-          <span className="rounded-sm border-2 border-ink bg-poker-blue-deep px-2 py-0.5 font-display text-[8px] uppercase tracking-wider text-cream">
-            ⚡ Local sparring bench
+          <span className="m3-chip m3-chip-cyan text-[9px]">
+            ⚡ Local Sparring Bench
           </span>
         )}
       </div>
+
       {record.citedPrecedent?.sourceUrl && (
         <a
           href={record.citedPrecedent.sourceUrl}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1 rounded-full border border-ink bg-paper px-2.5 py-1 font-display text-[9px] tracking-wider text-ink transition-colors hover:bg-chip-gold"
+          className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-slate-900/80 px-3 py-1 font-mono text-[10px] text-amber-300 hover:bg-amber-400 hover:text-slate-950 transition-colors"
         >
-          READ THE JUDGMENT ↗ {record.citedPrecedent.citation}
+          Read Full Ruling ↗ {record.citedPrecedent.citation}
         </a>
       )}
+
       <JudgeMessage text={judgeText} />
       <OpponentMessage
-        from={sparring ? 'Opposing Counsel · local bench' : record.opposingBrief ? 'Opposing Counsel · AI bench' : 'Opposing Counsel'}
+        from={sparring ? 'Opposing Counsel · Local Bench' : record.opposingBrief ? 'Opposing Counsel · AI Bench' : 'Opposing Counsel'}
         text={record.opposingBrief?.strike ?? r.opposing_advocate_strike}
         style="adversarial"
       />
