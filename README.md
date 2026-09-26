@@ -1,25 +1,32 @@
 # Overrool
 
-> Roll for precedent. Object to hearsay. Win with the law.
+> Understand the contract before you sign it. Know the law before you argue it.
 
-Overrool is an adversarial legal strategy courtroom card game built with React 19, TypeScript, Tailwind CSS v4, and a zero-cost BYOK (bring-your-own-key) LLM orchestrator. Players pick a side, spend strategy tokens, deploy precedent cards, cite statutes, and push the Judge's Favor Meter to 0 (dismissal) or 100 (victory). It ships an embedded global corpus of real, published landmark judgments from seven legal systems (United States, United Kingdom, European Union, Canada, Australia, South Africa, India), client-side factual citation verification, a single-pass **multi-role** LLM resolution loop (Presiding Judge, Opposing Senior Advocate, and Co-Counsel voices resolved in one structured JSON turn), an in-app Advocate Consultation Docket export (markdown / print / share), and a **Legal Desk** — a document-understanding workspace (simplify, risk audit, two-document comparison, ask-the-text, prepare-for-your-lawyer) that runs on the same GenAI pipeline over the user's own contract, policy, lease, or judgment.
+**Overrool is a GenAI assistant for legal assistance and access.** It helps people who cannot afford a lawyer understand the legal documents in front of them — a tenancy agreement, an employment contract, a policy, a court judgment, a notice — and know what to do next. It is free to use, it runs on the reader's own AI provider key, and it is built so that a fabricated citation is a *visible failure*, not a hidden one.
 
-[See below](#alignment-with-the-brief-and-genai-architecture) for the explicit mapping between the problem brief's GenAI use cases and where each is implemented, and exactly which GenAI services run where.
+Two surfaces, one pipeline:
+
+- **Legal Desk** — the assistance layer. Paste a document and **simplify** it, **compare** two versions, **audit** it for obligations, risks and inconsistencies, **ask questions** answered strictly from the text, and generate a **pre-consultation pack** for a real lawyer.
+- **Courtroom** — the practice layer. An adversarial strategy game where a **multi-role LLM bench** (Presiding Judge, Opposing Senior Advocate, Co-Counsel) rules on your citations in real time, so you learn to frame arguments, read precedent and spot fabricated authority without risking a real case.
+
+Both sit on the same foundations: an embedded corpus of **59 real, published judgments** spanning seven legal systems (United States, United Kingdom, European Union, Canada, Australia, South Africa, India) plus 10 statutes; **client-side citation verification** against that corpus; a **zero-cost BYOK (bring-your-own-key) architecture** where model calls go from the browser straight to the reader's own provider (React 19, TypeScript, Tailwind v4); and an exportable **Advocate Consultation Docket** (markdown / print / share).
+
+[See the full use-case mapping below](#alignment-with-the-brief-and-genai-architecture) for exactly which brief requirement each feature satisfies and where GenAI runs.
 
 ---
 
 ## Problem statement
 
-Practising courtroom strategy — framing motions, anticipating a bench's reasoning, distinguishing hostile precedent, and knowing when a citation is real — is a high-cost, high-stakes skill with no safe, free way to train alone. Legal AI assistants are either expensive subscriptions, opaque black-boxes that fabricate authority, or both.
+Legal assistance is gated behind money and expertise. Most people cannot afford a lawyer to read a contract, and cannot read one themselves either — so they sign things they do not understand, miss deadlines, and accept obligations they never agreed to. When they do try to learn, they hit the same wall from the other side: legal AI assistants are either expensive subscriptions, or opaque black boxes that confidently fabricate authority and are impossible to check.
 
-Overrool addresses four concrete gaps:
+Overrool addresses four concrete gaps in legal access:
 
-1. **Open by default — unlimited accounts.** No per-seat cost. The platform runs on Cloudflare's free tiers (Pages, D1, Workers AI); signups are unlimited and the only server-side AI path (Workers AI) is reserved for the single administrator's own trials. Everyone else plays on BYOK, which for most players means Google's free Gemini tier at zero cost forever.
-2. **Zero-cost practice.** No ecosystem token budget, no server-side API keys, no third-party proxy (Google Fonts are likewise self-hosted). Every LLM call runs directly from the player's browser to the player's own provider account using the key they supply under their own quota (Gemini, OpenAI, Anthropic, or Groq). Google's **Gemini API free tier** (key from Google AI Studio) is a natural no-card starting point, and the account administrator can host serverside inference on Cloudflare's free Workers AI tier for their own trials.
-3. **Factual grounding.** The engine refuses to reward fabricated law. Writer-side citations are checked against an embedded 59-case / 10-statute global corpus; unverifiable authority is flagged as exposure in the docket and the bench responds accordingly.
-4. **Accountable, exportable outcomes.** Each turn is resolved in a single structured LLM pass and captured as a typed `TurnRecord`, and the session is rendered into an Advocate Consultation Docket — admitted precedents, identified exposure points, and actionable consultation questions — that is downloadable, printable, and shareable.
+1. **Free access, not freemium access.** There is no per-seat cost and no feature paywall. The platform runs on Cloudflare's free tiers (Pages, D1, Workers AI), signups are unlimited, and the only server-side AI path is reserved for the administrator's own trials. Everyone else brings their own key — for most readers that is Google's free Gemini tier, at zero cost, with no card.
+2. **Assistance on the reader's own document, not general chat.** Legal Desk is not a chatbot that guesses at law. It is constrained to the text the reader supplied. `ask` is prompted to return *"a direct answer grounded in the document; if the document does not say, say so"* — with a supporting quotation, a confidence level, and concrete next steps. An honest *"the document does not answer that"* is a correct result, not a failure.
+3. **Factual grounding over confident fluency.** A legal tool that invents authority is worse than no tool, so citations are checked against the embedded 59-case / 10-statute corpus *client-side*. The engine does not take the model's word for its own citations: `searchIndex.validateCitation` re-derives the answer from the corpus, and when the two disagree the corpus wins. Unverifiable authority is surfaced as exposure, not passed off as law.
+4. **Accountable, exportable outcomes.** Every turn is resolved in a single structured LLM pass and captured as a typed `TurnRecord`, then rendered into an Advocate Consultation Docket — admitted precedents, identified exposure points, and the questions most likely to change a decision — that is downloadable, printable and shareable. The reader leaves with something they can act on or hand to a professional, not just a chat log.
 
-**Constraint.** Overrool is an educational legal-literacy and strategic-simulation tool under the Information Technology Act, 2000. It does not provide legal advice and cannot replace a certified advocate registered under the Advocates Act, 1961. Users must verify all citations against certified law reports.
+**Constraint.** Overrool provides legal **information, education and assistance**. It is not a law firm, it does not provide legal advice, it creates no attorney–client relationship, and it does not replace a qualified, locally-licensed legal professional. The corpus spans seven jurisdictions and is a static reference snapshot, not current legislation — every citation must be verified against an official, certified law report before it is relied on. See [DISCLAIMER.md](DISCLAIMER.md).
 
 ---
 

@@ -1,18 +1,36 @@
 # Overrool
 
-> Roll for precedent. Object to hearsay. Win with the law.
+> Understand the contract before you sign it. Know the law before you argue it.
 
-Overrool is an adversarial legal strategy courtroom card game. Players pick a
-side, spend strategy tokens, deploy precedent cards, cite statutes, and push
-the Judge's Favor Meter to 0 (dismissal) or 100 (victory). It embeds a global
-corpus of real, published landmark judgments from the United States, the
-United Kingdom, the European Union, Canada, Australia, South Africa, and India,
-with client-side factual citation verification and a single multi-role LLM
-turn. It is an educational simulation, not legal advice.
+Overrool is a GenAI assistant for legal assistance and access. It helps people
+who cannot afford a lawyer understand the legal documents in front of them — a
+tenancy agreement, an employment contract, a policy, a court judgment, a notice
+— and know what to do next. Free to use, and built so that a fabricated citation
+is a visible failure rather than a hidden one.
+
+Two surfaces run on one pipeline:
+
+- **Legal Desk (assistance).** Paste a document to simplify it, compare two
+  versions, audit it for obligations / risks / inconsistencies, ask questions
+  answered strictly from the text, and generate a pre-consultation pack of
+  questions for a real lawyer.
+- **Courtroom (practice).** An adversarial strategy game where a multi-role LLM
+  bench (Presiding Judge, Opposing Senior Advocate, Co-Counsel) rules on your
+  citations in real time.
+
+Grounding: an embedded corpus of 59 real, published judgments spanning the United
+States, United Kingdom, European Union, Canada, Australia, South Africa and
+India, plus 10 statutes. Citations are re-verified client-side against that
+corpus; the engine does not take the model's word for its own citations.
+
+Not legal advice. No attorney–client relationship. The corpus is a static
+reference snapshot, not current legislation — verify every citation against an
+official certified law report.
 
 ## Documentation
 
-- [README](https://github.com/z99wE/overruled#readme): overview, architecture, and quick start.
+- [README](https://github.com/z99wE/overruled#readme): problem statement, use-case mapping, architecture, and quick start.
+- [ARCHITECTURE](https://github.com/z99wE/overruled/blob/main/ARCHITECTURE.md): system layers, the agentic loop and its citation-verification leash, trust boundaries, data model, deployment shape.
 - [AUTH](https://github.com/z99wE/overruled/blob/main/AUTH.md): Cloudflare accounts, deployment, hosted inference runbook.
 - [PRIVACY](https://github.com/z99wE/overruled/blob/main/PRIVACY.md): what the app stores and never stores.
 - [DISCLAIMER](https://github.com/z99wE/overruled/blob/main/DISCLAIMER.md): not legal advice.
@@ -21,15 +39,20 @@ turn. It is an educational simulation, not legal advice.
 
 ## How it works
 
-- **Bring your own key.** Trials run a single structured LLM pass (Presiding
-  Judge, Opposing Senior Advocate, Co-Counsel) directly from your browser to
-  your own provider key — Gemini, OpenAI, Anthropic, or Groq. No keys, prompts,
-  or case text reach an intermediary server.
-- **Factual grounding.** Citations are verified against an embedded corpus;
-  unverifiable authority is flagged as exposure.
-- **Account sync.** Optional Cloudflare account syncs game progress across
-  devices (and, for the workspace administrator, into server-side hosted
-  inference on Workers AI).
+- **Legal Desk, grounded in your text.** Five operations — simplify, risks,
+  compare, ask, prepare-for-lawyer. Answers are constrained to the supplied
+  document; when the document does not answer a question, the desk says so
+  instead of speculating.
+- **Bring your own key.** Model calls run from the browser directly to your own
+  provider key — Gemini, OpenAI, Anthropic, or Groq. No keys, prompts, or
+  document text reach an intermediary server. A keyless deterministic mode keeps
+  every interaction usable with no credentials.
+- **Factual grounding.** Citations are re-derived from the corpus and checked
+  against the model's claim; where they disagree, the corpus wins. Unverifiable
+  authority is surfaced as exposure, never passed off as law.
+- **Account sync.** Optional Cloudflare account syncs progress across devices
+  (and, for the workspace administrator, into server-side hosted inference on
+  Workers AI).
 
 ## Licensing and status
 
