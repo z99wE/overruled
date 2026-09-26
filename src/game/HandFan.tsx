@@ -1,5 +1,4 @@
 import type { CSSProperties } from 'react';
-import { Layers } from 'lucide-react';
 import type { PrecedentCard } from '../types/legal';
 import { GameCard } from './GameCard';
 
@@ -45,7 +44,7 @@ export function HandFan({ cards, playedIds, selectedId, active, onSelect, pot, s
         </div>
 
         <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-slate-900/80 px-3.5 py-1 font-mono text-[11px] text-slate-300">
-          <Layers className="h-3.5 w-3.5 text-amber-400" /> {cards.length - playedIds.size} in hand
+          <span className="font-bold text-amber-300">{cards.length - playedIds.size}</span> in hand
         </span>
       </div>
 

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { ArrowRight, Eye, EyeOff, Hand, RotateCcw, Swords, X } from 'lucide-react';
 import type { PrecedentCard } from '../types/legal';
 import { newDuel, remainingCards, resolveDuelRound, toOpponentCard, type DuelState, type DuelSide } from './duel';
 import { CardTableCanvas } from './CardTableCanvas';
@@ -75,8 +74,8 @@ export function DuelMode({
         {/* Header */}
         <header className="flex items-center justify-between border-b border-white/10 px-6 py-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300">
-              <Swords className="h-4 w-4" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 font-serif text-sm font-bold">
+              ⚔
             </div>
             <div>
               <h2 className="font-display text-base font-bold text-white">Counsel Duel Arena</h2>
@@ -89,9 +88,9 @@ export function DuelMode({
             aria-label="Close duel"
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white font-serif text-sm"
           >
-            <X className="h-4 w-4" />
+            ✕
           </button>
         </header>
 
@@ -113,7 +112,7 @@ export function DuelMode({
                 onClick={() => startPicking('A')}
                 className="m3-btn m3-btn-primary px-7 py-3 text-sm font-semibold"
               >
-                <Hand className="h-4 w-4 mr-1.5" /> {NAMES.A}: Take the Deck
+                {NAMES.A}: Take the Deck ▸
               </button>
               <p className="text-xs text-slate-300 max-w-md mx-auto">
                 Select in secret, lock, then pass the screen. Precedents clash on the table and the Bench rules on authority.
@@ -133,8 +132,7 @@ export function DuelMode({
                   onClick={() => setHidden((h) => !h)}
                   className="m3-btn m3-btn-tonal px-3 py-1 text-xs"
                 >
-                  {hidden ? <EyeOff className="h-3.5 w-3.5 mr-1" /> : <Eye className="h-3.5 w-3.5 mr-1" />}
-                  {hidden ? 'Hidden' : 'Visible'}
+                  {hidden ? 'Show 👁' : 'Hide ✕'}
                 </button>
               </div>
               <p className="font-sans text-xs text-slate-400">
@@ -170,7 +168,7 @@ export function DuelMode({
                   onClick={lockAndPass}
                   className="m3-btn m3-btn-primary w-full py-3 text-sm font-bold"
                 >
-                  Lock &amp; Clash Arguments <ArrowRight className="inline h-4 w-4 ml-1.5" />
+                  Lock &amp; Clash Arguments ▸
                 </button>
               )}
             </div>
@@ -190,7 +188,7 @@ export function DuelMode({
                 onClick={nextRound}
                 className="m3-btn m3-btn-primary px-7 py-3 text-sm"
               >
-                {state.done ? 'Review Result' : 'Next Round'} <ArrowRight className="h-4 w-4 ml-1.5" />
+                {state.done ? 'Review Result ▸' : 'Next Round ▸'}
               </button>
             </div>
           )}
@@ -217,7 +215,7 @@ export function DuelMode({
                   }}
                   className="m3-btn m3-btn-tonal px-5 py-2.5 text-xs text-white"
                 >
-                  <RotateCcw className="h-4 w-4 mr-1.5" /> Rematch
+                  Rematch ↺
                 </button>
                 <button
                   aria-label="Back to the table"

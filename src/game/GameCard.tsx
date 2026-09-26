@@ -1,5 +1,4 @@
 import type { CSSProperties } from 'react';
-import { Check, ExternalLink, Scale } from 'lucide-react';
 import { authorityWeight, domainSuit, faceOf, JURISDICTION_CODE, type CardFaceLike } from './cardMeta';
 
 export type GameCardSize = 'sm' | 'md' | 'lg';
@@ -40,13 +39,13 @@ function BackFace({ burned = false }: { burned?: boolean }) {
         style={{ backgroundImage: 'radial-gradient(circle at center, rgba(251,191,36,0.12) 0%, rgba(15,23,42,0.8) 70%)' }}
       />
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-        <Scale className="h-5 w-5 text-amber-300/80 animate-pulse" />
+        <span className="font-serif text-base font-bold text-amber-300/90">§</span>
         <span className="font-display text-[8px] font-bold tracking-widest text-amber-200/90">
           OVERROOL
         </span>
       </div>
-      <span className="absolute left-1.5 top-1.5 font-mono text-[9px] text-amber-300/60">⚖</span>
-      <span className="absolute bottom-1.5 right-1.5 rotate-180 font-mono text-[9px] text-amber-300/60">⚖</span>
+      <span className="absolute left-1.5 top-1.5 font-mono text-[9px] text-amber-300/60">§</span>
+      <span className="absolute bottom-1.5 right-1.5 rotate-180 font-mono text-[9px] text-amber-300/60">§</span>
     </div>
   );
 }
@@ -129,8 +128,8 @@ export function GameCard({
       </div>
 
       {selected && (
-        <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-slate-950 bg-amber-400 text-slate-950 shadow-md">
-          <Check className="h-3.5 w-3.5" strokeWidth={3.5} />
+        <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-slate-950 bg-amber-400 font-bold text-xs text-slate-950 shadow-md">
+          ✓
         </span>
       )}
     </button>
@@ -146,7 +145,7 @@ export function GameCard({
         aria-label={`Read the full judgment of ${face.caseName}`}
         className="absolute -right-1 -top-2 z-10 flex items-center gap-1 rounded-full border border-amber-300 bg-slate-900 px-2 py-0.5 font-mono text-[8px] font-semibold text-amber-200 shadow-md hover:bg-amber-400 hover:text-slate-950 transition-colors"
       >
-        <ExternalLink className="h-2.5 w-2.5" /> Full
+        Full ↗
       </a>
     ) : null;
 

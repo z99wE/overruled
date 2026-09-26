@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import type { ReactNode } from 'react';
-import { Scale } from 'lucide-react';
 import type { Jurisdiction, PrecedentCard } from '../types/legal';
 
 interface LandingProps {
@@ -189,8 +188,8 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
           onClick={() => scrollTo('top')}
           className="group flex items-center gap-2.5 text-left"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-md transition-transform group-hover:scale-105">
-            <Scale className="h-5 w-5" strokeWidth={2.2} />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-md font-serif text-lg font-bold transition-transform group-hover:scale-105">
+            O
           </div>
           <span className="font-display text-xl font-bold tracking-tight text-white">
             Over<span className="text-amber-300">rool</span>
@@ -522,7 +521,6 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
       {/* ── Footer ──────────────────────────────────────────────────── */}
       <footer className="border-t border-white/10 bg-slate-950/90 px-6 py-12 text-center backdrop-blur-md">
         <div className="flex items-center justify-center gap-2">
-          <Scale className="h-6 w-6 text-amber-300" />
           <span className="font-display text-2xl font-bold text-white">Over<span className="text-amber-300">rool</span></span>
         </div>
         <p className="mx-auto mt-3 max-w-xl font-sans text-xs text-slate-400">

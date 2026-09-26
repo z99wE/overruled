@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import type { FormEvent } from 'react';
-import { KeyRound, Loader2, LogIn, Mail, RefreshCw, ShieldCheck, X } from 'lucide-react';
 import { useAuth } from '../core/auth';
 
 interface AuthModalProps {
@@ -106,8 +105,8 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
         {/* ── Modal Header ────────────────────────────────────── */}
         <header className="flex items-center justify-between border-b border-white/10 bg-slate-950/80 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-sm">
-              {view === 'codes' ? <KeyRound className="h-5 w-5" /> : <ShieldCheck className="h-5 w-5" />}
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 font-serif font-bold text-sm shadow-sm">
+              {view === 'codes' ? '§' : '✓'}
             </div>
             <div>
               <h2 className="font-display text-sm font-bold text-white">{title}</h2>
@@ -123,10 +122,10 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
               setView('form');
               onClose();
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white font-serif text-sm"
             aria-label="Close"
           >
-            <X className="h-4 w-4" />
+            ✕
           </button>
         </header>
 
@@ -153,14 +152,14 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                 onClick={onClose}
                 className="m3-btn m3-btn-primary w-full py-2.5 text-xs"
               >
-                <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> I've Saved These Safely
+                Saved Safely ✓
               </button>
             </div>
           ) : user ? (
             <div className="space-y-4">
               <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
-                <p className="flex items-center gap-2 font-display text-xs font-semibold text-amber-300">
-                  <Mail className="h-4 w-4 text-amber-400" /> {user.email}
+                <p className="font-display text-xs font-semibold text-amber-300">
+                  {user.email}
                 </p>
                 <p className="mt-1 font-mono text-[10px] text-slate-400">
                   Game run state syncs to this profile. BYOK API keys remain strictly local to this device.
@@ -194,8 +193,7 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                 onClick={() => void generateCodes()}
                 className="m3-btn m3-btn-tonal w-full py-2.5 text-xs text-white"
               >
-                {busy ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <KeyRound className="mr-1.5 h-3.5 w-3.5" />}
-                Generate Recovery Codes
+                {busy ? 'Generating...' : 'Generate Recovery Codes ↺'}
               </button>
 
               {error && (
@@ -210,25 +208,22 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                 onClick={() => void logout().then(onClose)}
                 className="m3-btn m3-btn-destructive w-full py-2.5 text-xs"
               >
-                <LogIn className="mr-1.5 h-3.5 w-3.5" /> Sign Out
+                Sign Out ▸
               </button>
             </div>
           ) : view === 'forgot' ? (
             <form onSubmit={(e) => void submitForgot(e)} className="space-y-4">
               <div>
                 <label className="mb-1.5 block font-mono text-[10px] text-slate-400">Email Address</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
-                  <input
-                    ref={emailRef}
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    className="m3-input pl-9 font-mono text-xs"
-                  />
-                </div>
+                <input
+                  ref={emailRef}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  className="m3-input px-3.5 font-mono text-xs"
+                />
               </div>
 
               {(error || notice) && (
@@ -247,8 +242,7 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                 disabled={busy}
                 className="m3-btn m3-btn-primary w-full py-2.5 text-xs"
               >
-                {busy ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Mail className="mr-1.5 h-3.5 w-3.5" />}
-                Send Reset Instructions
+                {busy ? 'Sending...' : 'Send Reset Instructions ▸'}
               </button>
 
               <button
@@ -267,18 +261,15 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
             <form onSubmit={(e) => void submit(e)} className="space-y-4">
               <div>
                 <label className="mb-1.5 block font-mono text-[10px] text-slate-400">Email Address</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
-                  <input
-                    ref={emailRef}
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    className="m3-input pl-9 font-mono text-xs"
-                  />
-                </div>
+                <input
+                  ref={emailRef}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  className="m3-input px-3.5 font-mono text-xs"
+                />
               </div>
 
               <div>
@@ -289,7 +280,7 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                   placeholder={mode === 'signup' ? 'At least 8 characters' : '••••••••'}
-                  className="m3-input font-mono text-xs"
+                  className="m3-input px-3.5 font-mono text-xs"
                 />
               </div>
 
@@ -319,8 +310,7 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
                 disabled={busy}
                 className="m3-btn m3-btn-primary w-full py-3 text-xs"
               >
-                {busy ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : mode === 'signup' ? <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> : <LogIn className="mr-1.5 h-3.5 w-3.5" />}
-                {mode === 'signup' ? 'Create Free Account' : 'Sign In'}
+                {busy ? 'Processing...' : mode === 'signup' ? 'Create Free Account ▸' : 'Sign In ▸'}
               </button>
 
               <div className="flex items-center justify-between text-[11px] pt-1">

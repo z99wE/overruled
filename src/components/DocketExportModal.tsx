@@ -1,17 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Download,
-  FileText,
-  Loader2,
-  Printer,
-  RefreshCw,
-  Send,
-  Share2,
-  Sparkles,
-  X,
-} from 'lucide-react';
 import type { ScenarioBundle, SessionSummary } from '../types/legal';
 import { createKeyManager } from '../core/storage';
 import { enrichConsultationQuestions, serializeDocketMarkdown, downloadText, shareText } from '../core/docket';
@@ -36,10 +23,10 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
 
   const outcome =
     summary.finalFavor >= 70
-      ? { label: 'Decisive Judgment in Client’s Favor', badge: 'neo-badge-emerald' }
+      ? { label: 'Decisive Judgment in Client’s Favor', badge: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' }
       : summary.finalFavor <= 30
-        ? { label: 'Matter Lost — Bench Rules Against Record', badge: 'neo-badge-crimson' }
-        : { label: 'Proceedings Finely Balanced / Adjourned', badge: 'neo-badge-gold' };
+        ? { label: 'Matter Lost — Bench Rules Against Record', badge: 'border-rose-500/30 bg-rose-500/10 text-rose-300' }
+        : { label: 'Proceedings Finely Balanced / Adjourned', badge: 'border-amber-500/30 bg-amber-500/10 text-amber-300' };
 
   useEffect(() => {
     viewRef.current?.scrollTo({ top: 0 });
@@ -94,19 +81,19 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/85 backdrop-blur-sm sm:items-center sm:p-6 selection:bg-amber-400 selection:text-black">
-      <div className="flex h-[92dvh] w-full max-w-3xl flex-col overflow-hidden neo-card-elevated bg-slate-900 border-2 border-black shadow-[8px_8px_0_#000] sm:h-auto sm:max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/85 backdrop-blur-md sm:items-center sm:p-6 selection:bg-amber-400 selection:text-black">
+      <div className="flex h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-white/15 bg-slate-900/95 shadow-2xl backdrop-blur-2xl sm:h-auto sm:max-h-[90vh]">
         {/* Header */}
-        <header className="flex items-center justify-between gap-3 border-b-2 border-black bg-slate-950 px-5 py-4 shadow-[0_2px_0_#000]">
+        <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-slate-950/80 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-black bg-amber-400 text-black shadow-[2px_2px_0_#000]">
-              <FileText className="h-5 w-5" strokeWidth={2.5} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400/15 text-amber-300 font-serif font-bold text-sm">
+              §
             </div>
             <div>
-              <h2 className="font-display text-sm uppercase tracking-wider text-white">
-                ADVOCATE CONSULTATION DOCKET
+              <h2 className="font-display text-sm font-bold text-white">
+                Advocate Consultation Docket
               </h2>
-              <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
+              <p className="font-mono text-[10px] text-slate-400">
                 {scenario.title} · {scenario.bench}
               </p>
             </div>
@@ -114,44 +101,44 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
           <button
             type="button"
             onClick={onClose}
-            className="neo-btn neo-btn-dark px-2 py-1"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white font-serif text-sm"
             aria-label="Close docket"
           >
-            <X className="h-4 w-4" />
+            ✕
           </button>
         </header>
 
         {/* Body */}
         <div ref={viewRef} className="min-h-0 flex-1 overflow-y-auto px-6 py-5 space-y-5">
           {/* Outcome Banner */}
-          <div className="neo-card p-4 bg-slate-950 flex flex-wrap items-center justify-between gap-3">
+          <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <span className={`neo-badge ${outcome.badge} text-[9px] mb-1.5`}>
+              <span className={`inline-block rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-semibold mb-1.5 ${outcome.badge}`}>
                 {outcome.label}
               </span>
               <p className="font-display text-base text-white">Client: {scenario.clientName}</p>
-              <p className="font-mono text-[11px] text-slate-400 mt-0.5">
-                Final Favor: <span className="text-amber-400 font-bold">{summary.finalFavor}/100</span> · {summary.turnRecords.length} submissions on record
+              <p className="font-mono text-xs text-slate-400 mt-0.5">
+                Final Favor: <span className="text-amber-300 font-bold">{summary.finalFavor}/100</span> · {summary.turnRecords.length} submissions on record
               </p>
             </div>
-            <span className="neo-badge neo-badge-chrome text-[8px]">
-              VERIFIED SIMULATION
+            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 font-mono text-[9px] text-slate-400">
+              Verified Record
             </span>
           </div>
 
           {/* 1. Executive Summary */}
           <section className="space-y-2">
-            <h3 className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-widest text-amber-300">
-              <CheckCircle2 className="h-4 w-4 text-amber-400" /> 1 · Record Summary &amp; Turns
+            <h3 className="font-mono text-xs font-bold text-amber-300">
+              1 · Record Summary &amp; Submissions
             </h3>
-            <div className="space-y-2 neo-card p-3 bg-slate-950">
+            <div className="space-y-2 rounded-2xl border border-white/10 bg-slate-950/60 p-3.5">
               {summary.turnRecords.map((r) => (
-                <div key={r.turnNumber} className="flex items-start gap-2.5 text-[12px] border-b border-slate-800/80 pb-2 last:border-none last:pb-0">
-                  <span className="neo-badge neo-badge-chrome text-[8px] shrink-0">T{r.turnNumber}</span>
+                <div key={r.turnNumber} className="flex items-start gap-2.5 text-xs border-b border-white/5 pb-2 last:border-none last:pb-0">
+                  <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[9px] text-slate-400 shrink-0">T{r.turnNumber}</span>
                   <span className="text-slate-200 flex-1">{r.playerAction.rawText}</span>
-                  <span className={`neo-badge ${
-                    r.resolution.judicial_favor_delta > 0 ? 'neo-badge-emerald' : r.resolution.judicial_favor_delta < 0 ? 'neo-badge-crimson' : 'neo-badge-chrome'
-                  } text-[8px] shrink-0`}>
+                  <span className={`rounded-full border px-2 py-0.5 font-mono text-[9px] shrink-0 ${
+                    r.resolution.judicial_favor_delta > 0 ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : r.resolution.judicial_favor_delta < 0 ? 'border-rose-500/30 bg-rose-500/10 text-rose-300' : 'border-white/10 bg-white/5 text-slate-400'
+                  }`}>
                     {r.resolution.bench_verdict_tag} {r.resolution.judicial_favor_delta > 0 ? '+' : ''}{r.resolution.judicial_favor_delta}
                   </span>
                 </div>
@@ -161,29 +148,29 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
 
           {/* 2. Admitted Precedents */}
           <section className="space-y-2">
-            <h3 className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-widest text-emerald-300">
-              <Sparkles className="h-4 w-4 text-emerald-400" /> 2 · Admitted Legal Precedents
+            <h3 className="font-mono text-xs font-bold text-emerald-300">
+              2 · Admitted Legal Precedents
             </h3>
             {summary.admittedPrecedents.length === 0 ? (
-              <p className="neo-card p-3 font-mono text-xs italic text-slate-500 bg-slate-950">
+              <p className="rounded-2xl border border-white/10 bg-slate-950/60 p-3.5 font-mono text-xs italic text-slate-400">
                 No authority survived opposing objections on this record.
               </p>
             ) : (
               <div className="space-y-2.5">
                 {summary.admittedPrecedents.map((p) => (
-                  <div key={p.id} className="neo-card p-3.5 bg-slate-950 border-emerald-500/40">
+                  <div key={p.id} className="rounded-2xl border border-emerald-500/20 bg-slate-950/60 p-3.5">
                     <div className="flex items-center justify-between">
-                      <p className="font-display text-[14px] text-white">{p.caseName}</p>
-                      <span className="neo-badge neo-badge-gold text-[8px]">{p.domain}</span>
+                      <p className="font-display text-sm font-bold text-white">{p.caseName}</p>
+                      <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 font-mono text-[9px] text-amber-300">{p.domain}</span>
                     </div>
-                    <p className="font-mono text-[10px] font-bold text-amber-300 mt-0.5">{p.citation} · {p.court}</p>
-                    <p className="mt-1.5 text-[12px] leading-relaxed text-slate-300">{p.ratioDecidendi}</p>
+                    <p className="font-mono text-[10px] text-amber-300/80 mt-0.5">{p.citation} · {p.court}</p>
+                    <p className="mt-1.5 text-xs leading-relaxed text-slate-300">{p.ratioDecidendi}</p>
                     {p.sourceUrl && (
                       <a
                         href={p.sourceUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-2 inline-block font-mono text-[10px] font-bold text-amber-400 underline decoration-dotted hover:text-white"
+                        className="mt-2 inline-block font-mono text-[10px] text-amber-300 underline decoration-dotted hover:text-white"
                       >
                         Read Official Law Report ↗
                       </a>
@@ -196,17 +183,17 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
 
           {/* 3. Exposure Points */}
           <section className="space-y-2">
-            <h3 className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-widest text-rose-300">
-              <AlertTriangle className="h-4 w-4 text-rose-400" /> 3 · Identified Exposure Points
+            <h3 className="font-mono text-xs font-bold text-rose-300">
+              3 · Identified Exposure Points
             </h3>
             {summary.exposurePoints.length === 0 ? (
-              <p className="neo-card p-3 font-mono text-xs italic text-slate-500 bg-slate-950">
+              <p className="rounded-2xl border border-white/10 bg-slate-950/60 p-3.5 font-mono text-xs italic text-slate-400">
                 No exposure was flagged by opposing counsel — verify independently before any filing.
               </p>
             ) : (
-              <div className="neo-card p-3.5 bg-rose-950/20 border-rose-500/50 space-y-1.5">
+              <div className="rounded-2xl border border-rose-500/30 bg-rose-950/20 p-3.5 space-y-1.5">
                 {summary.exposurePoints.map((e, i) => (
-                  <div key={i} className="flex items-start gap-2 text-[12px] text-rose-200">
+                  <div key={i} className="flex items-start gap-2 text-xs text-rose-200">
                     <span className="font-mono text-rose-400 font-bold">•</span>
                     <span>{e}</span>
                   </div>
@@ -218,8 +205,8 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
           {/* 4. Actionable Questions */}
           <section className="space-y-2">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-widest text-amber-300">
-                <Send className="h-4 w-4 text-amber-400" /> 4 · Counsel Consultation Questions
+              <h3 className="font-mono text-xs font-bold text-amber-300">
+                4 · Counsel Consultation Questions
               </h3>
               <div className="flex items-center gap-2">
                 {enrichError && <span className="font-mono text-[10px] text-rose-400 max-w-xs truncate">{enrichError}</span>}
@@ -228,22 +215,21 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
                   type="button"
                   onClick={() => void enrich()}
                   disabled={enriching}
-                  className="neo-btn neo-btn-chrome text-[10px] px-2.5 py-1"
+                  className="m3-btn m3-btn-tonal text-[10px] px-2.5 py-1"
                 >
-                  {enriching ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <RefreshCw className="h-3 w-3 mr-1" />}
-                  {copied ? 'Refined' : 'Refine with Key'}
+                  {enriching ? 'Refining...' : copied ? 'Refined ✓' : 'Refine with Key ↺'}
                 </button>
               </div>
             </div>
-            <div className="neo-card p-3.5 bg-slate-950 space-y-2">
+            <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-3.5 space-y-2">
               {questions.length === 0 ? (
-                <p className="font-mono text-xs italic text-slate-500">
+                <p className="font-mono text-xs italic text-slate-400">
                   Run refinement, or download the docket to receive the structured consultation question set.
                 </p>
               ) : (
                 questions.map((q, i) => (
-                  <div key={i} className="flex items-start gap-2 text-[13px] text-slate-200 border-b border-slate-800/80 pb-2 last:border-none last:pb-0">
-                    <span className="font-mono text-amber-400 font-bold">{i + 1}.</span>
+                  <div key={i} className="flex items-start gap-2 text-xs text-slate-200 border-b border-white/5 pb-2 last:border-none last:pb-0">
+                    <span className="font-mono text-amber-300 font-bold">{i + 1}.</span>
                     <span>{q}</span>
                   </div>
                 ))
@@ -255,39 +241,39 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
         </div>
 
         {/* Footer Actions */}
-        <footer className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-black bg-slate-950 px-5 py-3.5 shadow-[0_-2px_0_#000]">
+        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-slate-950/80 px-6 py-4">
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => doDownload('md')}
               aria-label="Download docket as markdown"
-              className="neo-btn neo-btn-primary px-3 py-2 text-xs"
+              className="m3-btn m3-btn-primary px-3 py-1.5 text-xs"
             >
-              <Download className="mr-1 h-3.5 w-3.5" /> .MD
+              Download .MD
             </button>
             <button
               type="button"
               onClick={() => doDownload('html')}
               aria-label="Download docket as html"
-              className="neo-btn neo-btn-dark px-3 py-2 text-xs text-white"
+              className="m3-btn m3-btn-tonal px-3 py-1.5 text-xs text-white"
             >
-              <FileText className="mr-1 h-3.5 w-3.5" /> .HTML
+              Download .HTML
             </button>
             <button
               type="button"
               onClick={() => doDownload('pdf')}
               aria-label="Print or save docket as pdf"
-              className="neo-btn neo-btn-dark px-3 py-2 text-xs text-white"
+              className="m3-btn m3-btn-tonal px-3 py-1.5 text-xs text-white"
             >
-              <Printer className="mr-1 h-3.5 w-3.5" /> Print / PDF
+              Print / PDF
             </button>
             <button
               type="button"
               onClick={() => void share()}
               aria-label="Share docket"
-              className="neo-btn neo-btn-dark px-3 py-2 text-xs text-white"
+              className="m3-btn m3-btn-tonal px-3 py-1.5 text-xs text-white"
             >
-              <Share2 className="mr-1 h-3.5 w-3.5" /> Share
+              Share
             </button>
             {printBlocked && (
               <span className="font-mono text-[10px] text-rose-400">
@@ -304,9 +290,9 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
             type="button"
             onClick={onRestart}
             aria-label="Retry proceedings"
-            className="neo-btn neo-btn-emerald px-4 py-2 text-xs"
+            className="m3-btn m3-btn-primary px-4 py-1.5 text-xs"
           >
-            <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Retry Proceeding
+            Retry Proceeding ↺
           </button>
         </footer>
       </div>

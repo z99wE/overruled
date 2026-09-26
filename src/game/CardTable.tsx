@@ -1,4 +1,3 @@
-import { Loader2 } from 'lucide-react';
 import type { OpponentPlayedCard, PrecedentCard } from '../types/legal';
 import { GameCard } from './GameCard';
 import { VERDICT_STYLE } from '../components/chamber/messages';
@@ -119,7 +118,7 @@ export function CardTable({ stage, playerCard, opponentCard, winner, record, cli
           {/* Deliberation Status Pill */}
           {stage === 'resolving' && (
             <div className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-amber-400/30 bg-slate-950/90 px-4 py-2 shadow-xl backdrop-blur">
-              <Loader2 className="h-4 w-4 animate-spin text-amber-300" />
+              <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
               <span className="font-sans text-xs font-medium text-slate-200">The Bench is deliberating authority…</span>
             </div>
           )}

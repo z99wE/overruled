@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FileText, Gavel, KeyRound, X } from 'lucide-react';
 import type { ScenarioBundle } from '../types/legal';
 import type { CitationIndex } from '../core/searchIndex';
 import { useTrial } from '../core/useTrial';
@@ -245,7 +244,7 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
               </div>
               <div className="flex shrink-0 gap-2">
                 <button type="button" onClick={onOpenKeys} aria-label="Open key vault" className="m3-btn m3-btn-tonal px-3 py-1 text-xs text-white">
-                  <KeyRound className="inline h-3 w-3" /> Key Vault
+                  Key Vault
                 </button>
                 <button type="button" onClick={clearError} aria-label="Dismiss error" className="m3-btn m3-btn-outlined px-3 py-1 text-xs text-slate-300">
                   Dismiss
@@ -259,7 +258,7 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
             onClick={() => { void notifyTap(); setFileOpen((v) => !v); }}
             className="m3-btn m3-btn-tonal w-full py-2.5 text-xs text-amber-300 shadow-sm"
           >
-            <FileText className="h-3.5 w-3.5" /> {fileOpen ? 'Close the Case File' : 'Open the Case File & Precedent Archive'}
+            {fileOpen ? 'Close the Case File ✕' : 'Open the Case File & Precedent Archive ▸'}
           </button>
         </div>
 
@@ -301,7 +300,7 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
 
           {state.phase === 'resolving' && (
             <div className="flex items-center gap-3 py-4">
-              <Gavel className="anim-float h-5 w-5 text-amber-300" />
+              <span className="h-2.5 w-2.5 rounded-full bg-amber-400 animate-ping" />
               <span className="font-sans text-xs font-medium text-slate-300">Clerk · the Bench is recording your authority…</span>
             </div>
           )}
@@ -354,9 +353,9 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
               type="button"
               aria-label="Close the case file"
               onClick={() => setFileOpen(false)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-xs font-mono text-slate-300 hover:text-white"
             >
-              <X className="h-4 w-4" />
+              ✕
             </button>
           </div>
           <ChamberSidebar scenario={scenario} selectedCardId={selectedCardId} onSelectCard={handleCardSelect} />

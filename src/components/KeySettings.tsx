@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Check, Cloud, KeyRound, Loader2, Lock, ShieldCheck, Trash2, X } from 'lucide-react';
 import type { LLMConfig, LLMProvider } from '../types/legal';
 import { PROVIDERS, HOSTED_ENTRY, createKeyManager, defaultModel, isHostedProvider } from '../core/storage';
 import { requestChat } from '../core/providerCall';
@@ -120,28 +119,28 @@ export function KeySettings({ onClose }: KeySettingsProps) {
   const met = creditsToday();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm selection:bg-amber-400 selection:text-black">
-      <div className="w-full max-w-lg overflow-hidden neo-card-elevated bg-slate-900 border-2 border-black shadow-[8px_8px_0_#000]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md selection:bg-amber-400 selection:text-slate-950">
+      <div className="w-full max-w-lg overflow-hidden m3-card-elevated border border-white/15 bg-slate-900/95 shadow-2xl backdrop-blur-2xl">
         {/* ── Modal Header ────────────────────────────────────── */}
-        <header className="flex items-center justify-between border-b-2 border-black bg-slate-950 px-5 py-4 shadow-[0_2px_0_#000]">
+        <header className="flex items-center justify-between border-b border-white/10 bg-slate-950/80 px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-black bg-amber-400 text-black shadow-[2px_2px_0_#000]">
-              <KeyRound className="h-5 w-5" strokeWidth={2.5} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 font-serif font-bold text-lg shadow-md">
+              §
             </div>
             <div>
-              <h2 className="font-display text-sm uppercase tracking-wider text-white">KEY VAULT</h2>
-              <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">
-                BRING YOUR OWN KEY · ZERO-KNOWLEDGE DIRECT HTTPS
+              <h2 className="font-display text-sm font-bold text-white">Private Key Vault</h2>
+              <p className="font-sans text-[10px] text-slate-400">
+                Direct client HTTPS · Zero intermediary storage
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="neo-btn neo-btn-dark px-2 py-1"
+            className="m3-btn m3-btn-tonal px-2.5 py-1 text-xs text-slate-300 hover:text-white font-mono"
             aria-label="Close"
           >
-            <X className="h-4 w-4" />
+            ✕
           </button>
         </header>
 
@@ -149,7 +148,7 @@ export function KeySettings({ onClose }: KeySettingsProps) {
         <div className="max-h-[80vh] overflow-y-auto space-y-4 px-6 py-5">
           {!loaded && (
             <div className="flex justify-center py-6">
-              <Loader2 className="h-6 w-6 animate-spin text-amber-400" />
+              <span className="h-4 w-4 rounded-full bg-amber-400 animate-ping" />
             </div>
           )}
           {loaded && (
@@ -212,24 +211,21 @@ export function KeySettings({ onClose }: KeySettingsProps) {
               {!isHostedProvider(provider) && (
                 <>
                   <div>
-                    <label className="mb-1.5 block font-mono text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <label className="mb-1.5 block font-mono text-[10px] text-slate-400">
                       API Key
                     </label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
-                      <input
-                        type="password"
-                        value={apiKey}
-                        onChange={(e) => setApiKey(e.target.value)}
-                        placeholder="Paste your provider key (e.g. gsk_… / sk-…)…"
-                        autoComplete="off"
-                        className="neo-input pl-9 font-mono text-xs"
-                      />
-                    </div>
+                    <input
+                      type="password"
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      placeholder="Paste your provider key (e.g. gsk_… / sk-…)…"
+                      autoComplete="off"
+                      className="m3-input px-3.5 font-mono text-xs"
+                    />
                   </div>
 
                   {/* Persist across sessions */}
-                  <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-black bg-slate-950 p-3 shadow-[2px_2px_0_#000]">
+                  <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-900/80 p-3.5">
                     <div>
                       <p className="font-display text-xs text-white">Persist in Local Storage</p>
                       <p className="font-mono text-[10px] text-slate-400">
@@ -242,12 +238,12 @@ export function KeySettings({ onClose }: KeySettingsProps) {
                       role="switch"
                       aria-checked={persist}
                       onClick={() => void togglePersist()}
-                      className={`relative h-6 w-11 rounded-full border-2 border-black transition-colors ${
+                      className={`relative h-6 w-11 rounded-full border border-white/15 transition-colors ${
                         persist ? 'bg-amber-400' : 'bg-slate-800'
                       }`}
                     >
                       <span
-                        className={`absolute top-0.5 h-4 w-4 rounded-full bg-black transition-transform ${
+                        className={`absolute top-0.5 h-4 w-4 rounded-full bg-slate-950 transition-transform ${
                           persist ? 'translate-x-[20px]' : 'translate-x-0.5'
                         }`}
                       />
@@ -259,10 +255,10 @@ export function KeySettings({ onClose }: KeySettingsProps) {
               {/* Status Message */}
               {status && (
                 <div
-                  className={`rounded-lg border-2 border-black p-3 font-mono text-[11px] font-bold shadow-[2px_2px_0_#000] ${
+                  className={`rounded-xl border p-3 font-mono text-xs ${
                     statusKind === 'ok'
-                      ? 'bg-emerald-950 text-emerald-300 border-emerald-500'
-                      : 'bg-rose-950 text-rose-300 border-rose-500'
+                      ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
+                      : 'bg-rose-950/80 text-rose-300 border-rose-500/40'
                   }`}
                 >
                   {statusMsg}
@@ -271,19 +267,19 @@ export function KeySettings({ onClose }: KeySettingsProps) {
 
               {/* Active Config Status */}
               {config && (
-                <div className="flex items-center gap-2 rounded-lg border border-amber-500/50 bg-amber-950/20 p-2.5 font-mono text-xs text-amber-300">
-                  <ShieldCheck className="h-4 w-4 text-amber-400" />
-                  <span>ARMED: {labelFor(config.provider)} ({config.model})</span>
+                <div className="flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-950/20 p-2.5 font-mono text-xs text-amber-300">
+                  <span className="font-bold">ARMED:</span>
+                  <span>{labelFor(config.provider)} ({config.model})</span>
                 </div>
               )}
 
               {/* Credits Usage */}
-              <div className="rounded-lg border-2 border-black bg-slate-950 p-3 shadow-[2px_2px_0_#000]">
-                <div className="flex items-center justify-between font-mono text-[10px] uppercase font-bold text-slate-400">
+              <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-3.5">
+                <div className="flex items-center justify-between font-mono text-[10px] text-slate-400">
                   <span>Daily Quota Tracker</span>
-                  <span className="text-amber-400">{met.used} / {met.cap} credits</span>
+                  <span className="text-amber-300 font-bold">{met.used} / {met.cap} credits</span>
                 </div>
-                <p className="mt-1 font-mono text-[9px] text-slate-500">
+                <p className="mt-1 font-mono text-[9px] text-slate-400">
                   Trial = {CREDIT_COSTS.trial} credits · Desk Op = {CREDIT_COSTS.deskOp} credits · Local Rules run unlimited &amp; free
                 </p>
               </div>
@@ -295,16 +291,9 @@ export function KeySettings({ onClose }: KeySettingsProps) {
                   type="button"
                   onClick={() => void save()}
                   disabled={saving}
-                  className="neo-btn neo-btn-primary flex-1 py-2.5 text-xs"
+                  className="m3-btn m3-btn-primary flex-1 py-2.5 text-xs font-bold"
                 >
-                  {saving ? (
-                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                  ) : isHostedProvider(provider) ? (
-                    <Cloud className="mr-1.5 h-3.5 w-3.5" />
-                  ) : (
-                    <Lock className="mr-1.5 h-3.5 w-3.5" />
-                  )}
-                  {isHostedProvider(provider) ? 'Enable Hosted' : 'Save To Vault'}
+                  {saving ? 'Saving...' : isHostedProvider(provider) ? 'Enable Hosted ▸' : 'Save To Vault ▸'}
                 </button>
 
                 <button
@@ -312,24 +301,23 @@ export function KeySettings({ onClose }: KeySettingsProps) {
                   type="button"
                   onClick={() => void test()}
                   disabled={testing}
-                  className="neo-btn neo-btn-chrome px-4 py-2.5 text-xs"
+                  className="m3-btn m3-btn-tonal px-4 py-2.5 text-xs text-white"
                 >
-                  {testing ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Check className="mr-1 h-3.5 w-3.5" />}
-                  Test Connection
+                  {testing ? 'Testing...' : 'Test Connection ↺'}
                 </button>
 
                 <button
                   aria-label="Clear stored API key"
                   type="button"
                   onClick={() => void clear()}
-                  className="neo-btn neo-btn-crimson px-3.5 py-2.5 text-xs"
+                  className="m3-btn m3-btn-destructive px-3.5 py-2.5 text-xs"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  Clear
                 </button>
               </div>
 
               {/* Security guarantee note */}
-              <p className="font-mono text-[9px] leading-relaxed text-slate-500">
+              <p className="font-mono text-[9px] leading-relaxed text-slate-400">
                 {isHostedProvider(provider)
                   ? 'Hosted inference executes through Cloudflare Workers AI with admin privileges.'
                   : `Direct browser-to-provider HTTPS architecture. Only generative AI requests leaving this client are transmitted to the approved official endpoints of Google, OpenAI, Anthropic, or Groq.`}

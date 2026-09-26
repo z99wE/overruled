@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import { FileText, Loader2, Upload } from 'lucide-react';
 import { ACCEPT_ATTR, IngestError, ingestFile } from '../core/documentIngest';
 import type { IngestedDoc } from '../core/documentIngest';
 
@@ -55,19 +54,15 @@ export function DocumentIngest({ onLoaded, label = 'Upload a document' }: Docume
           }
         }}
         aria-label={label}
-        className={`flex min-h-[180px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-4 text-center transition ${
-          dragging ? 'border-dgold bg-dgold/10' : 'border-ink bg-felt-800 hover:border-cream/40'
+        className={`flex min-h-[180px] cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-4 text-center transition ${
+          dragging ? 'border-amber-400 bg-amber-400/10' : 'border-white/15 bg-slate-900/60 hover:border-amber-400/40'
         }`}
       >
-        {busy ? (
-          <Loader2 className="h-6 w-6 animate-spin text-dgold" />
-        ) : (
-          <Upload className={`h-6 w-6 ${dragging ? 'text-dgold' : 'text-cream/40'}`} />
-        )}
-        <p className="text-[13px] font-medium text-cream">
+        <span className="font-serif text-2xl font-bold text-amber-300">§</span>
+        <p className="text-[13px] font-medium text-white">
           {busy ? 'Reading…' : dragging ? 'Drop to read' : label}
         </p>
-        <p className="font-mono text-[10px] leading-relaxed text-cream/40">
+        <p className="font-mono text-[10px] leading-relaxed text-slate-400">
           Drop a PDF, .docx or .txt here — or click to choose.
           <br />
           Read in your browser. Nothing is uploaded to a server.
@@ -81,7 +76,7 @@ export function DocumentIngest({ onLoaded, label = 'Upload a document' }: Docume
         />
       </div>
       {error && (
-        <p className="rounded-lg border border-poker-red/40 bg-poker-red-deep/30 px-3 py-2 text-[12px] text-poker-red">{error}</p>
+        <p className="rounded-xl border border-rose-500/40 bg-rose-950/60 px-3 py-2 text-[12px] text-rose-200">{error}</p>
       )}
     </div>
   );
@@ -89,10 +84,9 @@ export function DocumentIngest({ onLoaded, label = 'Upload a document' }: Docume
 
 export function DocChip({ name, kind }: { name: string; kind: string }) {
   return (
-    <span className="flex min-w-0 items-center gap-1.5 rounded-md bg-ink/40 px-2 py-1 text-[11px] text-cream/80">
-      <FileText className="h-3 w-3 shrink-0 text-dgold" />
+    <span className="flex min-w-0 items-center gap-1.5 rounded-full border border-white/10 bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-200">
       <span className="truncate">{name}</span>
-      <span className="shrink-0 font-mono text-[9px] uppercase text-cream/40">{KIND_HINT[kind] ?? kind}</span>
+      <span className="shrink-0 font-mono text-[9px] uppercase text-amber-300">{KIND_HINT[kind] ?? kind}</span>
     </span>
   );
 }

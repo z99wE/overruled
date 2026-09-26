@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Check, ChevronLeft, Copy, Download, KeyRound, Landmark, Loader2, Save, Share2, Sparkles, X, FileText, ShieldAlert, GitCompare, FileSearch, Gavel } from 'lucide-react';
 import type { LLMConfig, LLMProvider } from '../types/legal';
 import { PROVIDERS, HOSTED_ENTRY, createKeyManager } from '../core/storage';
 import type { AskResult, CompareResult, DeskAnalysis, DeskOp, DeskResult, LawyerResult, RisksResult, SimplifyResult } from '../core/docEngine';
@@ -28,12 +27,12 @@ const SOURCES: { id: SourceTab; label: string }[] = [
   { id: 'sample', label: 'Samples' },
 ];
 
-const OPS: { id: DeskOp; label: string; icon: typeof FileText }[] = [
-  { id: 'simplify', label: 'Plain Language', icon: FileText },
-  { id: 'risks', label: 'Risk & Traps', icon: ShieldAlert },
-  { id: 'compare', label: 'Version Diff', icon: GitCompare },
-  { id: 'ask', label: 'Ask Document', icon: FileSearch },
-  { id: 'lawyer', label: 'Counsel Prep', icon: Gavel },
+const OPS: { id: DeskOp; label: string }[] = [
+  { id: 'simplify', label: 'Plain Language' },
+  { id: 'risks', label: 'Risk & Traps' },
+  { id: 'compare', label: 'Version Diff' },
+  { id: 'ask', label: 'Ask Document' },
+  { id: 'lawyer', label: 'Counsel Prep' },
 ];
 
 const KIND_LABEL: Record<string, { label: string; badge: string }> = {
@@ -249,8 +248,8 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
         {/* ── Top Header Strip ────────────────────────────────────── */}
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-md">
-              <Landmark className="h-5 w-5" strokeWidth={2.2} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 font-serif font-bold text-lg shadow-md">
+              §
             </div>
             <div>
               <h2 className="font-display text-base font-bold text-white">
@@ -266,15 +265,14 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
               onClick={onOpenKeys}
               className="m3-btn m3-btn-tonal px-3.5 py-1.5 text-xs text-slate-300"
             >
-              <KeyRound className="mr-1.5 h-3.5 w-3.5 text-amber-300" />
               {cfg ? providerLabel(cfg.provider) : 'Keyless (Local Engine)'}
             </button>
             <button
               onClick={onClose}
-              className="m3-btn m3-btn-tonal h-9 w-9 p-0 text-slate-300 hover:text-white"
+              className="m3-btn m3-btn-tonal px-3 py-1.5 text-xs text-slate-300 hover:text-white"
               aria-label={page ? 'Back' : 'Close legal desk'}
             >
-              {page ? <ChevronLeft className="h-4 w-4" /> : <X className="h-4 w-4" />}
+              {page ? '← Back' : 'Close ✕'}
             </button>
           </div>
         </header>
@@ -288,18 +286,16 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
             {/* Operation Tabs */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {OPS.map((o) => {
-                const Icon = o.icon;
                 const active = op === o.id;
                 return (
                   <button
                     key={o.id}
                     onClick={() => setOp(o.id)}
-                    className={`m3-btn py-2 px-3 text-xs gap-1.5 justify-start ${
+                    className={`m3-btn py-2 px-3 text-xs justify-center ${
                       active ? 'm3-btn-primary' : 'm3-btn-tonal text-slate-300'
                     }`}
                   >
-                    <Icon className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{o.label}</span>
+                    <span className="truncate font-medium">{o.label}</span>
                   </button>
                 );
               })}
@@ -402,8 +398,7 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                   onClick={saveIntoLibrary}
                   className="m3-btn m3-btn-emerald px-3.5 py-1 text-xs"
                 >
-                  {saved ? <Check className="mr-1 h-3 w-3" /> : <Save className="mr-1 h-3 w-3" />}
-                  {saved ? 'Saved' : 'Save'}
+                  {saved ? 'Saved ✓' : 'Save'}
                 </button>
               </div>
             )}
@@ -483,7 +478,6 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
               disabled={busy}
               className="m3-btn m3-btn-primary w-full py-3.5 text-sm font-semibold"
             >
-              {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
               {busy
                 ? `Executing Analysis${cfg ? '' : ' (Local Engine)'}…`
                 : `Run Analysis with ${cfg ? providerLabel(cfg.provider) : 'Local Rules Analyst'}`}
@@ -511,26 +505,26 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                   <button
                     onClick={() => void exportMd('copy')}
                     aria-label="Copy analysis as markdown"
-                    className="m3-btn m3-btn-tonal h-8 w-8 p-0"
+                    className="m3-btn m3-btn-tonal px-3 py-1 font-mono text-xs text-slate-300 hover:text-white"
                     title="Copy Markdown"
                   >
-                    {copied ? <Check className="h-3.5 w-3.5 text-emerald-300" /> : <Copy className="h-3.5 w-3.5" />}
+                    {copied ? 'Copied ✓' : 'Copy'}
                   </button>
                   <button
                     onClick={() => void exportMd('share')}
                     aria-label="Share analysis"
-                    className="m3-btn m3-btn-tonal h-8 w-8 p-0"
+                    className="m3-btn m3-btn-tonal px-3 py-1 font-mono text-xs text-slate-300 hover:text-white"
                     title="Share"
                   >
-                    <Share2 className="h-3.5 w-3.5" />
+                    Share
                   </button>
                   <button
                     onClick={() => void exportMd('download')}
                     aria-label="Download analysis as markdown"
-                    className="m3-btn m3-btn-tonal h-8 w-8 p-0"
+                    className="m3-btn m3-btn-tonal px-3 py-1 font-mono text-xs text-slate-300 hover:text-white"
                     title="Download Markdown"
                   >
-                    <Download className="h-3.5 w-3.5" />
+                    Download .md
                   </button>
                 </div>
               </div>
@@ -539,8 +533,8 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
             <div className="min-h-[260px] flex-1 overflow-y-auto m3-card p-5">
               {!analysis && (
                 <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-slate-400 py-12">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-md">
-                    <Landmark className="h-6 w-6" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-400/15 text-amber-300 font-serif font-bold text-2xl shadow-md">
+                    §
                   </div>
                   <div>
                     <p className="font-display text-base font-bold text-white">Workbench Standing By</p>

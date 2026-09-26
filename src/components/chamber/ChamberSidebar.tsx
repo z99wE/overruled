@@ -1,4 +1,3 @@
-import { BookOpen, FileText } from 'lucide-react';
 import type { ScenarioBundle } from '../../types/legal';
 import { PrecedentCard } from '../PrecedentCard';
 
@@ -13,8 +12,8 @@ export function ChamberSidebar({ scenario, selectedCardId, onSelectCard }: Chamb
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-5">
       <section className="space-y-3 rounded-2xl border border-white/10 bg-slate-900/60 p-4 backdrop-blur">
-        <h2 className="flex items-center gap-2 font-display text-sm font-bold text-amber-300">
-          <FileText className="h-4 w-4" /> Case File
+        <h2 className="font-display text-sm font-bold text-amber-300">
+          Case File
         </h2>
         <div className="space-y-3 text-xs leading-relaxed text-slate-300">
           <div>
@@ -33,8 +32,8 @@ export function ChamberSidebar({ scenario, selectedCardId, onSelectCard }: Chamb
       </section>
 
       <section className="space-y-3">
-        <h2 className="flex items-center gap-2 font-display text-sm font-bold text-amber-300">
-          <BookOpen className="h-4 w-4" /> Precedent Authority Board
+        <h2 className="font-display text-sm font-bold text-amber-300">
+          Precedent Authority Board
         </h2>
         <p className="font-sans text-xs text-slate-400">
           All {scenario.availablePrecedents.length} verified precedents admitted to your side

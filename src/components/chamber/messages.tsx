@@ -1,4 +1,3 @@
-import { Gavel, Landmark, Sparkles, Scale } from 'lucide-react';
 import type { TurnRecord } from '../../types/legal';
 
 export const VERDICT_STYLE: Record<
@@ -32,7 +31,7 @@ export function VerdictFlash({ record }: { record: TurnRecord }) {
   return (
     <div className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center backdrop-blur-sm">
       <div className={`anim-slam flex flex-col items-center gap-2 rounded-3xl border border-white/20 px-12 py-8 shadow-2xl ${style.flash}`}>
-        <Scale className="h-10 w-10" strokeWidth={2.2} />
+        <span className="font-serif text-3xl font-bold">§</span>
         <span className="font-display text-4xl font-bold tracking-tight">
           {style.label}
         </span>
@@ -51,8 +50,8 @@ export function VerdictFlash({ record }: { record: TurnRecord }) {
 export function JudgeMessage({ text, meta }: { text: string; meta?: string }) {
   return (
     <div className="flex gap-3">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-md">
-        <Gavel className="h-4 w-4" strokeWidth={2.2} />
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-400/15 font-serif text-base font-bold text-amber-300 shadow-md">
+        J
       </div>
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-baseline gap-2">
@@ -73,7 +72,7 @@ export function OpponentMessage({ from, text, style, attack }: { from: string; t
       <p className="max-w-full truncate text-right font-sans text-xs font-semibold text-rose-300">{from}</p>
       <div className="max-w-[88%] rounded-2xl rounded-tr-sm border border-rose-500/20 bg-rose-950/30 p-3.5 shadow-lg backdrop-blur">
         {from.includes('AI bench') && (
-          <p className="mb-1 inline-flex items-center gap-1 rounded-full bg-rose-900/50 px-2 py-0.5 font-mono text-[9px] text-rose-200">⚡ AI Bench</p>
+          <p className="mb-1 inline-flex items-center gap-1 rounded-full bg-rose-900/50 px-2 py-0.5 font-mono text-[9px] text-rose-200">AI Bench</p>
         )}
         <p className="text-[13px] leading-relaxed text-slate-200">{text}</p>
       </div>
@@ -98,7 +97,7 @@ export function PlayerMessage({ text, verified, tag }: { text: string; verified:
           <p className="text-[13px] leading-relaxed text-slate-100">{text}</p>
           {verified && (
             <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-2 py-0.5 font-mono text-[9px] text-emerald-200">
-              <Landmark className="h-3 w-3" /> Verified Precedent
+              Verified Precedent ✓
             </p>
           )}
         </div>
@@ -110,8 +109,8 @@ export function PlayerMessage({ text, verified, tag }: { text: string; verified:
 export function CoCounselMessage({ text }: { text: string }) {
   return (
     <div className="flex gap-3">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-purple-400/30 bg-purple-400/15 text-purple-300 shadow-md">
-        <Sparkles className="h-4 w-4" strokeWidth={2.2} />
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-purple-400/30 bg-purple-400/15 font-serif text-base font-bold text-purple-300 shadow-md">
+        C
       </div>
       <div className="min-w-0 flex-1">
         <p className="mb-1 font-sans text-xs font-semibold text-purple-300">Co-Counsel · Tactical Whisper</p>

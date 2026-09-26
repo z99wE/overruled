@@ -1,4 +1,3 @@
-import { Flame, RotateCcw, ShoppingBag, Trophy, Volume2, VolumeX } from 'lucide-react';
 import { rankForXp } from './economy';
 import { jokerById, rarityCls } from './jokers';
 import type { RunState } from './runStore';
@@ -40,7 +39,7 @@ export function RunPanel({
           </span>
           {run.bestStreak > 1 && (
             <span className="streak-flame inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/15 px-3 py-1 font-mono text-xs font-semibold text-amber-300">
-              <Flame className="h-3.5 w-3.5" /> Best streak ×{run.bestStreak}
+              Best streak ×{run.bestStreak}
             </span>
           )}
         </div>
@@ -51,8 +50,7 @@ export function RunPanel({
             onClick={() => setMuted(toggleMute())}
             className="m3-btn m3-btn-tonal px-3.5 py-1.5 text-xs text-slate-300 hover:text-white"
           >
-            {muted ? <VolumeX className="h-3.5 w-3.5 mr-1" /> : <Volume2 className="h-3.5 w-3.5 mr-1" />}
-            {muted ? 'Muted' : 'Sound On'}
+            {muted ? 'Audio Muted' : 'Audio Active'}
           </button>
           <button
             aria-label="Open shop"
@@ -63,7 +61,7 @@ export function RunPanel({
             }}
             className="m3-btn m3-btn-primary px-4 py-1.5 text-xs"
           >
-            <ShoppingBag className="h-3.5 w-3.5 mr-1" /> Chambers Emporium
+            Chambers Emporium
           </button>
           <button
             aria-label="Reset run ledger"
@@ -71,13 +69,13 @@ export function RunPanel({
             onClick={reset}
             className="m3-btn m3-btn-outlined px-3.5 py-1.5 text-xs text-slate-300 hover:text-rose-300"
           >
-            <RotateCcw className="h-3.5 w-3.5 mr-1" /> Reset
+            Reset Ledger
           </button>
         </div>
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
         <span className="inline-flex items-center gap-1 font-mono text-[11px] text-slate-400">
-          <Trophy className="h-3.5 w-3.5 text-amber-300" /> Overcome Benches:
+          Overcome Benches:
         </span>
         {scalps ? (
           <span className="font-mono text-xs font-semibold text-amber-300">{scalps}</span>

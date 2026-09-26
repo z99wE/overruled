@@ -1,4 +1,3 @@
-import { ArrowRight, BookOpen, Loader2, MessageSquareQuote, RotateCcw } from 'lucide-react';
 import type { TrialState } from '../../core/useTrial';
 
 interface ChamberActionBarProps {
@@ -46,7 +45,7 @@ export function ChamberActionBar({
                   mode === 'cards' ? 'm3-btn-primary' : 'm3-btn-tonal text-slate-300'
                 }`}
               >
-                <BookOpen className="h-3.5 w-3.5" /> Deploy Precedent · {handLeft} in hand
+                Deploy Precedent · {handLeft} in hand
               </button>
               {allowFreeform && (
                 <button
@@ -57,7 +56,7 @@ export function ChamberActionBar({
                     mode === 'freeform' ? 'm3-btn-primary' : 'm3-btn-tonal text-slate-300'
                   }`}
                 >
-                  <MessageSquareQuote className="h-3.5 w-3.5" /> Freeform Motion
+                  Freeform Motion
                 </button>
               )}
             </div>
@@ -94,7 +93,7 @@ export function ChamberActionBar({
                   canSubmit ? 'm3-btn-primary' : 'm3-btn-outlined'
                 }`}
               >
-                {isFinalTurn ? 'Final Submission' : 'Submit Argument'} <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                {isFinalTurn ? 'Final Submission ▸' : 'Submit Argument ▸'}
               </button>
             </div>
           </>
@@ -109,12 +108,13 @@ export function ChamberActionBar({
               onClick={onContinue}
               className="m3-btn m3-btn-primary px-6 py-2 text-xs"
             >
-              Continue <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+              Continue ▸
             </button>
           </div>
         ) : state.phase === 'resolving' ? (
           <div className="flex items-center justify-center gap-2 py-2 text-center font-sans text-xs font-medium text-amber-300">
-            <Loader2 className="h-4 w-4 animate-spin text-amber-300" /> Opposing counsel answers · Bench deliberating…
+            <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping" />
+            Opposing counsel answers · Bench deliberating…
           </div>
         ) : (
           <div className="flex items-center justify-center gap-4 py-2">
@@ -124,7 +124,7 @@ export function ChamberActionBar({
               onClick={onRetry}
               className="m3-btn m3-btn-tonal px-5 py-2 text-xs text-white"
             >
-              <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Retry Trial
+              Retry Trial
             </button>
           </div>
         )}

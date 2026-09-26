@@ -1,4 +1,3 @@
-import { BadgeCheck, Bell, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { NEWS_ITEMS } from '../core/news';
 import { useAuth } from '../core/auth';
@@ -39,13 +38,13 @@ export function NewsFeed({ onNeedAccount }: NewsFeedProps) {
   const latest = NEWS_ITEMS[0];
 
   return (
-    <section className="mb-6 rounded-2xl border-2 border-ink bg-felt-800 p-5">
+    <section className="mb-6 rounded-2xl border border-white/10 bg-slate-900/70 p-5 backdrop-blur-xl">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 font-display text-lg uppercase tracking-wide text-chip-gold">
-          <Bell className="h-5 w-5" /> The AI Briefing
+        <h2 className="flex items-center gap-2 font-display text-base font-bold text-amber-300">
+          The AI Legal Briefing
           {subscribed && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-chip-gold/40 bg-chip-gold/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest text-chip-gold">
-              <BadgeCheck className="h-3 w-3" /> Subscribed
+            <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 font-mono text-[9px] text-amber-300">
+              Subscribed ✓
             </span>
           )}
         </h2>
@@ -55,9 +54,9 @@ export function NewsFeed({ onNeedAccount }: NewsFeedProps) {
             type="button"
             disabled={busy}
             onClick={() => void subscribe()}
-            className="btn-3d inline-flex items-center gap-2 rounded-lg border-2 border-ink bg-chip-gold px-4 py-2 font-display text-xs uppercase tracking-wider text-ink disabled:opacity-50"
+            className="m3-btn m3-btn-primary px-4 py-1.5 text-xs font-semibold disabled:opacity-50"
           >
-            <Sparkles className="h-3.5 w-3.5" /> Subscribe free
+            Subscribe Free
           </button>
         )}
       </div>

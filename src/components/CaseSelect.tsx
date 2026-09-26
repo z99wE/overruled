@@ -1,4 +1,3 @@
-import { ArrowRight, CalendarDays, KeyRound, Landmark, Scale, ShieldCheck, Sparkles, Wand2, Dices, Layers, Skull, ShoppingBag, Swords } from 'lucide-react';
 import { useState } from 'react';
 import type { Jurisdiction, ScenarioBundle } from '../types/legal';
 import { StatutoryNotice } from './StatutoryNotice';
@@ -66,8 +65,8 @@ export function CaseSelect({
       {/* ── Top Header ────────────────────────────────────────── */}
       <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-slate-950/80 px-6 py-3.5 shadow-lg backdrop-blur-xl lg:px-12">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-md">
-            <Scale className="h-5 w-5" strokeWidth={2.2} />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 font-serif font-bold text-lg shadow-md">
+            O
           </div>
           <div>
             <h1 className="font-display text-xl font-bold tracking-tight text-white">
@@ -86,7 +85,6 @@ export function CaseSelect({
             onClick={onOpenAccount}
             className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-slate-900/60 px-3.5 py-1.5 font-mono text-xs text-slate-300 hover:border-amber-400/40 hover:text-white transition-colors"
           >
-            <ShieldCheck className="h-3.5 w-3.5 text-amber-300" />
             {accountEmail ? accountEmail : 'Account Sync'}
           </button>
 
@@ -94,10 +92,9 @@ export function CaseSelect({
             aria-label="Open shop"
             type="button"
             onClick={onOpenShop}
-            className="m3-btn m3-btn-primary px-4 py-1.5 text-xs"
+            className="m3-btn m3-btn-primary px-4 py-1.5 text-xs font-semibold"
           >
-            <ShoppingBag className="h-3.5 w-3.5 mr-0.5" />
-            🪙 {run.chips}
+            🪙 {run.chips} chips
           </button>
 
           <button
@@ -106,7 +103,6 @@ export function CaseSelect({
             onClick={onOpenDesk}
             className="m3-btn m3-btn-tonal px-4 py-1.5 text-xs text-slate-200"
           >
-            <Landmark className="h-3.5 w-3.5 mr-1" />
             Legal Desk
           </button>
 
@@ -118,7 +114,6 @@ export function CaseSelect({
               hasKey ? 'm3-btn-emerald' : 'm3-btn-outlined text-slate-300'
             }`}
           >
-            {hasKey ? <ShieldCheck className="h-3.5 w-3.5 mr-1" /> : <KeyRound className="h-3.5 w-3.5 mr-1" />}
             {hasKey ? 'Key Active' : 'Keyless (Local)'}
           </button>
         </div>
@@ -156,7 +151,6 @@ export function CaseSelect({
               onClick={onOpenKeys}
               className="m3-btn m3-btn-primary shrink-0 px-4 py-2 text-xs"
             >
-              <KeyRound className="h-3.5 w-3.5 mr-1" />
               Configure BYOK Vault
             </button>
           </div>
@@ -168,7 +162,6 @@ export function CaseSelect({
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="max-w-2xl">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <Wand2 className="h-4 w-4 text-amber-300" />
                   <h2 className="font-display text-base font-bold text-amber-200">
                     Procedural Matter Generator
                   </h2>
@@ -183,7 +176,6 @@ export function CaseSelect({
                 onClick={handleGenerate}
                 className="m3-btn m3-btn-primary shrink-0 px-5 py-2.5 text-xs"
               >
-                <Dices className="h-4 w-4 mr-1.5" />
                 Generate New Matter
               </button>
             </div>
@@ -195,7 +187,6 @@ export function CaseSelect({
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="max-w-2xl">
               <div className="flex items-center gap-2 mb-1.5">
-                <Swords className="h-4 w-4 text-rose-300" />
                 <h2 className="font-display text-base font-bold text-rose-200">
                   Counsel Duel — Pass &amp; Play Arena
                 </h2>
@@ -210,7 +201,6 @@ export function CaseSelect({
               onClick={onOpenDuel}
               className="m3-btn m3-btn-tonal border-rose-400/30 text-rose-200 shrink-0 px-5 py-2.5 text-xs hover:border-rose-400"
             >
-              <Swords className="h-4 w-4 mr-1.5" />
               Launch Duel Arena
             </button>
           </div>
@@ -219,7 +209,6 @@ export function CaseSelect({
         {/* Case of the day notification */}
         {caseOfDayId && (
           <div className="mb-6 flex items-center gap-2.5 rounded-2xl border border-amber-400/30 bg-slate-950/80 px-4 py-2.5 backdrop-blur">
-            <CalendarDays className="h-4 w-4 shrink-0 text-amber-300" />
             <p className="font-sans text-xs text-amber-200">
               Case of the Day — Overcoming today's featured Bench grants <span className="font-semibold">+100 bonus chips</span>
             </p>
@@ -255,12 +244,12 @@ export function CaseSelect({
 
                 {isGenerated && (
                   <div className="pointer-events-none absolute left-0 top-0 rounded-br-xl border-b border-r border-amber-400/30 bg-amber-400/20 px-3 py-1 font-mono text-[9px] font-semibold text-amber-200">
-                    <Sparkles className="inline-block mr-1 h-3 w-3" /> Custom Matter
+                    Custom Matter
                   </div>
                 )}
                 {isBoss && (
                   <div className="pointer-events-none absolute left-0 top-0 rounded-br-xl border-b border-r border-rose-500/30 bg-rose-950/60 px-3 py-1 font-mono text-[9px] font-semibold text-rose-200">
-                    <Skull className="inline-block mr-1 h-3 w-3" /> Boss Bench
+                    Boss Bench
                   </div>
                 )}
 
@@ -293,15 +282,12 @@ export function CaseSelect({
 
                   <div className="flex items-center justify-between border-t border-white/10 pt-3">
                     <div className="flex items-center gap-3 font-mono text-[10px] text-slate-400">
-                      <span className="inline-flex items-center gap-1">
-                        <Scale className="h-3 w-3 text-amber-300" /> {s.maxTurns} turns
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Layers className="h-3 w-3 text-amber-300" /> {s.availablePrecedents.length} precedents
-                      </span>
+                      <span>§ {s.maxTurns} turns</span>
+                      <span>•</span>
+                      <span>{s.availablePrecedents.length} precedents</span>
                     </div>
                     <span className="inline-flex items-center gap-1 font-sans text-xs font-semibold text-amber-300 transition-transform group-hover:translate-x-1">
-                      Enter Chamber <ArrowRight className="h-3.5 w-3.5" />
+                      Enter Chamber ▸
                     </span>
                   </div>
                 </div>
@@ -363,7 +349,7 @@ export function CaseSelect({
                   }}
                   className="m3-btn m3-btn-primary px-5 py-2 text-xs"
                 >
-                  Enter Chamber <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                  Enter Chamber ▸
                 </button>
               </div>
             </div>

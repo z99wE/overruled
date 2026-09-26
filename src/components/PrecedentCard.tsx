@@ -1,4 +1,3 @@
-import { Check, ExternalLink, Scale } from 'lucide-react';
 import type { Domain, Jurisdiction, PrecedentCard } from '../types/legal';
 
 interface PrecedentCardProps {
@@ -49,8 +48,7 @@ export function PrecedentCard({ card, selected, disabled, onSelect, exhaustible,
           aria-label={`Read the full judgment of ${card.caseName}`}
           className="absolute -left-1 -top-2.5 z-10 flex items-center gap-1 rounded-full border border-amber-400/40 bg-slate-900 px-2.5 py-0.5 font-mono text-[9px] font-medium text-amber-300 shadow-md hover:bg-amber-400 hover:text-slate-950 transition-colors"
         >
-          <ExternalLink className="h-2.5 w-2.5" />
-          <span>Official Text</span>
+          <span>Official Text ↗</span>
         </a>
       )}
       <button
@@ -74,9 +72,8 @@ export function PrecedentCard({ card, selected, disabled, onSelect, exhaustible,
           {/* Header Bar */}
           <div className="flex items-center justify-between border-b border-white/10 bg-slate-950/80 px-4 py-2 text-white">
             <div className="flex items-center gap-1.5">
-              <Scale className="h-3.5 w-3.5 text-amber-300" />
               <span className="font-mono text-xs font-semibold text-amber-200">
-                {card.citation}
+                § {card.citation}
               </span>
             </div>
             <span className={`rounded-full border px-2 py-0.5 font-mono text-[9px] ${jTag.bg}`}>
@@ -118,8 +115,8 @@ export function PrecedentCard({ card, selected, disabled, onSelect, exhaustible,
         </div>
 
         {selected && (
-          <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-slate-950 bg-amber-400 text-slate-950 shadow-lg">
-            <Check className="h-4 w-4" strokeWidth={3} />
+          <span className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full border-2 border-slate-950 bg-amber-400 font-bold text-xs text-slate-950 shadow-lg">
+            ✓
           </span>
         )}
       </button>

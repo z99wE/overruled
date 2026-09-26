@@ -1,5 +1,3 @@
-import { Scale } from 'lucide-react';
-
 interface FavorMeterProps {
   value: number;
   delta?: number;
@@ -34,8 +32,7 @@ export function FavorMeter({ value, delta, compact }: FavorMeterProps) {
     <div className={`w-full ${compact ? 'space-y-1' : 'space-y-2'}`}>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-1.5 text-amber-300">
-          <Scale className={compact ? 'h-3.5 w-3.5' : 'h-4 w-4'} strokeWidth={2.2} />
-          <span className={`font-sans font-semibold ${compact ? 'text-[11px]' : 'text-xs'}`}>
+          <span className={`font-sans font-semibold tracking-wide ${compact ? 'text-[11px]' : 'text-xs'}`}>
             Bench Favor
           </span>
         </div>

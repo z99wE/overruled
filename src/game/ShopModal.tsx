@@ -1,4 +1,3 @@
-import { X } from 'lucide-react';
 import { JOKERS, rarityCls, type JokerId } from './jokers';
 import { sfx } from './sfx';
 
@@ -29,9 +28,9 @@ export function ShopModal({
               aria-label="Close shop"
               type="button"
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white font-serif text-sm"
             >
-              <X className="h-4 w-4" />
+              ✕
             </button>
           </div>
         </header>

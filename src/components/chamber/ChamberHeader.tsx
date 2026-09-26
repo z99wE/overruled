@@ -1,4 +1,3 @@
-import { X, Flame } from 'lucide-react';
 import type { ScenarioBundle } from '../../types/legal';
 import type { TrialState } from '../../core/useTrial';
 import { FavorMeter } from '../FavorMeter';
@@ -18,9 +17,9 @@ export function ChamberHeader({ scenario, state, onExit }: ChamberHeaderProps) {
             aria-label="Exit trial"
             type="button"
             onClick={onExit}
-            className="m3-btn m3-btn-tonal flex h-9 w-9 shrink-0 items-center justify-center p-0 text-slate-300 hover:text-white"
+            className="m3-btn m3-btn-tonal flex h-9 w-9 shrink-0 items-center justify-center p-0 font-mono text-xs text-slate-300 hover:text-white"
           >
-            <X className="h-4 w-4" strokeWidth={2.2} />
+            ✕
           </button>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
@@ -39,7 +38,7 @@ export function ChamberHeader({ scenario, state, onExit }: ChamberHeaderProps) {
             <div className="hidden items-center gap-2 sm:flex">
               {state.streak > 0 && (
                 <span className="streak-flame inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/15 px-3 py-1 font-mono text-[11px] font-semibold text-amber-300">
-                  <Flame className="h-3 w-3" /> ×{state.streak}
+                  Streak ×{state.streak}
                 </span>
               )}
               {state.pot > 0 && (

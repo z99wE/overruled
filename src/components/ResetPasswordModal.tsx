@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { KeyRound, Loader2, LogIn, X } from 'lucide-react';
 import { useAuth } from '../core/auth';
 
 export function ResetPasswordModal({ token, onClose }: { token: string; onClose: () => void }) {
@@ -36,31 +35,31 @@ export function ResetPasswordModal({ token, onClose }: { token: string; onClose:
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-ink bg-felt-900 shadow-2xl">
-        <header className="flex items-center justify-between border-b border-ink px-5 py-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md">
+      <div className="w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-slate-900/95 shadow-2xl backdrop-blur-2xl">
+        <header className="flex items-center justify-between border-b border-white/10 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-chip-gold/15 text-chip-gold">
-              <KeyRound className="h-5 w-5" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400/15 text-amber-300 font-serif font-bold text-sm">
+              §
             </div>
             <div>
-              <h2 className="font-display text-sm font-bold uppercase tracking-widest text-cream">Choose a new password</h2>
-              <p className="text-[11px] text-cream/50">Cloudflare-hosted · this link works once</p>
+              <h2 className="font-display text-sm font-bold text-white">Choose a New Password</h2>
+              <p className="text-[11px] text-slate-400">Secure link · valid for single use</p>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-md border border-ink text-cream/50 hover:text-cream" aria-label="Close">
-            <X className="h-4 w-4" />
+          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white font-serif text-sm" aria-label="Close">
+            ✕
           </button>
         </header>
 
-        <form onSubmit={(e) => void submit(e)} className="space-y-4 px-5 py-5">
-          <p className="text-[11px] leading-relaxed text-cream/60">
+        <form onSubmit={(e) => void submit(e)} className="space-y-4 px-6 py-5">
+          <p className="text-xs leading-relaxed text-slate-300">
             Set a new password for your account. The reset link in your email expires in 30 minutes and can only be
-            used once — all other sessions on this account are signed out when you continue.
+            used once.
           </p>
 
           <div>
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-cream/50">New password</label>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">New Password</label>
             <input
               ref={pwRef}
               type="password"
@@ -68,33 +67,33 @@ export function ResetPasswordModal({ token, onClose }: { token: string; onClose:
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
               placeholder="At least 8 characters"
-              className="w-full rounded-lg border border-ink bg-ink px-3 py-2 font-mono text-[12px] text-cream outline-none focus:border-chip-gold/50"
+              className="w-full rounded-xl border border-white/15 bg-slate-950/80 px-3.5 py-2.5 font-mono text-xs text-white placeholder:text-slate-500 outline-none focus:border-amber-400/60"
             />
           </div>
 
           <div>
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-cream/50">Confirm password</label>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Confirm Password</label>
             <input
               type="password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               autoComplete="new-password"
               placeholder="Repeat your new password"
-              className="w-full rounded-lg border border-ink bg-ink px-3 py-2 font-mono text-[12px] text-cream outline-none focus:border-chip-gold/50"
+              className="w-full rounded-xl border border-white/15 bg-slate-950/80 px-3.5 py-2.5 font-mono text-xs text-white placeholder:text-slate-500 outline-none focus:border-amber-400/60"
             />
           </div>
 
           {error && (
-            <div className="rounded-lg border border-poker-red/40 bg-poker-red/5 px-3 py-2 text-[11px] leading-relaxed text-poker-red">{error}</div>
+            <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3.5 py-2 text-xs leading-relaxed text-rose-300">{error}</div>
           )}
 
           <button
             aria-label="Save my new password"
             type="submit"
             disabled={busy}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-chip-gold px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-ink hover:brightness-110 disabled:opacity-50"
+            className="m3-btn m3-btn-primary w-full py-2.5 text-xs font-bold"
           >
-            {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <LogIn className="h-3.5 w-3.5" />} Set new password
+            {busy ? 'Updating...' : 'Set New Password ▸'}
           </button>
         </form>
       </div>
