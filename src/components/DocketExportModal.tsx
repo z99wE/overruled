@@ -81,19 +81,19 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/85 backdrop-blur-md sm:items-center sm:p-6 selection:bg-amber-400 selection:text-black">
-      <div className="flex h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-white/15 bg-slate-900/95 shadow-2xl backdrop-blur-2xl sm:h-auto sm:max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/70 p-4 backdrop-blur-md sm:items-center sm:p-6 font-sans">
+      <div className="flex h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl sm:h-auto sm:max-h-[90vh] text-slate-900">
         {/* Header */}
-        <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-slate-950/80 px-6 py-4">
+        <header className="flex items-center justify-between gap-3 border-b border-slate-100 bg-white px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400/15 text-amber-300 font-serif font-bold text-sm">
-              §
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-700 font-sans font-bold text-sm">
+              D
             </div>
             <div>
-              <h2 className="font-display text-sm font-bold text-white">
+              <h2 className="font-display text-sm sm:text-base font-bold text-slate-900">
                 Advocate Consultation Docket
               </h2>
-              <p className="font-mono text-[10px] text-slate-400">
+              <p className="font-mono text-[10px] text-slate-500">
                 {scenario.title} · {scenario.bench}
               </p>
             </div>
@@ -101,7 +101,7 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white font-serif text-sm"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 font-sans text-xs font-bold cursor-pointer"
             aria-label="Close docket"
           >
             ✕
@@ -111,33 +111,33 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
         {/* Body */}
         <div ref={viewRef} className="min-h-0 flex-1 overflow-y-auto px-6 py-5 space-y-5">
           {/* Outcome Banner */}
-          <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <span className={`inline-block rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-semibold mb-1.5 ${outcome.badge}`}>
                 {outcome.label}
               </span>
-              <p className="font-display text-base text-white">Client: {scenario.clientName}</p>
-              <p className="font-mono text-xs text-slate-400 mt-0.5">
-                Final Favor: <span className="text-amber-300 font-bold">{summary.finalFavor}/100</span> · {summary.turnRecords.length} submissions on record
+              <p className="font-display text-base text-slate-900 font-bold">Client: {scenario.clientName}</p>
+              <p className="font-mono text-xs text-slate-600 mt-0.5">
+                Final Favor: <span className="text-blue-700 font-bold">{summary.finalFavor}/100</span> · {summary.turnRecords.length} submissions on record
               </p>
             </div>
-            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 font-mono text-[9px] text-slate-400">
+            <span className="rounded-full border border-slate-200 bg-white px-2.5 py-0.5 font-mono text-[9px] text-slate-600 shadow-2xs">
               Verified Record
             </span>
           </div>
 
           {/* 1. Executive Summary */}
           <section className="space-y-2">
-            <h3 className="font-mono text-xs font-bold text-amber-300">
+            <h3 className="font-mono text-xs font-bold text-slate-800">
               1 · Record Summary &amp; Submissions
             </h3>
-            <div className="space-y-2 rounded-2xl border border-white/10 bg-slate-950/60 p-3.5">
+            <div className="space-y-2 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-2xs">
               {summary.turnRecords.map((r) => (
-                <div key={r.turnNumber} className="flex items-start gap-2.5 text-xs border-b border-white/5 pb-2 last:border-none last:pb-0">
-                  <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[9px] text-slate-400 shrink-0">T{r.turnNumber}</span>
-                  <span className="text-slate-200 flex-1">{r.playerAction.rawText}</span>
+                <div key={r.turnNumber} className="flex items-start gap-2.5 text-xs border-b border-slate-100 pb-2 last:border-none last:pb-0">
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-[9px] text-slate-600 shrink-0">T{r.turnNumber}</span>
+                  <span className="text-slate-800 flex-1">{r.playerAction.rawText}</span>
                   <span className={`rounded-full border px-2 py-0.5 font-mono text-[9px] shrink-0 ${
-                    r.resolution.judicial_favor_delta > 0 ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : r.resolution.judicial_favor_delta < 0 ? 'border-rose-500/30 bg-rose-500/10 text-rose-300' : 'border-white/10 bg-white/5 text-slate-400'
+                    r.resolution.judicial_favor_delta > 0 ? 'border-emerald-200 bg-emerald-50 text-emerald-800 font-bold' : r.resolution.judicial_favor_delta < 0 ? 'border-rose-200 bg-rose-50 text-rose-800 font-bold' : 'border-slate-200 bg-slate-50 text-slate-600'
                   }`}>
                     {r.resolution.bench_verdict_tag} {r.resolution.judicial_favor_delta > 0 ? '+' : ''}{r.resolution.judicial_favor_delta}
                   </span>
@@ -148,31 +148,31 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
 
           {/* 2. Admitted Precedents */}
           <section className="space-y-2">
-            <h3 className="font-mono text-xs font-bold text-emerald-300">
+            <h3 className="font-mono text-xs font-bold text-emerald-800">
               2 · Admitted Legal Precedents
             </h3>
             {summary.admittedPrecedents.length === 0 ? (
-              <p className="rounded-2xl border border-white/10 bg-slate-950/60 p-3.5 font-mono text-xs italic text-slate-400">
+              <p className="rounded-2xl border border-slate-200 bg-slate-50 p-3.5 font-mono text-xs italic text-slate-500">
                 No authority survived opposing objections on this record.
               </p>
             ) : (
               <div className="space-y-2.5">
                 {summary.admittedPrecedents.map((p) => (
-                  <div key={p.id} className="rounded-2xl border border-emerald-500/20 bg-slate-950/60 p-3.5">
+                  <div key={p.id} className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-2xs">
                     <div className="flex items-center justify-between">
-                      <p className="font-display text-sm font-bold text-white">{p.caseName}</p>
-                      <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 font-mono text-[9px] text-amber-300">{p.domain}</span>
+                      <p className="font-display text-sm font-bold text-slate-900">{p.caseName}</p>
+                      <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 font-mono text-[9px] font-bold text-blue-700">{p.domain}</span>
                     </div>
-                    <p className="font-mono text-[10px] text-amber-300/80 mt-0.5">{p.citation} · {p.court}</p>
-                    <p className="mt-1.5 text-xs leading-relaxed text-slate-300">{p.ratioDecidendi}</p>
+                    <p className="font-mono text-[10px] text-slate-600 mt-0.5">{p.citation} · {p.court}</p>
+                    <p className="mt-1.5 text-xs leading-relaxed text-slate-700">{p.ratioDecidendi}</p>
                     {p.sourceUrl && (
                       <a
                         href={p.sourceUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-2 inline-block font-mono text-[10px] text-amber-300 underline decoration-dotted hover:text-white"
+                        className="mt-2 inline-block font-mono text-[10px] text-blue-700 underline decoration-dotted hover:text-blue-900 font-semibold"
                       >
-                        Read Official Law Report ↗
+                        Read Official Law Report
                       </a>
                     )}
                   </div>
@@ -183,18 +183,18 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
 
           {/* 3. Exposure Points */}
           <section className="space-y-2">
-            <h3 className="font-mono text-xs font-bold text-rose-300">
+            <h3 className="font-mono text-xs font-bold text-rose-800">
               3 · Identified Exposure Points
             </h3>
             {summary.exposurePoints.length === 0 ? (
-              <p className="rounded-2xl border border-white/10 bg-slate-950/60 p-3.5 font-mono text-xs italic text-slate-400">
+              <p className="rounded-2xl border border-slate-200 bg-slate-50 p-3.5 font-mono text-xs italic text-slate-500">
                 No exposure was flagged by opposing counsel — verify independently before any filing.
               </p>
             ) : (
-              <div className="rounded-2xl border border-rose-500/30 bg-rose-950/20 p-3.5 space-y-1.5">
+              <div className="rounded-2xl border border-rose-200 bg-rose-50/60 p-3.5 space-y-1.5">
                 {summary.exposurePoints.map((e, i) => (
-                  <div key={i} className="flex items-start gap-2 text-xs text-rose-200">
-                    <span className="font-mono text-rose-400 font-bold">•</span>
+                  <div key={i} className="flex items-start gap-2 text-xs text-rose-900">
+                    <span className="font-mono text-rose-600 font-bold">•</span>
                     <span>{e}</span>
                   </div>
                 ))}
@@ -205,31 +205,31 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
           {/* 4. Actionable Questions */}
           <section className="space-y-2">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="font-mono text-xs font-bold text-amber-300">
+              <h3 className="font-mono text-xs font-bold text-slate-800">
                 4 · Counsel Consultation Questions
               </h3>
               <div className="flex items-center gap-2">
-                {enrichError && <span className="font-mono text-[10px] text-rose-400 max-w-xs truncate">{enrichError}</span>}
+                {enrichError && <span className="font-mono text-[10px] text-rose-600 max-w-xs truncate">{enrichError}</span>}
                 <button
                   aria-label={copied ? 'Refine' : 'Refine questions with your key'}
                   type="button"
                   onClick={() => void enrich()}
                   disabled={enriching}
-                  className="m3-btn m3-btn-tonal text-[10px] px-2.5 py-1"
+                  className="rounded-full border border-slate-200 bg-white px-3 py-1 font-mono text-[10px] font-bold text-slate-700 shadow-2xs hover:bg-slate-50 cursor-pointer"
                 >
-                  {enriching ? 'Refining...' : copied ? 'Refined ✓' : 'Refine with Key ↺'}
+                  {enriching ? 'Refining...' : copied ? 'Refined' : 'Refine with Key'}
                 </button>
               </div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-3.5 space-y-2">
+            <div className="rounded-2xl border border-slate-200 bg-white p-3.5 space-y-2 shadow-2xs">
               {questions.length === 0 ? (
-                <p className="font-mono text-xs italic text-slate-400">
+                <p className="font-mono text-xs italic text-slate-500">
                   Run refinement, or download the docket to receive the structured consultation question set.
                 </p>
               ) : (
                 questions.map((q, i) => (
-                  <div key={i} className="flex items-start gap-2 text-xs text-slate-200 border-b border-white/5 pb-2 last:border-none last:pb-0">
-                    <span className="font-mono text-amber-300 font-bold">{i + 1}.</span>
+                  <div key={i} className="flex items-start gap-2 text-xs text-slate-800 border-b border-slate-100 pb-2 last:border-none last:pb-0">
+                    <span className="font-mono text-blue-700 font-bold">{i + 1}.</span>
                     <span>{q}</span>
                   </div>
                 ))
@@ -241,13 +241,13 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
         </div>
 
         {/* Footer Actions */}
-        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-slate-950/80 px-6 py-4">
+        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4">
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => doDownload('md')}
               aria-label="Download docket as markdown"
-              className="m3-btn m3-btn-primary px-3 py-1.5 text-xs"
+              className="rounded-full bg-blue-600 px-4 py-2 font-sans text-xs font-bold text-white hover:bg-blue-700 shadow-xs cursor-pointer"
             >
               Download .MD
             </button>
@@ -255,7 +255,7 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
               type="button"
               onClick={() => doDownload('html')}
               aria-label="Download docket as html"
-              className="m3-btn m3-btn-tonal px-3 py-1.5 text-xs text-white"
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 font-sans text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-2xs cursor-pointer"
             >
               Download .HTML
             </button>
@@ -263,7 +263,7 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
               type="button"
               onClick={() => doDownload('pdf')}
               aria-label="Print or save docket as pdf"
-              className="m3-btn m3-btn-tonal px-3 py-1.5 text-xs text-white"
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 font-sans text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-2xs cursor-pointer"
             >
               Print / PDF
             </button>
@@ -271,17 +271,17 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
               type="button"
               onClick={() => void share()}
               aria-label="Share docket"
-              className="m3-btn m3-btn-tonal px-3 py-1.5 text-xs text-white"
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 font-sans text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-2xs cursor-pointer"
             >
               Share
             </button>
             {printBlocked && (
-              <span className="font-mono text-[10px] text-rose-400">
+              <span className="font-mono text-[10px] text-rose-600">
                 Pop-up blocked — allow pop-ups to print.
               </span>
             )}
             {copied && (
-              <span className="font-mono text-[10px] text-emerald-400">
+              <span className="font-mono text-[10px] text-emerald-700 font-bold">
                 Copied to clipboard.
               </span>
             )}
@@ -290,9 +290,9 @@ export function DocketExportModal({ scenario, summary, onClose, onRestart }: Doc
             type="button"
             onClick={onRestart}
             aria-label="Retry proceedings"
-            className="m3-btn m3-btn-primary px-4 py-1.5 text-xs"
+            className="rounded-full bg-slate-900 px-5 py-2 font-sans text-xs font-bold text-white hover:bg-black shadow-xs cursor-pointer"
           >
-            Retry Proceeding ↺
+            Retry Proceeding
           </button>
         </footer>
       </div>

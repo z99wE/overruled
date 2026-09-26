@@ -184,3 +184,73 @@ export function EarningsModal({ onClose, chips = 0 }: EarningsModalProps) {
     </div>
   );
 }
+
+interface PrivacyModalProps {
+  onClose: () => void;
+}
+
+export function PrivacyModal({ onClose }: PrivacyModalProps) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md font-sans selection:bg-blue-200 selection:text-slate-950">
+      <div className="relative w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-2xl text-slate-900">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div>
+            <h3 className="font-display text-lg sm:text-xl font-extrabold text-slate-900">
+              Privacy Architecture &amp; Legal Disclaimer
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Client-side zero-leak execution standards
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="my-5 max-h-[60vh] space-y-4 overflow-y-auto text-xs sm:text-sm text-slate-600 pr-2 leading-relaxed">
+          <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200">
+            <h4 className="font-bold text-slate-900 mb-1.5">1. Zero Cloud Document Retention</h4>
+            <p>
+              Uploaded contracts, PDF briefs, and DOCX files are processed in-memory directly in your browser. Document embeddings, text extraction, and clause audits execute strictly on your device. No document text is ever uploaded to a central database or used to train public machine learning models.
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200">
+            <h4 className="font-bold text-slate-900 mb-1.5">2. Client-Side Cryptographic Vault</h4>
+            <p>
+              Your custom API keys (OpenAI, Anthropic, Gemini, Groq, OpenRouter) and local account credentials are encrypted in local browser storage using Web Crypto API standards. Keys are dispatched strictly as direct authorization headers to the respective AI provider endpoints.
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200">
+            <h4 className="font-bold text-slate-900 mb-1.5">3. Statutory &amp; Jurisprudence Notice</h4>
+            <p>
+              Overrool is an educational legal-strategy simulation and contract forensic workbench built on publicly certified court decisions. The simulation does not provide legal advice, does not establish an attorney-client relationship, and cannot replace a qualified advocate admitted in your jurisdiction.
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-slate-50 p-4 border border-slate-200">
+            <h4 className="font-bold text-slate-900 mb-1.5">4. Secure Privacy Inquiries &amp; Support</h4>
+            <p>
+              To safeguard confidential client workflows and eliminate data harvesting, support and security inquiries are routed exclusively through our authenticated in-app Key Settings protocol and verified GitHub repository issue tracker.
+            </p>
+          </div>
+        </div>
+
+        <div className="pt-4 border-t border-slate-100 flex justify-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full bg-blue-600 px-6 py-2.5 font-sans text-xs font-bold text-white hover:bg-blue-700 transition-colors shadow-sm cursor-pointer"
+          >
+            Acknowledge &amp; Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -6,7 +6,7 @@ import { MilestoneTrack } from './MilestoneTrack';
 import { LeaderboardPodium } from './LeaderboardPodium';
 import { ReferralRewardsHub } from './ReferralRewardsHub';
 import { CommunitySection } from './CommunitySection';
-import { RulesModal, RaffleModal, EarningsModal } from './ArcadeModals';
+import { RulesModal, RaffleModal, EarningsModal, PrivacyModal } from './ArcadeModals';
 
 interface LandingProps {
   cases: PrecedentCard[];
@@ -48,6 +48,7 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
   const [rulesOpen, setRulesOpen] = useState(false);
   const [raffleOpen, setRaffleOpen] = useState(false);
   const [earningsOpen, setEarningsOpen] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
   const [submissionsCount, setSubmissionsCount] = useState(3);
 
   const handleClaimCreationChest = () => {
@@ -251,6 +252,9 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
             <button type="button" onClick={() => setEarningsOpen(true)} className="hover:text-blue-600 cursor-pointer">
               Counsel Dockets
             </button>
+            <button type="button" onClick={() => setPrivacyOpen(true)} className="hover:text-blue-600 cursor-pointer">
+              Privacy &amp; Legal
+            </button>
             <button type="button" onClick={onOpenDesk} className="hover:text-blue-600 cursor-pointer">
               Legal Desk
             </button>
@@ -262,6 +266,7 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
       {rulesOpen && <RulesModal onClose={() => setRulesOpen(false)} />}
       {raffleOpen && <RaffleModal onClose={() => setRaffleOpen(false)} />}
       {earningsOpen && <EarningsModal onClose={() => setEarningsOpen(false)} />}
+      {privacyOpen && <PrivacyModal onClose={() => setPrivacyOpen(false)} />}
     </div>
   );
 }
