@@ -526,7 +526,7 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
           <span className="font-display text-2xl font-bold text-white">Over<span className="text-amber-300">rool</span></span>
         </div>
         <p className="mx-auto mt-3 max-w-xl font-sans text-xs text-slate-400">
-          Adversarial Legal Intelligence &amp; Document Discovery Engine. Educational simulation; not legal advice.
+          Grounded Legal Understanding &amp; Precedent Intelligence. Educational simulation; not legal advice.
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
           <button
