@@ -21,34 +21,34 @@ export function RunPanel({
     .join(' ');
 
   const reset = () => {
-    if (window.confirm('Reset the whole run ledger? Chips, rank, and active jokers will reset.')) {
+    if (window.confirm('Reset the whole run ledger? Chips, rank, and active advocate tools will reset.')) {
       clearRun();
       onChange({ ...run, ...{ chips: 0, xp: 0, bestStreak: 0, bossesDefeated: [], jokers: [], matterChips: {}, caseOfDay: null } });
     }
   };
 
   return (
-    <section className="m3-card-elevated p-5">
+    <section className="rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <span className="rounded-full border border-amber-400/40 bg-amber-400/15 px-3.5 py-1.5 font-mono text-sm font-semibold text-amber-300">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className="rounded-full border border-amber-300 bg-amber-50 px-3.5 py-1.5 font-sans text-xs font-black text-amber-950 shadow-2xs">
             🪙 {run.chips} chips
           </span>
-          <span className="rounded-full border border-white/10 bg-slate-900/80 px-3.5 py-1.5 font-sans text-xs font-medium text-slate-200">
+          <span className="rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 font-sans text-xs font-bold text-slate-800">
             {rank.title} · Level {rank.level}
           </span>
           {run.bestStreak > 1 && (
-            <span className="streak-flame inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/15 px-3 py-1 font-mono text-xs font-semibold text-amber-300">
-              Best streak ×{run.bestStreak}
+            <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 font-mono text-xs font-bold text-blue-700">
+              Streak ×{run.bestStreak}
             </span>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             aria-label={muted ? 'Unmute audio' : 'Mute audio'}
             type="button"
             onClick={() => setMuted(toggleMute())}
-            className="m3-btn m3-btn-tonal px-3.5 py-1.5 text-xs text-slate-300 hover:text-white"
+            className="rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 px-3.5 py-1.5 text-xs font-bold text-slate-700 transition-colors cursor-pointer"
           >
             {muted ? 'Audio Muted' : 'Audio Active'}
           </button>
@@ -59,7 +59,7 @@ export function RunPanel({
               sfx.shop();
               onOpenShop?.();
             }}
-            className="m3-btn m3-btn-primary px-4 py-1.5 text-xs"
+            className="rounded-full bg-amber-400 hover:bg-amber-300 px-4 py-1.5 text-xs font-black text-slate-950 shadow-xs transition-all cursor-pointer"
           >
             Chambers Emporium
           </button>
@@ -67,30 +67,30 @@ export function RunPanel({
             aria-label="Reset run ledger"
             type="button"
             onClick={reset}
-            className="m3-btn m3-btn-outlined px-3.5 py-1.5 text-xs text-slate-300 hover:text-rose-300"
+            className="rounded-full border border-rose-200 bg-rose-50 hover:bg-rose-100 px-3.5 py-1.5 text-xs font-bold text-rose-700 transition-colors cursor-pointer"
           >
             Reset Ledger
           </button>
         </div>
       </div>
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
-        <span className="inline-flex items-center gap-1 font-mono text-[11px] text-slate-400">
+      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 text-xs">
+        <span className="font-sans font-bold text-slate-500">
           Overcome Benches:
         </span>
         {scalps ? (
-          <span className="font-mono text-xs font-semibold text-amber-300">{scalps}</span>
+          <span className="font-mono text-xs font-bold text-blue-600">{scalps}</span>
         ) : (
-          <span className="font-sans text-xs text-slate-500">None yet — select a bench to start</span>
+          <span className="font-sans text-xs text-slate-400">None yet — select a landmark matter to start</span>
         )}
         {rank.nextAt != null && (
-          <span className="ml-auto font-mono text-[11px] text-slate-400">
-            Next rank at {rank.nextAt} XP
+          <span className="ml-auto font-sans text-xs text-slate-500">
+            Next rank at <strong className="text-slate-800 font-bold">{rank.nextAt} XP</strong>
           </span>
         )}
       </div>
       {run.jokers.length > 0 && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
-          <span className="mr-1 font-sans text-xs text-slate-400">Jokers in Play:</span>
+        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
+          <span className="mr-1 font-sans text-xs font-bold text-slate-500">Advocate Tools Active:</span>
           {run.jokers.map((id) => {
             const j = jokerById(id);
             if (!j) return null;
@@ -98,7 +98,7 @@ export function RunPanel({
               <span
                 key={id}
                 title={j.blurb}
-                className={`rounded-full border px-2.5 py-0.5 font-sans text-xs ${rarityCls(j.rarity)}`}
+                className={`rounded-full border px-2.5 py-0.5 font-sans text-xs font-bold ${rarityCls(j.rarity)}`}
               >
                 {j.name}
               </span>

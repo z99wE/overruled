@@ -5,19 +5,12 @@ interface DocketlingProps {
   documentsUnderstood: number;
 }
 
-/**
- * A companion, not a mechanic. It never decays, never punishes inactivity and
- * never nags: if you stop reading, it simply waits. The only thing it rewards
- * is reading, and it says so in the vocabulary of the thing itself.
- */
 export function Docketling({ documentsUnderstood }: DocketlingProps) {
   const stage = stageFor(documentsUnderstood);
   const next = nextStageFor(documentsUnderstood);
   const rows = spriteFor(stage.id);
   const size = rows[0]?.length ?? 12;
 
-  // Run-length encode each row so the SVG stays small: a 12x12 sprite is a
-  // handful of rects, not 144.
   const rects: Array<{ x: number; y: number; w: number; fill: string }> = [];
   rows.forEach((row, y) => {
     let x = 0;
@@ -39,12 +32,12 @@ export function Docketling({ documentsUnderstood }: DocketlingProps) {
   return (
     <aside
       aria-label="Docketling, your reading companion"
-      className="rounded-xl border-2 border-ink bg-felt-900/70 p-4"
+      className="rounded-2xl border border-slate-200 bg-slate-50/90 p-4"
     >
       <div className="flex items-center gap-4">
         <svg
           viewBox={`0 0 ${size} ${size}`}
-          className="anim-float h-16 w-16 shrink-0"
+          className="anim-float h-14 w-14 shrink-0"
           style={{ imageRendering: 'pixelated' }}
           role="img"
           aria-label={`A pixel-art companion at the ${stage.name} stage`}
@@ -54,9 +47,9 @@ export function Docketling({ documentsUnderstood }: DocketlingProps) {
           ))}
         </svg>
         <div className="min-w-0">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cream/40">Your companion</p>
-          <p className="font-display text-lg uppercase text-chip-gold">{stage.name}</p>
-          <p className="mt-0.5 text-[13px] leading-snug text-cream/70">{stage.blurb}</p>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-500">Legal Audit Companion</p>
+          <p className="font-display text-base font-extrabold uppercase text-slate-900">{stage.name}</p>
+          <p className="mt-0.5 text-xs leading-snug text-slate-600">{stage.blurb}</p>
         </div>
       </div>
 
@@ -65,15 +58,15 @@ export function Docketling({ documentsUnderstood }: DocketlingProps) {
           <span
             key={s.id}
             title={s.name}
-            className={`h-1.5 flex-1 rounded-full ${i <= idx ? 'bg-chip-gold' : 'bg-cream/15'}`}
+            className={`h-1.5 flex-1 rounded-full ${i <= idx ? 'bg-blue-600' : 'bg-slate-200'}`}
           />
         ))}
       </div>
 
-      <p className="mt-2 font-mono text-[10px] uppercase tracking-widest text-cream/35">
+      <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-slate-400">
         {next
-          ? `Next: ${next.name} — ${next.blurb}`
-          : 'Fully standing. It stays as long as you keep reading.'}
+          ? `Next Rank: ${next.name} — ${next.blurb}`
+          : 'Fully Certified. It stays active with every contract audit.'}
       </p>
     </aside>
   );

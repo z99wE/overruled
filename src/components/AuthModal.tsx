@@ -97,21 +97,21 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
     }
   };
 
-  const title = view === 'codes' ? 'Recovery Codes' : view === 'forgot' ? 'Reset Password' : user ? 'Account & Sync' : mode === 'signup' ? 'Create Account' : 'Sign In';
+  const title = view === 'codes' ? 'Recovery Codes' : view === 'forgot' ? 'Reset Password' : user ? 'Counsel Workspace' : mode === 'signup' ? 'Create Counsel Account' : 'Sign In to Overrool';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md selection:bg-amber-400 selection:text-black">
-      <div className="w-full max-w-md overflow-hidden liquid-glass-elevated bg-slate-950/95 border border-white/15 shadow-2xl rounded-3xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md selection:bg-blue-200 selection:text-slate-950">
+      <div className="w-full max-w-md overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-2xl">
         {/* ── Modal Header ────────────────────────────────────── */}
-        <header className="flex items-center justify-between border-b border-white/10 bg-slate-950/80 px-6 py-4">
+        <header className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 font-serif font-bold text-sm shadow-sm">
-              {view === 'codes' ? '§' : '✓'}
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-bold text-sm shadow-sm">
+              {view === 'codes' ? '§' : '⚖️'}
             </div>
             <div>
-              <h2 className="font-display text-sm font-bold text-white">{title}</h2>
-              <p className="font-mono text-[11px] text-slate-400">
-                Encrypted Profile &amp; Progress Sync
+              <h2 className="font-display text-sm sm:text-base font-extrabold text-slate-900">{title}</h2>
+              <p className="font-sans text-[11px] text-slate-500">
+                Encrypted Workspace & Precedent Sync
               </p>
             </div>
           </div>
@@ -122,7 +122,7 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
               setView('form');
               onClose();
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white font-serif text-sm"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors cursor-pointer"
             aria-label="Close"
           >
             ✕
@@ -133,207 +133,225 @@ export function AuthModal({ mode: initialMode, onClose }: AuthModalProps) {
         <div className="space-y-4 px-6 py-6">
           {view === 'codes' && codes ? (
             <div className="space-y-4">
-              <p className="text-[12px] leading-relaxed text-slate-300">
-                Write these recovery codes down. Each code works once if you ever forget your password. We only store cryptographic hashes.
+              <p className="text-xs leading-relaxed text-slate-600">
+                Store these recovery codes in a secure location. Each code works once if you ever lose your password. We only store cryptographic one-way hashes.
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {codes.map((code) => (
-                  <div
-                    key={code}
-                    className="rounded-xl border border-amber-400/30 bg-slate-900 px-3 py-2 text-center font-mono text-[13px] font-bold tracking-[0.15em] text-amber-300"
-                  >
+                  <code key={code} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-center font-mono text-xs font-bold text-slate-800 select-all">
                     {code}
-                  </div>
+                  </code>
                 ))}
               </div>
               <button
-                aria-label="I have stored my recovery codes somewhere safe"
                 type="button"
-                onClick={onClose}
-                className="m3-btn m3-btn-primary w-full py-2.5 text-xs"
+                onClick={() => {
+                  setCodes(null);
+                  setView('form');
+                  onClose();
+                }}
+                className="w-full rounded-full bg-blue-600 hover:bg-blue-700 py-3 text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
               >
-                Saved Safely ✓
+                I Have Saved My Codes →
               </button>
             </div>
           ) : user ? (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
-                <p className="font-display text-xs font-semibold text-amber-300">
-                  {user.email}
-                </p>
-                <p className="mt-1 font-mono text-[10px] text-slate-400">
-                  Game run state syncs to this profile. BYOK API keys remain strictly local to this device.
+              <div className="rounded-2xl bg-blue-50/80 border border-blue-200/80 p-4 space-y-1">
+                <span className="font-sans text-[10px] font-bold text-blue-700 uppercase tracking-wider">Signed In Counsel</span>
+                <p className="font-mono text-xs font-bold text-slate-900 break-all">{user.email}</p>
+                <p className="text-[11px] text-slate-600 mt-1">
+                  Your audited dockets and common law precedent chips sync automatically to your secure vault.
                 </p>
               </div>
 
-              <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-900/80 p-4">
+              <div className="flex items-center justify-between rounded-xl border border-slate-200 p-3 bg-slate-50">
                 <div>
-                  <p className="font-mono text-[10px] text-slate-400">Legal Intelligence Briefing</p>
-                  <p className="text-[12px] text-slate-200">
-                    {user.newsletterOptin ? 'Subscribed to weekly legal analysis.' : 'Not subscribed.'}
-                  </p>
+                  <p className="font-sans text-xs font-bold text-slate-900">Weekly Precedent Briefing</p>
+                  <p className="font-sans text-[11px] text-slate-500">Curated landmark analyses and ratio updates.</p>
                 </div>
                 <button
-                  aria-label={user.newsletterOptin ? 'Unsubscribe from the AI Briefing' : 'Subscribe to the free AI Briefing'}
                   type="button"
-                  disabled={busy}
                   onClick={() => void toggleNewsletter()}
-                  className={`m3-btn text-[11px] px-3.5 py-1.5 ${
-                    user.newsletterOptin ? 'm3-btn-outlined text-slate-400' : 'm3-btn-primary'
+                  disabled={busy}
+                  className={`rounded-full px-3.5 py-1 text-xs font-bold transition-all cursor-pointer ${
+                    user.newsletterOptin
+                      ? 'bg-emerald-500 text-white shadow-xs'
+                      : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-100'
                   }`}
                 >
-                  {user.newsletterOptin ? 'Unsubscribe' : 'Subscribe'}
+                  {user.newsletterOptin ? 'Active' : 'Enable'}
                 </button>
               </div>
 
-              <button
-                aria-label="Generate a fresh set of recovery codes"
-                type="button"
-                disabled={busy}
-                onClick={() => void generateCodes()}
-                className="m3-btn m3-btn-tonal w-full py-2.5 text-xs text-white"
-              >
-                {busy ? 'Generating...' : 'Generate Recovery Codes ↺'}
-              </button>
+              <div className="flex flex-col gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => void generateCodes()}
+                  disabled={busy}
+                  className="w-full rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  Generate Backup Recovery Codes
+                </button>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await logout();
+                    onClose();
+                  }}
+                  className="w-full rounded-xl border border-rose-200 bg-rose-50 py-2.5 text-xs font-bold text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          ) : view === 'forgot' ? (
+            <form onSubmit={(e) => void submitForgot(e)} className="space-y-4">
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Enter your counsel email address. We will generate a secure reset link.
+              </p>
+              <div>
+                <label className="block font-sans text-xs font-bold text-slate-700 mb-1">
+                  Counsel Email
+                </label>
+                <input
+                  ref={emailRef}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="counsel@firm.com"
+                  className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-xs font-sans text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none transition-colors"
+                  required
+                />
+              </div>
+
+              {notice && (
+                <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-800 font-medium">
+                  {notice}
+                </div>
+              )}
 
               {error && (
-                <div className="rounded-xl border border-rose-500/30 bg-rose-950/70 p-3 text-xs font-mono text-rose-200">
+                <div className="rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800 font-medium">
                   {error}
                 </div>
               )}
 
               <button
-                aria-label="Log out of your account"
-                type="button"
-                onClick={() => void logout().then(onClose)}
-                className="m3-btn m3-btn-destructive w-full py-2.5 text-xs"
-              >
-                Sign Out ▸
-              </button>
-            </div>
-          ) : view === 'forgot' ? (
-            <form onSubmit={(e) => void submitForgot(e)} className="space-y-4">
-              <div>
-                <label className="mb-1.5 block font-mono text-[10px] text-slate-400">Email Address</label>
-                <input
-                  ref={emailRef}
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  className="m3-input px-3.5 font-mono text-xs"
-                />
-              </div>
-
-              {(error || notice) && (
-                <div
-                  className={`rounded-xl border p-3 font-mono text-xs ${
-                    error ? 'bg-rose-950 text-rose-300 border-rose-500/40' : 'bg-amber-950 text-amber-300 border-amber-500/40'
-                  }`}
-                >
-                  {error ?? notice}
-                </div>
-              )}
-
-              <button
-                aria-label="Email me a reset link"
                 type="submit"
                 disabled={busy}
-                className="m3-btn m3-btn-primary w-full py-2.5 text-xs"
+                className="w-full rounded-full bg-blue-600 hover:bg-blue-700 py-3 text-xs font-bold text-white shadow-sm transition-all cursor-pointer disabled:opacity-50"
               >
-                {busy ? 'Sending...' : 'Send Reset Instructions ▸'}
+                {busy ? 'Generating link…' : 'Send Reset Link →'}
               </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setView('form');
-                  setError(null);
-                  setNotice(null);
-                }}
-                className="w-full text-center font-mono text-xs text-amber-400 hover:underline"
-              >
-                Back to sign in
-              </button>
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setView('form');
+                    setError(null);
+                    setNotice(null);
+                  }}
+                  className="text-xs font-semibold text-blue-600 hover:underline cursor-pointer"
+                >
+                  ← Back to Sign In
+                </button>
+              </div>
             </form>
           ) : (
             <form onSubmit={(e) => void submit(e)} className="space-y-4">
               <div>
-                <label className="mb-1.5 block font-mono text-[10px] text-slate-400">Email Address</label>
+                <label className="block font-sans text-xs font-bold text-slate-700 mb-1">
+                  Work Email Address
+                </label>
                 <input
                   ref={emailRef}
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  className="m3-input px-3.5 font-mono text-xs"
+                  placeholder="counsel@firm.com"
+                  className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-xs font-sans text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none transition-colors"
+                  required
                 />
               </div>
 
               <div>
-                <label className="mb-1.5 block font-mono text-[10px] text-slate-400">Password</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block font-sans text-xs font-bold text-slate-700">
+                    Password
+                  </label>
+                  {mode === 'login' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setView('forgot');
+                        setError(null);
+                      }}
+                      className="text-[11px] font-semibold text-blue-600 hover:underline cursor-pointer"
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                  placeholder={mode === 'signup' ? 'At least 8 characters' : '••••••••'}
-                  className="m3-input px-3.5 font-mono text-xs"
+                  placeholder={mode === 'signup' ? 'At least 8 characters' : 'Enter password'}
+                  className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-xs font-sans text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none transition-colors"
+                  required
                 />
               </div>
 
               {mode === 'signup' && (
-                <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-white/10 bg-slate-900/80 p-3">
+                <label className="flex items-start gap-2 text-xs text-slate-600 cursor-pointer pt-1">
                   <input
                     type="checkbox"
                     checked={newsletter}
                     onChange={(e) => setNewsletter(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 accent-amber-400"
+                    className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-[11px] leading-relaxed text-slate-300">
-                    <strong className="text-amber-300 font-semibold">Weekly Briefing:</strong> Receive updates on emerging legal technology and precedent analysis.
+                  <span>
+                    <strong className="text-slate-900 font-bold">Weekly Legal Briefing:</strong> Receive updates on contract risk analysis and landmark precedent ratios.
                   </span>
                 </label>
               )}
 
               {error && (
-                <div className="rounded-xl border border-rose-500/30 bg-rose-950/70 p-3 text-xs font-mono text-rose-200">
+                <div className="rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-800 font-medium">
                   {error}
                 </div>
               )}
 
               <button
-                aria-label={mode === 'signup' ? 'Create your free account' : 'Log in to your account'}
                 type="submit"
                 disabled={busy}
-                className="m3-btn m3-btn-primary w-full py-3 text-xs"
+                className="w-full rounded-full bg-blue-600 hover:bg-blue-700 py-3 text-xs font-bold text-white shadow-md hover:scale-102 active:scale-98 transition-all cursor-pointer disabled:opacity-50"
               >
-                {busy ? 'Processing...' : mode === 'signup' ? 'Create Free Account ▸' : 'Sign In ▸'}
+                {busy ? 'Authenticating…' : mode === 'signup' ? 'Create Free Counsel Account →' : 'Sign In →'}
               </button>
 
-              <div className="flex items-center justify-between text-[11px] pt-1">
-                {mode === 'login' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setView('forgot');
-                      setError(null);
-                    }}
-                    className="font-mono text-slate-400 hover:text-amber-300"
-                  >
-                    Forgot password?
-                  </button>
-                )}
+              <div className="text-center pt-2">
                 <button
-                  aria-label={mode === 'signup' ? 'Switch to log in' : 'Switch to sign up'}
                   type="button"
-                  onClick={() => setMode((m) => (m === 'signup' ? 'login' : 'signup'))}
-                  className={mode === 'login' ? 'font-mono text-slate-400 hover:text-amber-300' : 'w-full text-center font-mono text-slate-400 hover:text-amber-300'}
+                  onClick={() => {
+                    setMode(mode === 'signup' ? 'login' : 'signup');
+                    setError(null);
+                  }}
+                  className="text-xs text-slate-500 hover:text-slate-800 font-medium cursor-pointer"
                 >
-                  {mode === 'signup' ? 'Already have an account? Sign in.' : "Don't have an account? Sign up."}
+                  {mode === 'signup' ? 'Already have an account? Sign in.' : "Don't have an account? Create one."}
                 </button>
+              </div>
+
+              {/* Zero-Leak Security Badge */}
+              <div className="pt-2 border-t border-slate-100 text-center">
+                <span className="inline-flex items-center gap-1.5 text-[10px] text-slate-500 font-medium">
+                  <span>🔒</span>
+                  <span>Zero-Leak Guarantee · Document drafts stay private on-device</span>
+                </span>
               </div>
             </form>
           )}

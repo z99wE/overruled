@@ -24,23 +24,23 @@ const SOURCES: { id: SourceTab; label: string }[] = [
   { id: 'paste', label: 'Paste Text' },
   { id: 'upload', label: 'Upload File' },
   { id: 'library', label: 'Saved Vault' },
-  { id: 'sample', label: 'Samples' },
+  { id: 'sample', label: 'Sample Contracts' },
 ];
 
-const OPS: { id: DeskOp; label: string }[] = [
-  { id: 'simplify', label: 'Plain Language' },
-  { id: 'risks', label: 'Risk & Traps' },
-  { id: 'compare', label: 'Version Diff' },
-  { id: 'ask', label: 'Ask Document' },
-  { id: 'lawyer', label: 'Counsel Prep' },
+const OPS: { id: DeskOp; label: string; desc: string }[] = [
+  { id: 'simplify', label: 'Plain Language', desc: 'Translate legalese into executive summary' },
+  { id: 'risks', label: 'Risk & Traps', desc: 'Audit one-sided indemnities & uncapped liability' },
+  { id: 'compare', label: 'Version Diff', desc: 'Side-by-side redline & exposure comparison' },
+  { id: 'ask', label: 'Ask Document', desc: 'Grounded question answering with textual proof' },
+  { id: 'lawyer', label: 'Counsel Prep', desc: 'Pre-negotiation brief & strategic questions' },
 ];
 
 const KIND_LABEL: Record<string, { label: string; badge: string }> = {
-  obligation: { label: 'Obligation', badge: 'm3-chip-cyan' },
-  risk: { label: 'High Risk', badge: 'm3-chip-rose' },
-  inconsistency: { label: 'Inconsistency', badge: 'm3-chip-primary' },
-  opportunity: { label: 'Opportunity', badge: 'm3-chip-emerald' },
-  unclear: { label: 'Ambiguous', badge: 'm3-chip-lavender' },
+  obligation: { label: 'Obligation', badge: 'bg-blue-100 text-blue-800 border-blue-200' },
+  risk: { label: 'High Risk Trap', badge: 'bg-rose-100 text-rose-800 border-rose-200' },
+  inconsistency: { label: 'Inconsistency', badge: 'bg-amber-100 text-amber-800 border-amber-200' },
+  opportunity: { label: 'Safe Harbor', badge: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+  unclear: { label: 'Ambiguous Clause', badge: 'bg-purple-100 text-purple-800 border-purple-200' },
 };
 
 const providerLabel = (p: LLMProvider): string => PROVIDERS.find((x) => x.id === p)?.label ?? HOSTED_ENTRY.label;
@@ -50,23 +50,23 @@ function deskToMarkdown(a: DeskAnalysis): string {
   switch (a.op) {
     case 'simplify': {
       const r = a.result as SimplifyResult;
-      return `${h('Bottom line')}${r.bottomLine}\n\n${h('What this means')}${r.overview.map((o) => `- ${o}`).join('\n')}\n\n${h('Who it affects')}${r.whoAffects}\n\n${h('Plain-language glossary')}${r.glossary.map((g) => `- ${g.term}: ${g.means}`).join('\n')}\n`;
+      return `${h('Executive Bottom Line')}${r.bottomLine}\n\n${h('Core Implications')}${r.overview.map((o) => `- ${o}`).join('\n')}\n\n${h('Parties Affected')}${r.whoAffects}\n\n${h('Plain-Language Glossary')}${r.glossary.map((g) => `- ${g.term}: ${g.means}`).join('\n')}\n`;
     }
     case 'risks': {
       const r = a.result as RisksResult;
-      return `${h('Read of the document')}${r.bottomLine}\n\n${h('Findings')}${r.findings.map((f) => `- [${KIND_LABEL[f.kind]?.label ?? f.kind} · severity ${f.severity}/5] "${f.sentence}" — ${f.note}`).join('\n')}\n`;
+      return `${h('Risk Assessment')}${r.bottomLine}\n\n${h('Forensic Findings')}${r.findings.map((f) => `- [${KIND_LABEL[f.kind]?.label ?? f.kind} · Severity ${f.severity}/5] "${f.sentence}" — ${f.note}`).join('\n')}\n`;
     }
     case 'compare': {
       const r = a.result as CompareResult;
-      return `${h('Which version wins')}${r.bottomLine}\n\n${h('Material differences')}${r.differences.map((d) => `- ${d.area}\n  - A: ${d.sideA}\n  - B: ${d.sideB}\n  - Note: ${d.note}`).join('\n')}\n`;
+      return `${h('Comparative Analysis')}${r.bottomLine}\n\n${h('Material Differences')}${r.differences.map((d) => `- ${d.area}\n  - Version A: ${d.sideA}\n  - Version B: ${d.sideB}\n  - Note: ${d.note}`).join('\n')}\n`;
     }
     case 'ask': {
       const r = a.result as AskResult;
-      return `${h('Answer')}${r.answer}\n${r.evidence ? `\n${h('On the record')}"${r.evidence}"\n` : ''}\n${h('Confidence')}${r.confidence}\n\n${h('Next steps')}${r.nextSteps.map((s) => `- ${s}`).join('\n')}\n`;
+      return `${h('Grounded Answer')}${r.answer}\n${r.evidence ? `\n${h('Contract Evidence')}"${r.evidence}"\n` : ''}\n${h('Confidence')}${r.confidence}\n\n${h('Recommended Next Steps')}${r.nextSteps.map((s) => `- ${s}`).join('\n')}\n`;
     }
     case 'lawyer': {
       const r = a.result as LawyerResult;
-      return `${h('Why this matters')}${r.whyThisMatters}\n\n${h('Questions for your lawyer')}${r.questions.map((q) => `- ${q.question}\n  *${q.why}*`).join('\n')}\n\n${h('Bring along')}${r.bringDocuments.map((b) => `- ${b}`).join('\n')}\n`;
+      return `${h('Strategic Value')}${r.whyThisMatters}\n\n${h('Questions for Legal Counsel')}${r.questions.map((q) => `- ${q.question}\n  *${q.why}*`).join('\n')}\n\n${h('Required Evidence to Bring')}${r.bringDocuments.map((b) => `- ${b}`).join('\n')}\n`;
     }
   }
 }
@@ -74,7 +74,7 @@ function deskToMarkdown(a: DeskAnalysis): string {
 export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps) {
   const km = createKeyManager();
   const [cfg, setCfg] = useState<LLMConfig | null>(null);
-  const [op, setOp] = useState<DeskOp>('simplify');
+  const [op, setOp] = useState<DeskOp>('risks');
   const [sampleId, setSampleId] = useState('consulting');
   const [doc, setDoc] = useState(DESK_SAMPLES[0].text);
   const [docB, setDocB] = useState('');
@@ -83,7 +83,7 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
   const [error, setError] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<DeskAnalysis | null>(null);
   const [copied, setCopied] = useState(false);
-  const [source, setSource] = useState<SourceTab>('paste');
+  const [source, setSource] = useState<SourceTab>('sample');
   const [bSource, setBSource] = useState<SourceTab>('paste');
   const [library, setLibrary] = useState<Library>(emptyLibrary);
   const [docAId, setDocAId] = useState<string | null>(null);
@@ -137,7 +137,7 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
     const target = saveTo || library.files[0]?.id;
     if (!target || !doc.trim()) return;
     const existing = docAId ? findDoc(docAId, library) : null;
-    const name = existing?.name ?? (doc.slice(0, 32).trim() || 'Untitled Note');
+    const name = existing?.name ?? (doc.slice(0, 32).trim() || 'Audited Contract');
     const updated = addDoc(target, { name, text: doc, kind: 'text', bytes: new Blob([doc]).size }, library);
     persistLibrary(updated);
     setSaved(true);
@@ -222,7 +222,7 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `overrool-${analysis.op}-analysis.md`;
+      a.download = `overrool-${analysis.op}-audit.md`;
       a.click();
       URL.revokeObjectURL(url);
       return;
@@ -230,7 +230,7 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
     if (mode === 'share' && navigator.share) {
       try {
         await navigator.share({
-          title: `Overrool — ${analysis.op} Analysis`,
+          title: `Overrool — ${analysis.op} Risk Audit`,
           text: md,
         });
       } catch {
@@ -243,33 +243,33 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
   const r = analysis?.result;
 
   return (
-    <div className={`fixed inset-0 z-50 flex flex-col bg-slate-950/85 p-3 backdrop-blur-md ${page ? 'relative p-0' : ''}`}>
-      <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col overflow-hidden rounded-3xl border border-white/15 bg-slate-900/95 shadow-2xl backdrop-blur-2xl">
+    <div className={`fixed inset-0 z-50 flex flex-col bg-slate-950/60 p-3 sm:p-5 backdrop-blur-md selection:bg-blue-200 selection:text-slate-950 font-sans ${page ? 'relative p-0' : ''}`}>
+      <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-2xl">
         {/* ── Top Header Strip ────────────────────────────────────── */}
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-6 py-4">
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 bg-slate-50/90 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 font-serif font-bold text-lg shadow-md">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-serif font-bold text-lg shadow-sm">
               §
             </div>
             <div>
-              <h2 className="font-display text-base font-extrabold text-white">
-                Overrool Legal Intelligence &amp; Contract Audit Desk
+              <h2 className="font-display text-base font-extrabold text-slate-900">
+                Overrool Legal Risk Workbench
               </h2>
-              <p className="font-sans text-xs text-slate-400">
-                Plain language translation · Hidden risk audit · Version diff · Grounded Q&amp;A
+              <p className="font-sans text-xs text-slate-500">
+                Plain language translation · Hidden risk audit · Version diff · Grounded precedent Q&amp;A
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2.5">
             <button
               onClick={onOpenKeys}
-              className="rounded-full border border-slate-700 bg-slate-800/80 px-3.5 py-1.5 font-mono text-xs text-slate-300 hover:border-amber-400 hover:text-white transition-colors cursor-pointer"
+              className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 font-mono text-xs font-bold text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-colors shadow-2xs cursor-pointer"
             >
               {cfg ? providerLabel(cfg.provider) : 'Keyless (Local Private Engine)'}
             </button>
             <button
               onClick={onClose}
-              className="rounded-full bg-slate-800 hover:bg-slate-700 px-3.5 py-1.5 text-xs font-bold text-slate-200 hover:text-white transition-colors cursor-pointer"
+              className="rounded-full bg-slate-900 hover:bg-slate-800 px-4 py-1.5 text-xs font-bold text-white transition-colors shadow-xs cursor-pointer"
               aria-label={page ? 'Back' : 'Close legal desk'}
             >
               {page ? '← Back' : 'Close ✕'}
@@ -283,7 +283,7 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
           <div className="flex min-h-0 flex-col gap-4">
             <Docketling documentsUnderstood={readCount} />
 
-            {/* Operation Tabs with Clear Benefit Tooltips */}
+            {/* Operation Tabs with Clear Benefit Descriptions */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {OPS.map((o) => {
                 const active = op === o.id;
@@ -291,37 +291,42 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                   <button
                     key={o.id}
                     onClick={() => setOp(o.id)}
-                    className={`rounded-xl py-2 px-3 text-xs font-bold transition-all cursor-pointer flex items-center justify-center text-center shadow-xs ${
+                    className={`rounded-2xl p-2.5 text-left transition-all cursor-pointer border flex flex-col justify-between ${
                       active
-                        ? 'bg-blue-600 text-white shadow-blue-500/20'
-                        : 'bg-slate-800/90 text-slate-300 hover:bg-slate-700 hover:text-white'
+                        ? 'border-blue-600 bg-blue-50/90 shadow-xs ring-1 ring-blue-500'
+                        : 'border-slate-200 bg-white hover:bg-slate-50'
                     }`}
                   >
-                    <span className="truncate">{o.label}</span>
+                    <span className={`font-sans text-xs font-extrabold ${active ? 'text-blue-950' : 'text-slate-900'}`}>
+                      {o.label}
+                    </span>
+                    <span className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">
+                      {o.desc}
+                    </span>
                   </button>
                 );
               })}
             </div>
 
             {/* Source Selectors */}
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2">
               <div className="flex gap-1.5">
                 {SOURCES.map((s) => (
                   <button
                     key={s.id}
                     onClick={() => setSource(s.id)}
-                    className={`rounded-full border px-3 py-1 font-mono text-[10px] font-medium transition-all ${
+                    className={`rounded-full px-3 py-1 font-sans text-xs font-bold transition-all cursor-pointer ${
                       source === s.id
-                        ? 'border-amber-400 bg-amber-400/20 text-amber-200'
-                        : 'border-white/10 bg-slate-950/60 text-slate-400 hover:text-white'
+                        ? 'bg-slate-900 text-white shadow-xs'
+                        : 'bg-slate-100 text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     {s.label}
                   </button>
                 ))}
               </div>
-              <span className="font-mono text-[10px] text-slate-400">
-                {libraryStats(library).docs} items in vault
+              <span className="font-mono text-[11px] text-slate-400">
+                {libraryStats(library).docs} docs in local vault
               </span>
             </div>
 
@@ -333,8 +338,8 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                   setDoc(e.target.value);
                   setDocAId(null);
                 }}
-                placeholder="Paste contract, NDA, lease clause, privacy policy, or legal excerpt here…"
-                className="m3-input min-h-[190px] flex-1 resize-none font-mono text-xs leading-relaxed"
+                placeholder="Paste contract, NDA, lease clause, SaaS terms, or legal excerpt here…"
+                className="min-h-[190px] flex-1 resize-none rounded-2xl border border-slate-300 bg-slate-50 p-3.5 font-mono text-xs leading-relaxed text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none transition-colors"
               />
             )}
 
@@ -347,15 +352,15 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                     setSource('paste');
                   }}
                 />
-                {docAId && <p className="mt-2 font-mono text-[11px] text-slate-400">Loaded from local library.</p>}
+                {docAId && <p className="mt-2 font-mono text-[11px] text-slate-500">Loaded from local encrypted library.</p>}
               </div>
             )}
 
             {source === 'library' && (
               <div className="flex-1">
                 <DocumentLibraryPanel library={library} persist={persistLibrary} onPick={(d) => loadInto('A', d)} pickedId={docAId} />
-                <p className="mt-2 font-mono text-[10px] text-slate-500">
-                  Client-side encrypted local vault. Never transmitted to Overrool servers.
+                <p className="mt-2 font-mono text-[10px] text-slate-400">
+                  Client-side encrypted local vault. Never transmitted to third-party cloud servers.
                 </p>
               </div>
             )}
@@ -365,10 +370,10 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                 <select
                   value={sampleId}
                   onChange={(e) => pickSample(e.target.value)}
-                  className="m3-input font-mono text-xs"
+                  className="w-full rounded-xl border border-slate-300 bg-white p-2.5 font-sans text-xs font-bold text-slate-900 focus:border-blue-500 focus:outline-none"
                 >
                   {DESK_SAMPLES.map((s) => (
-                    <option key={s.id} value={s.id} className="bg-slate-900 text-white">
+                    <option key={s.id} value={s.id}>
                       {s.label}
                     </option>
                   ))}
@@ -376,29 +381,29 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                 <textarea
                   value={doc}
                   readOnly
-                  className="m3-input min-h-[150px] w-full resize-none font-mono text-xs text-slate-300"
+                  className="min-h-[150px] w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-3.5 font-mono text-xs text-slate-700"
                 />
               </div>
             )}
 
             {/* Save to library row */}
             {library.files.length > 0 && source !== 'library' && (
-              <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-white/10 bg-slate-950/80 p-3">
-                <span className="font-mono text-[10px] text-slate-400">Vault Target:</span>
+              <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <span className="font-sans text-xs font-bold text-slate-600">Vault Target:</span>
                 <select
                   value={saveTo}
                   onChange={(e) => setSaveTo(e.target.value)}
-                  className="flex-1 rounded-xl border border-white/10 bg-slate-900 px-3 py-1 font-mono text-xs text-white"
+                  className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-sans text-xs text-slate-800 focus:outline-none"
                 >
                   {library.files.map((f) => (
-                    <option key={f.id} value={f.id} className="bg-slate-900 text-white">
+                    <option key={f.id} value={f.id}>
                       {f.name}
                     </option>
                   ))}
                 </select>
                 <button
                   onClick={saveIntoLibrary}
-                  className="m3-btn m3-btn-emerald px-3.5 py-1 text-xs"
+                  className="rounded-full bg-emerald-600 hover:bg-emerald-700 px-4 py-1.5 text-xs font-bold text-white shadow-xs transition-colors cursor-pointer"
                 >
                   {saved ? 'Saved ✓' : 'Save'}
                 </button>
@@ -407,15 +412,15 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
 
             {/* Compare doc B panel */}
             {op === 'compare' && (
-              <div className="space-y-2 m3-card p-4">
+              <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-center gap-2">
-                  <span className="m3-chip m3-chip-primary text-[8px]">Version B</span>
+                  <span className="rounded-full bg-blue-100 text-blue-800 px-2 py-0.5 text-[10px] font-bold">Version B</span>
                   {(['paste', 'upload', 'library'] as const).map((t) => (
                     <button
                       key={t}
                       onClick={() => setBSource(t)}
-                      className={`rounded-full px-2.5 py-0.5 font-mono text-[9px] ${
-                        bSource === t ? 'bg-amber-400/20 text-amber-200 border border-amber-400/40' : 'text-slate-400 hover:text-white'
+                      className={`rounded-full px-2.5 py-0.5 font-sans text-[10px] font-bold ${
+                        bSource === t ? 'bg-slate-900 text-white' : 'text-slate-500 hover:text-slate-900'
                       }`}
                     >
                       {t}
@@ -434,8 +439,8 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                       setDocB(e.target.value);
                       setDocBId(null);
                     }}
-                    placeholder="Paste the revised/opposing version B to compare…"
-                    className="m3-input min-h-[100px] font-mono text-xs"
+                    placeholder="Paste the revised or counterparty Version B to compare…"
+                    className="min-h-[100px] w-full rounded-xl border border-slate-300 bg-white p-2.5 font-mono text-xs text-slate-900"
                   />
                 )}
                 {bSource === 'upload' && (
@@ -469,8 +474,8 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && void run()}
-                placeholder="Ask any specific question about this document (e.g. Can I terminate early?)…"
-                className="m3-input text-xs font-mono"
+                placeholder="Ask any specific question (e.g. Is there an uncapped indemnity or auto-renewal?)…"
+                className="w-full rounded-xl border border-slate-300 bg-slate-50 p-3 font-sans text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none"
               />
             )}
 
@@ -478,20 +483,20 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
             <button
               onClick={() => void run()}
               disabled={busy}
-              className="m3-btn m3-btn-primary w-full py-3.5 text-sm font-semibold"
+              className="w-full rounded-full bg-blue-600 hover:bg-blue-700 py-3.5 px-6 font-sans text-sm font-bold text-white shadow-md hover:scale-101 active:scale-98 transition-all cursor-pointer disabled:opacity-50"
             >
               {busy
-                ? `Executing Analysis${cfg ? '' : ' (Local Engine)'}…`
-                : `Run Analysis with ${cfg ? providerLabel(cfg.provider) : 'Local Rules Analyst'}`}
+                ? `Executing Forensic Audit${cfg ? '' : ' (Local Private Engine)'}…`
+                : `Run Forensic Audit with ${cfg ? providerLabel(cfg.provider) : 'Local Rules Analyst'}`}
             </button>
 
-            <p className="font-mono text-[10px] leading-relaxed text-slate-400">
-              Daily Credits: <span className="text-amber-300 font-semibold">{met.used} / {met.cap}</span> · Model analysis costs {CREDIT_COSTS.deskOp} credits · Local Rules run free
+            <p className="font-mono text-[11px] leading-relaxed text-slate-500 text-center">
+              Daily Credits: <span className="text-slate-900 font-bold">{met.used} / {met.cap}</span> · 100% In-Browser Privacy
             </p>
 
             {error && (
-              <div className="rounded-2xl border border-rose-500/30 bg-rose-950/70 p-3.5 text-xs text-rose-200">
-                <p className="font-semibold">{error}</p>
+              <div className="rounded-2xl border border-rose-200 bg-rose-50 p-3.5 text-xs text-rose-800 font-medium">
+                {error}
               </div>
             )}
           </div>
@@ -500,31 +505,21 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
           <div className="flex min-h-0 flex-col gap-4">
             {analysis && r && (
               <div className="flex items-center justify-between gap-2">
-                <span className={`m3-chip ${analysis.origin === 'genai' ? 'm3-chip-primary' : 'm3-chip-emerald'} text-[10px]`}>
-                  {analysis.origin === 'genai' ? `Cloud Neural · ${analysis.provider ?? 'Model'}` : 'Private Native Intelligence · On-Device'}
+                <span className="rounded-full bg-emerald-100 text-emerald-800 px-3 py-1 font-sans text-xs font-bold">
+                  {analysis.origin === 'genai' ? `Cloud Neural · ${analysis.provider ?? 'Model'}` : 'Private Native Intelligence · 100% On-Device'}
                 </span>
                 <div className="flex gap-1.5">
                   <button
                     onClick={() => void exportMd('copy')}
                     aria-label="Copy analysis as markdown"
-                    className="m3-btn m3-btn-tonal px-3 py-1 font-mono text-xs text-slate-300 hover:text-white"
-                    title="Copy Markdown"
+                    className="rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 px-3 py-1 font-sans text-xs font-bold text-slate-700 transition-colors cursor-pointer"
                   >
                     {copied ? 'Copied ✓' : 'Copy'}
                   </button>
                   <button
-                    onClick={() => void exportMd('share')}
-                    aria-label="Share analysis"
-                    className="m3-btn m3-btn-tonal px-3 py-1 font-mono text-xs text-slate-300 hover:text-white"
-                    title="Share"
-                  >
-                    Share
-                  </button>
-                  <button
                     onClick={() => void exportMd('download')}
                     aria-label="Download analysis as markdown"
-                    className="m3-btn m3-btn-tonal px-3 py-1 font-mono text-xs text-slate-300 hover:text-white"
-                    title="Download Markdown"
+                    className="rounded-full bg-slate-900 hover:bg-slate-800 px-3.5 py-1 font-sans text-xs font-bold text-white transition-colors cursor-pointer"
                   >
                     Download .md
                   </button>
@@ -532,16 +527,16 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
               </div>
             )}
 
-            <div className="min-h-[260px] flex-1 overflow-y-auto m3-card p-5">
+            <div className="min-h-[280px] flex-1 overflow-y-auto rounded-3xl border border-slate-200 bg-slate-50/50 p-5">
               {!analysis && (
-                <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-slate-400 py-12">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-400/15 text-amber-300 font-serif font-bold text-2xl shadow-md">
+                <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-slate-400 py-16">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-700 font-serif font-bold text-2xl shadow-sm">
                     §
                   </div>
                   <div>
-                    <p className="font-display text-base font-bold text-white">Workbench Standing By</p>
-                    <p className="max-w-xs text-xs text-slate-400 mt-1">
-                      Choose an operation and run analysis. Findings can be copied or downloaded as a consultation pack.
+                    <p className="font-display text-base font-extrabold text-slate-800">Workbench Standing By</p>
+                    <p className="max-w-xs text-xs text-slate-500 mt-1">
+                      Choose an operation and run analysis. Findings can be copied or downloaded as a court-ready consultation pack.
                     </p>
                   </div>
                 </div>
@@ -550,21 +545,21 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
               {/* Simplify View */}
               {analysis?.op === 'simplify' && r && (
                 <div className="space-y-4">
-                  <div className="rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4">
-                    <span className="m3-chip m3-chip-primary text-[8px] mb-2">Bottom Line</span>
-                    <p className="text-sm font-semibold text-white leading-relaxed">
+                  <div className="rounded-2xl border border-blue-200 bg-blue-50/80 p-4">
+                    <span className="inline-block rounded-full bg-blue-600 text-white px-2.5 py-0.5 text-[10px] font-bold mb-2">Executive Summary</span>
+                    <p className="text-xs sm:text-sm font-bold text-blue-950 leading-relaxed">
                       {(r as SimplifyResult).bottomLine}
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="mb-2 font-sans text-xs font-semibold text-amber-200">
+                    <h4 className="mb-2 font-sans text-xs font-bold text-slate-900">
                       Core Implications
                     </h4>
-                    <ul className="space-y-1.5 text-xs leading-relaxed text-slate-200">
+                    <ul className="space-y-1.5 text-xs leading-relaxed text-slate-700">
                       {(r as SimplifyResult).overview.map((o, i) => (
                         <li key={i} className="flex gap-2">
-                          <span className="text-amber-300 font-bold">•</span>
+                          <span className="text-blue-600 font-bold">•</span>
                           <span>{o}</span>
                         </li>
                       ))}
@@ -572,20 +567,20 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                   </div>
 
                   <div>
-                    <h4 className="mb-1 font-sans text-xs font-semibold text-amber-200">
+                    <h4 className="mb-1 font-sans text-xs font-bold text-slate-900">
                       Who It Affects
                     </h4>
-                    <p className="text-xs text-slate-300">{(r as SimplifyResult).whoAffects}</p>
+                    <p className="text-xs text-slate-600">{(r as SimplifyResult).whoAffects}</p>
                   </div>
 
                   <div>
-                    <h4 className="mb-2 font-sans text-xs font-semibold text-amber-200">
+                    <h4 className="mb-2 font-sans text-xs font-bold text-slate-900">
                       Plain-Language Legal Glossary
                     </h4>
                     <div className="space-y-2">
                       {(r as SimplifyResult).glossary.map((g, i) => (
-                        <div key={i} className="rounded-xl border border-white/10 bg-slate-950/60 p-3 text-xs text-slate-200">
-                          <span className="font-bold text-amber-300">{g.term}</span> — {g.means}
+                        <div key={i} className="rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-800 shadow-2xs">
+                          <span className="font-bold text-blue-700">{g.term}</span> — {g.means}
                         </div>
                       ))}
                     </div>
@@ -596,9 +591,9 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
               {/* Risks View */}
               {analysis?.op === 'risks' && r && (
                 <div className="space-y-4">
-                  <div className="rounded-2xl border border-rose-500/30 bg-rose-950/40 p-4">
-                    <span className="m3-chip m3-chip-rose text-[8px] mb-2">Assessment</span>
-                    <p className="text-sm font-semibold text-white leading-relaxed">
+                  <div className="rounded-2xl border border-rose-200 bg-rose-50/80 p-4">
+                    <span className="inline-block rounded-full bg-rose-600 text-white px-2.5 py-0.5 text-[10px] font-bold mb-2">Risk Assessment</span>
+                    <p className="text-xs sm:text-sm font-bold text-rose-950 leading-relaxed">
                       {(r as RisksResult).bottomLine}
                     </p>
                   </div>
@@ -607,20 +602,20 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                     {(r as RisksResult).findings.map((f, i) => (
                       <div
                         key={i}
-                        className={`rounded-2xl border p-3.5 ${
-                          f.severity >= 4 ? 'bg-rose-950/30 border-rose-500/40' : 'bg-slate-950/60 border-white/10'
+                        className={`rounded-2xl border p-4 bg-white shadow-2xs ${
+                          f.severity >= 4 ? 'border-rose-300 ring-1 ring-rose-300/40' : 'border-slate-200'
                         }`}
                       >
                         <div className="mb-1.5 flex items-center justify-between">
-                          <span className={`m3-chip ${KIND_LABEL[f.kind]?.badge ?? 'm3-chip'} text-[8px]`}>
+                          <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold border ${KIND_LABEL[f.kind]?.badge ?? 'bg-slate-100 text-slate-700'}`}>
                             {KIND_LABEL[f.kind]?.label ?? f.kind}
                           </span>
-                          <span className="font-mono text-[10px] text-slate-400">
+                          <span className="font-mono text-[10px] font-bold text-slate-500">
                             Severity {f.severity}/5
                           </span>
                         </div>
-                        <p className="text-xs font-semibold text-white">“{f.sentence}”</p>
-                        <p className="mt-1 text-xs text-slate-300">{f.note}</p>
+                        <p className="text-xs font-bold text-slate-900">“{f.sentence}”</p>
+                        <p className="mt-1 text-xs text-slate-600">{f.note}</p>
                       </div>
                     ))}
                   </div>
@@ -630,27 +625,27 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
               {/* Compare View */}
               {analysis?.op === 'compare' && r && (
                 <div className="space-y-4">
-                  <div className="rounded-2xl border border-sky-400/30 bg-sky-950/30 p-4">
-                    <span className="m3-chip m3-chip-cyan text-[8px] mb-2">Comparison Summary</span>
-                    <p className="text-sm font-semibold text-white leading-relaxed">
+                  <div className="rounded-2xl border border-blue-200 bg-blue-50/80 p-4">
+                    <span className="inline-block rounded-full bg-blue-600 text-white px-2.5 py-0.5 text-[10px] font-bold mb-2">Comparison Summary</span>
+                    <p className="text-xs sm:text-sm font-bold text-blue-950 leading-relaxed">
                       {(r as CompareResult).bottomLine}
                     </p>
                   </div>
                   <div className="space-y-3">
                     {(r as CompareResult).differences.map((d, i) => (
-                      <div key={i} className="rounded-2xl border border-white/10 bg-slate-950/60 p-3.5">
-                        <span className="m3-chip m3-chip-primary text-[8px] mb-2">{d.area}</span>
+                      <div key={i} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xs">
+                        <span className="inline-block rounded-full bg-slate-100 text-slate-800 px-2.5 py-0.5 text-[10px] font-bold mb-2">{d.area}</span>
                         <div className="grid gap-2 text-xs">
-                          <div className="rounded-xl bg-slate-900/80 p-2.5 border border-white/5">
-                            <span className="font-bold text-emerald-300">Version A: </span>
-                            <span className="text-slate-200">{d.sideA}</span>
+                          <div className="rounded-xl bg-emerald-50 p-2.5 border border-emerald-200">
+                            <span className="font-bold text-emerald-800">Version A: </span>
+                            <span className="text-slate-800">{d.sideA}</span>
                           </div>
-                          <div className="rounded-xl bg-slate-900/80 p-2.5 border border-white/5">
-                            <span className="font-bold text-rose-300">Version B: </span>
-                            <span className="text-slate-200">{d.sideB}</span>
+                          <div className="rounded-xl bg-rose-50 p-2.5 border border-rose-200">
+                            <span className="font-bold text-rose-800">Version B: </span>
+                            <span className="text-slate-800">{d.sideB}</span>
                           </div>
                         </div>
-                        <p className="mt-2 text-xs text-slate-400 italic">{d.note}</p>
+                        <p className="mt-2 text-xs text-slate-500 italic">{d.note}</p>
                       </div>
                     ))}
                   </div>
@@ -660,30 +655,30 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
               {/* Ask View */}
               {analysis?.op === 'ask' && r && (
                 <div className="space-y-4">
-                  <div className="rounded-2xl border border-emerald-400/30 bg-emerald-950/30 p-4">
-                    <span className="m3-chip m3-chip-emerald text-[8px] mb-2">Grounded Answer</span>
-                    <p className="text-sm font-semibold text-white leading-relaxed">
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4">
+                    <span className="inline-block rounded-full bg-emerald-600 text-white px-2.5 py-0.5 text-[10px] font-bold mb-2">Grounded Answer</span>
+                    <p className="text-xs sm:text-sm font-bold text-emerald-950 leading-relaxed">
                       {(r as AskResult).answer}
                     </p>
                   </div>
                   {(r as AskResult).evidence && (
-                    <div className="rounded-2xl border border-amber-400/30 bg-amber-950/20 p-3.5">
-                      <span className="font-mono text-[9px] font-semibold text-amber-300 block mb-1">Textual Proof:</span>
-                      <p className="text-xs italic text-amber-100">“{(r as AskResult).evidence}”</p>
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-3.5">
+                      <span className="font-mono text-[10px] font-bold text-amber-800 block mb-1">Textual Proof:</span>
+                      <p className="text-xs italic text-amber-950">“{(r as AskResult).evidence}”</p>
                     </div>
                   )}
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] text-slate-400">Confidence:</span>
-                    <span className="m3-chip m3-chip-primary text-[8px]">{(r as AskResult).confidence}</span>
+                    <span className="font-sans text-xs font-bold text-slate-500">Confidence:</span>
+                    <span className="rounded-full bg-blue-100 text-blue-800 px-2.5 py-0.5 text-[10px] font-bold">{(r as AskResult).confidence}</span>
                   </div>
                   <div>
-                    <h4 className="mb-1.5 font-sans text-xs font-semibold text-amber-200">
+                    <h4 className="mb-1.5 font-sans text-xs font-bold text-slate-900">
                       Recommended Next Steps
                     </h4>
-                    <ul className="space-y-1.5 text-xs text-slate-200">
+                    <ul className="space-y-1.5 text-xs text-slate-700">
                       {(r as AskResult).nextSteps.map((s, i) => (
                         <li key={i} className="flex gap-2">
-                          <span className="text-amber-300 font-bold">•</span>
+                          <span className="text-emerald-600 font-bold">•</span>
                           <span>{s}</span>
                         </li>
                       ))}
@@ -695,33 +690,33 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
               {/* Lawyer View */}
               {analysis?.op === 'lawyer' && r && (
                 <div className="space-y-4">
-                  <div className="rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4">
-                    <span className="m3-chip m3-chip-primary text-[8px] mb-2">Strategic Context</span>
-                    <p className="text-sm font-semibold text-white leading-relaxed">
+                  <div className="rounded-2xl border border-blue-200 bg-blue-50/80 p-4">
+                    <span className="inline-block rounded-full bg-blue-600 text-white px-2.5 py-0.5 text-[10px] font-bold mb-2">Strategic Context</span>
+                    <p className="text-xs sm:text-sm font-bold text-blue-950 leading-relaxed">
                       {(r as LawyerResult).whyThisMatters}
                     </p>
                   </div>
                   <div>
-                    <h4 className="mb-2 font-sans text-xs font-semibold text-amber-200">
+                    <h4 className="mb-2 font-sans text-xs font-bold text-slate-900">
                       Questions for Legal Counsel
                     </h4>
                     <div className="space-y-2.5">
                       {(r as LawyerResult).questions.map((q, i) => (
-                        <div key={i} className="rounded-2xl border border-white/10 bg-slate-950/60 p-3.5">
-                          <p className="text-xs font-bold text-white">{q.question}</p>
-                          <p className="mt-1 text-xs text-slate-300"><span className="text-amber-300 font-semibold">Why:</span> {q.why}</p>
+                        <div key={i} className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-2xs">
+                          <p className="text-xs font-bold text-slate-900">{q.question}</p>
+                          <p className="mt-1 text-xs text-slate-600"><span className="text-blue-600 font-bold">Why:</span> {q.why}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <h4 className="mb-1.5 font-sans text-xs font-semibold text-amber-200">
+                    <h4 className="mb-1.5 font-sans text-xs font-bold text-slate-900">
                       Documents &amp; Evidence to Bring
                     </h4>
-                    <ul className="space-y-1.5 text-xs text-slate-200">
+                    <ul className="space-y-1.5 text-xs text-slate-700">
                       {(r as LawyerResult).bringDocuments.map((b, i) => (
                         <li key={i} className="flex gap-2">
-                          <span className="text-amber-300 font-bold">•</span>
+                          <span className="text-blue-600 font-bold">•</span>
                           <span>{b}</span>
                         </li>
                       ))}

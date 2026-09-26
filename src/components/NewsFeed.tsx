@@ -7,11 +7,6 @@ interface NewsFeedProps {
   onNeedAccount: () => void;
 }
 
-/**
- * The in-app AI Briefing — the free newsletter surface. Subscribers see the
- * full feed; everyone else gets a one-line pitch and a free subscribe button.
- * Pure client content, zero external services (Cloudflare-only delivery).
- */
 export function NewsFeed({ onNeedAccount }: NewsFeedProps) {
   const { user, setNewsletterOptin } = useAuth();
   const [busy, setBusy] = useState(false);
@@ -38,12 +33,13 @@ export function NewsFeed({ onNeedAccount }: NewsFeedProps) {
   const latest = NEWS_ITEMS[0];
 
   return (
-    <section className="mb-6 rounded-2xl border border-white/10 bg-slate-900/70 p-5 backdrop-blur-xl">
+    <section className="mb-6 rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 font-display text-base font-bold text-amber-300">
-          The AI Legal Briefing
+        <h2 className="flex items-center gap-2 font-display text-base font-extrabold text-slate-900">
+          <span>📰</span>
+          <span>The AI Legal Briefing</span>
           {subscribed && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 font-mono text-[9px] text-amber-300">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 font-sans text-[10px] font-bold text-emerald-800">
               Subscribed ✓
             </span>
           )}
@@ -54,7 +50,7 @@ export function NewsFeed({ onNeedAccount }: NewsFeedProps) {
             type="button"
             disabled={busy}
             onClick={() => void subscribe()}
-            className="m3-btn m3-btn-primary px-4 py-1.5 text-xs font-semibold disabled:opacity-50"
+            className="rounded-full bg-blue-600 hover:bg-blue-700 px-4 py-1.5 text-xs font-bold text-white shadow-xs transition-all cursor-pointer disabled:opacity-50"
           >
             Subscribe Free
           </button>
@@ -62,7 +58,7 @@ export function NewsFeed({ onNeedAccount }: NewsFeedProps) {
       </div>
 
       {error && (
-        <p className="mt-3 rounded-lg border border-poker-red/40 bg-poker-red/5 px-3 py-2 text-[11px] leading-relaxed text-poker-red">
+        <p className="mt-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
           {error}
         </p>
       )}
@@ -70,19 +66,19 @@ export function NewsFeed({ onNeedAccount }: NewsFeedProps) {
       {subscribed ? (
         <ul className="mt-4 space-y-4">
           {NEWS_ITEMS.map((item) => (
-            <li key={item.id} className="border-l-2 border-chip-gold/40 pl-3">
-              <p className="font-mono text-[10px] uppercase tracking-widest text-cream/45">
+            <li key={item.id} className="border-l-2 border-blue-500 pl-3.5">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 {item.date} · {item.tag}
               </p>
-              <p className="mt-0.5 font-display text-sm uppercase tracking-wide text-cream">{item.title}</p>
-              <p className="mt-1 text-[12px] leading-relaxed text-cream/70">{item.body}</p>
+              <p className="mt-0.5 font-display text-sm font-extrabold text-slate-900">{item.title}</p>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600">{item.body}</p>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="mt-3 text-[13px] leading-relaxed text-cream/75">
-          What's new in law-meets-AI, in one short read: <span className="text-cream">{latest.title}</span> — {latest.body.split('.')[0]}.
-          <span className="text-cream/50"> Subscribe free to see every update here (no email, no spam).</span>
+        <p className="mt-3 text-xs leading-relaxed text-slate-600">
+          What's new in contract risk and AI law: <strong className="text-slate-900">{latest.title}</strong> — {latest.body.split('.')[0]}.
+          <span className="text-slate-500"> Subscribe free to receive weekly precedent ratios and contract risk updates.</span>
         </p>
       )}
     </section>

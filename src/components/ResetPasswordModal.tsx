@@ -35,31 +35,30 @@ export function ResetPasswordModal({ token, onClose }: { token: string; onClose:
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md">
-      <div className="w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-slate-900/95 shadow-2xl backdrop-blur-2xl">
-        <header className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md selection:bg-blue-200 selection:text-slate-950">
+      <div className="w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+        <header className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-400/15 text-amber-300 font-serif font-bold text-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white font-serif font-bold text-sm">
               §
             </div>
             <div>
-              <h2 className="font-display text-sm font-bold text-white">Choose a New Password</h2>
-              <p className="text-[11px] text-slate-400">Secure link · valid for single use</p>
+              <h2 className="font-display text-sm font-extrabold text-slate-900">Choose a New Password</h2>
+              <p className="text-[11px] text-slate-500">Secure link · valid for single use</p>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white font-serif text-sm" aria-label="Close">
+          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors cursor-pointer" aria-label="Close">
             ✕
           </button>
         </header>
 
         <form onSubmit={(e) => void submit(e)} className="space-y-4 px-6 py-5">
-          <p className="text-xs leading-relaxed text-slate-300">
-            Set a new password for your account. The reset link in your email expires in 30 minutes and can only be
-            used once.
+          <p className="text-xs leading-relaxed text-slate-600">
+            Set a new password for your counsel account. The reset link expires in 30 minutes.
           </p>
 
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">New Password</label>
+            <label className="mb-1 block text-xs font-bold text-slate-700">New Password</label>
             <input
               ref={pwRef}
               type="password"
@@ -67,31 +66,31 @@ export function ResetPasswordModal({ token, onClose }: { token: string; onClose:
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
               placeholder="At least 8 characters"
-              className="w-full rounded-xl border border-white/15 bg-slate-950/80 px-3.5 py-2.5 font-mono text-xs text-white placeholder:text-slate-500 outline-none focus:border-amber-400/60"
+              className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 font-sans text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:bg-white transition-colors"
             />
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-semibold text-slate-300">Confirm Password</label>
+            <label className="mb-1 block text-xs font-bold text-slate-700">Confirm Password</label>
             <input
               type="password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               autoComplete="new-password"
               placeholder="Repeat your new password"
-              className="w-full rounded-xl border border-white/15 bg-slate-950/80 px-3.5 py-2.5 font-mono text-xs text-white placeholder:text-slate-500 outline-none focus:border-amber-400/60"
+              className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 font-sans text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:bg-white transition-colors"
             />
           </div>
 
           {error && (
-            <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3.5 py-2 text-xs leading-relaxed text-rose-300">{error}</div>
+            <div className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs leading-relaxed text-rose-700 font-medium">{error}</div>
           )}
 
           <button
             aria-label="Save my new password"
             type="submit"
             disabled={busy}
-            className="m3-btn m3-btn-primary w-full py-2.5 text-xs font-bold"
+            className="w-full rounded-full bg-blue-600 hover:bg-blue-700 py-3 text-xs font-bold text-white shadow-sm transition-all cursor-pointer disabled:opacity-50"
           >
             {busy ? 'Updating...' : 'Set New Password ▸'}
           </button>

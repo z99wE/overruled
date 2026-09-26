@@ -13,22 +13,22 @@ export function ShopModal({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md">
-      <div className="w-full max-w-2xl rounded-3xl border border-white/15 bg-slate-900/95 shadow-2xl backdrop-blur-2xl">
-        <header className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md">
+      <div className="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white shadow-2xl overflow-hidden">
+        <header className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-6 py-4">
           <div>
-            <h2 className="font-display text-base font-bold text-amber-300">Chambers Emporium</h2>
-            <p className="font-sans text-xs text-slate-400">Jokers reshape how every precedent and verdict scores</p>
+            <h2 className="font-display text-base font-extrabold text-slate-900">Chambers Emporium</h2>
+            <p className="font-sans text-xs text-slate-500">Advocate privileges &amp; procedural modifiers that reshape court scoring</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-full border border-amber-400/40 bg-amber-400/15 px-3 py-1 font-mono text-xs font-semibold text-amber-300">
+            <span className="rounded-full border border-amber-300 bg-amber-50 px-3.5 py-1 font-sans text-xs font-black text-amber-950 shadow-2xs">
               🪙 {chips} chips
             </span>
             <button
               aria-label="Close shop"
               type="button"
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-slate-300 hover:text-white font-serif text-sm"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors cursor-pointer"
             >
               ✕
             </button>
@@ -41,16 +41,16 @@ export function ShopModal({
             return (
               <div
                 key={j.id}
-                className="flex flex-col justify-between rounded-2xl border border-white/10 bg-slate-950/60 p-4 shadow-sm"
+                className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50/60 p-4 shadow-2xs transition-all hover:bg-white hover:shadow-xs"
               >
                 <div>
                   <div className="mb-1.5 flex items-center justify-between gap-2">
-                    <p className="font-display text-sm font-bold text-white">{j.name}{isOwned ? ' ✓' : ''}</p>
-                    <span className={`rounded-full border px-2 py-0.5 font-mono text-[9px] ${rarityCls(j.rarity)}`}>
+                    <p className="font-display text-sm font-extrabold text-slate-900">{j.name}{isOwned ? ' ✓' : ''}</p>
+                    <span className={`rounded-full border px-2 py-0.5 font-sans text-[10px] font-bold ${rarityCls(j.rarity)}`}>
                       {j.rarity}
                     </span>
                   </div>
-                  <p className="text-xs leading-relaxed text-slate-300">{j.blurb}</p>
+                  <p className="text-xs leading-relaxed text-slate-600">{j.blurb}</p>
                 </div>
                 <button
                   aria-label={isOwned ? `In play: ${j.name}` : `Buy ${j.name} for ${j.cost} chips`}
@@ -60,16 +60,15 @@ export function ShopModal({
                     sfx.chips();
                     onBuy(j.id as JokerId, j.cost);
                   }}
-                  className={[
-                    'm3-btn mt-3.5 w-full py-2 text-xs',
+                  className={`mt-3.5 w-full rounded-full py-2 text-xs font-bold transition-all cursor-pointer ${
                     isOwned
-                      ? 'cursor-default bg-slate-900 text-slate-500 border border-white/5'
+                      ? 'cursor-default bg-emerald-100 text-emerald-800'
                       : afford
-                        ? 'm3-btn-primary'
-                        : 'cursor-not-allowed bg-slate-900/50 text-slate-600 border border-white/5',
-                  ].join(' ')}
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs'
+                      : 'cursor-not-allowed bg-slate-200 text-slate-400'
+                  }`}
                 >
-                  {isOwned ? 'Admitted to Deck' : `🪙 ${j.cost} Chips`}
+                  {isOwned ? 'Admitted to Deck ✓' : `🪙 ${j.cost} Chips`}
                 </button>
               </div>
             );

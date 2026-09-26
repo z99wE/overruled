@@ -219,7 +219,7 @@ export function App() {
   }
 
   return (
-    <div className="felt-bg felt-noise h-full">
+    <div className={`min-h-full ${screen === 'trial' ? 'felt-bg felt-noise' : 'grid-graph-light bg-slate-50'}`}>
       {screen === 'landing' && (
         <Landing
           cases={libraryRef.current?.payload.corpus.cases ?? []}
