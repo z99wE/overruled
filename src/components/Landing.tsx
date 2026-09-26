@@ -240,12 +240,12 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
             Read a document — free
           </button>
           <button
-            aria-label="Enter the courtroom and play"
+            aria-label="Enter the Room and play"
             type="button"
             onClick={onPlay}
             className="rounded-xl border-2 border-cream/25 px-7 py-3.5 font-mono text-xs uppercase tracking-widest text-cream/80 transition hover:border-chip-gold/50 hover:text-chip-gold"
           >
-            Enter the courtroom
+            Enter the Room
           </button>
           <button
             aria-label="How the Legal Desk works"
@@ -445,12 +445,12 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
             Read a document
           </button>
           <button
-            aria-label="Enter the courtroom"
+            aria-label="Enter the Room"
             type="button"
             onClick={onPlay}
             className="rounded-lg border-2 border-ink bg-felt-700 px-5 py-2 font-display text-xs uppercase text-cream shadow-[0_3px_0_var(--color-ink)] active:translate-y-[2px] active:shadow-none"
           >
-            Enter the courtroom
+            Enter the Room
           </button>
         </div>
       </footer>
