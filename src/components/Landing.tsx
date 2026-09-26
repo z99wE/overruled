@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { ReactNode } from 'react';
 import type { Jurisdiction, PrecedentCard } from '../types/legal';
 import { MoltenMetal } from './MoltenMetal';
+import { Lightfall } from './Lightfall';
 
 interface LandingProps {
   cases: PrecedentCard[];
@@ -427,6 +428,22 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
             alt="Impressionist oil painting of classical Roman amphitheater courtroom in Claude Monet and Edouard Manet style"
             className="w-full h-72 sm:h-96 object-cover"
           />
+          <div className="absolute inset-0 pointer-events-none opacity-40 mix-blend-screen">
+            <Lightfall
+              colors={['#fde68a', '#fbbf24', '#38bdf8']}
+              backgroundColor="#070a12"
+              speed={0.4}
+              streakCount={3}
+              streakWidth={1.2}
+              streakLength={1.5}
+              glow={1.2}
+              density={0.5}
+              twinkle={0.8}
+              zoom={2.2}
+              backgroundGlow={0.2}
+              opacity={0.6}
+            />
+          </div>
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
           <div className="absolute bottom-6 left-6 right-6 p-6 rounded-2xl border border-white/15 bg-slate-900/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-4">
             <div>
