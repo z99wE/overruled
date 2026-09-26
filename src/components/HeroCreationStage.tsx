@@ -106,119 +106,31 @@ export function HeroCreationStage({
         <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-blue-600"></div>
       </div>
 
-      {/* ── 3D Tabletop Stage Showcase ── */}
+      {/* ── 3D Tabletop Stage Showcase with Generated 3D Asset ── */}
       <div className="relative z-10 mx-auto max-w-4xl px-4">
-        {/* Stage Container */}
-        <div className="relative flex flex-col items-center">
-          {/* Tabletop Surface with 3D Voxel Models */}
-          <div className="relative w-full flex items-end justify-center gap-3 sm:gap-6 md:gap-8 pb-3 pt-6">
-            
-            {/* Left Model: Yellow Voxel Dog */}
-            <div className="hidden sm:flex flex-col items-center transition-transform hover:-translate-y-2 cursor-pointer">
-              <div className="relative w-20 h-24 flex items-center justify-center">
-                <svg className="w-16 h-16 drop-shadow-md" viewBox="0 0 64 64" fill="none">
-                  <rect x="20" y="16" width="24" height="20" rx="4" fill="#fbbf24" stroke="#0f172a" strokeWidth="2" />
-                  <rect x="16" y="22" width="6" height="12" rx="2" fill="#d97706" stroke="#0f172a" strokeWidth="1.5" />
-                  <rect x="22" y="36" width="20" height="18" rx="3" fill="#f59e0b" stroke="#0f172a" strokeWidth="2" />
-                  <rect x="26" y="22" width="4" height="4" fill="#0f172a" />
-                  <rect x="36" y="22" width="4" height="4" fill="#0f172a" />
-                  <rect x="30" y="28" width="6" height="3" rx="1" fill="#be123c" />
-                  <rect x="20" y="34" width="24" height="4" fill="#ef4444" />
-                </svg>
-              </div>
-            </div>
+        <div
+          onClick={handleChestClick}
+          className={`relative rounded-3xl overflow-hidden border-2 border-slate-200 shadow-xl cursor-pointer transition-all duration-300 ${
+            chestOpened ? 'scale-102 ring-4 ring-amber-400' : 'hover:scale-101'
+          }`}
+        >
+          <img
+            src="/assets/hero_chest_stage.jpg"
+            alt="3D Creation Chest Tabletop Showcase"
+            className="w-full h-auto object-cover"
+          />
 
-            {/* Left Model 2: Green Tugboat */}
-            <div className="hidden md:flex flex-col items-center transition-transform hover:-translate-y-2 cursor-pointer">
-              <svg className="w-18 h-18 drop-shadow-md" viewBox="0 0 64 64" fill="none">
-                <path d="M12 36l6 14h28l6-14H12z" fill="#059669" stroke="#0f172a" strokeWidth="2" />
-                <rect x="26" y="20" width="12" height="16" fill="#f8fafc" stroke="#0f172a" strokeWidth="2" />
-                <rect x="30" y="12" width="4" height="8" fill="#d97706" stroke="#0f172a" strokeWidth="1.5" />
-                <circle cx="32" cy="26" r="2.5" fill="#0284c7" />
-              </svg>
-            </div>
-
-            {/* Centerpiece: The Big Red Digital Creation Chest */}
-            <div
-              onClick={handleChestClick}
-              className={`relative z-20 flex flex-col items-center cursor-pointer transition-all duration-300 ${
-                chestOpened ? 'scale-105' : 'hover:scale-102'
-              }`}
-            >
-              {/* 3D Red Chest Case */}
-              <div className="relative w-64 sm:w-72 md:w-80 rounded-2xl bg-gradient-to-b from-red-500 to-red-600 p-3.5 border-3 border-amber-400 shadow-2xl shadow-red-500/20">
-                {/* Yellow Corner Bumpers */}
-                <div className="absolute top-0 left-0 w-5 h-5 bg-amber-400 rounded-tl-xl border-b-2 border-r-2 border-amber-500"></div>
-                <div className="absolute top-0 right-0 w-5 h-5 bg-amber-400 rounded-tr-xl border-b-2 border-l-2 border-amber-500"></div>
-                <div className="absolute bottom-0 left-0 w-5 h-5 bg-amber-400 rounded-bl-xl border-t-2 border-r-2 border-amber-500"></div>
-                <div className="absolute bottom-0 right-0 w-5 h-5 bg-amber-400 rounded-br-xl border-t-2 border-l-2 border-amber-500"></div>
-
-                {/* Right Side Rotary Dial & Green Button */}
-                <div className="absolute -right-3 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-slate-700 border-2 border-slate-900 shadow-inner flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-red-400"></div>
-                  </div>
-                  <div className="w-4 h-6 rounded bg-emerald-500 border border-slate-900 shadow"></div>
-                </div>
-
-                {/* LCD Digital Display */}
-                <div className="rounded-xl bg-slate-900 border-2 border-slate-800 p-4 text-center shadow-inner">
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-slate-400 mb-1 border-b border-slate-800 pb-1">
-                    Remaining Prize Pool
-                  </div>
-                  <div className="font-mono text-3xl sm:text-4xl font-black tracking-wider text-white">
-                    ${remainingPool.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-
-              {/* Reward Notification Banner */}
-              {chestMessage && (
-                <div className="mt-3 rounded-full bg-emerald-500 px-4 py-1.5 font-sans text-xs font-bold text-white shadow-lg anim-pop">
-                  {chestMessage}
-                </div>
-              )}
-            </div>
-
-            {/* Right Model 1: Yellow Chick */}
-            <div className="hidden sm:flex flex-col items-center transition-transform hover:-translate-y-2 cursor-pointer">
-              <svg className="w-14 h-14 drop-shadow-md" viewBox="0 0 64 64" fill="none">
-                <rect x="18" y="20" width="28" height="28" rx="6" fill="#fde047" stroke="#0f172a" strokeWidth="2" />
-                <rect x="24" y="28" width="4" height="4" fill="#0f172a" />
-                <rect x="36" y="28" width="4" height="4" fill="#0f172a" />
-                <polygon points="32,34 26,40 38,40" fill="#f97316" stroke="#0f172a" strokeWidth="1.5" />
-              </svg>
-            </div>
-
-            {/* Right Model 2: Purple Voxel Cat */}
-            <div className="hidden md:flex flex-col items-center transition-transform hover:-translate-y-2 cursor-pointer">
-              <svg className="w-20 h-20 drop-shadow-md" viewBox="0 0 64 64" fill="none">
-                <polygon points="18,16 26,24 16,24" fill="#8b5cf6" stroke="#0f172a" strokeWidth="1.5" />
-                <polygon points="46,16 48,24 38,24" fill="#8b5cf6" stroke="#0f172a" strokeWidth="1.5" />
-                <rect x="16" y="22" width="32" height="26" rx="4" fill="#7c3aed" stroke="#0f172a" strokeWidth="2" />
-                <rect x="22" y="30" width="6" height="6" fill="#34d399" />
-                <rect x="36" y="30" width="6" height="6" fill="#34d399" />
-                <rect x="30" y="38" width="4" height="3" rx="1" fill="#f43f5e" />
-              </svg>
-            </div>
-
-            {/* Right Model 3: Blue Mini Robot */}
-            <div className="hidden lg:flex flex-col items-center transition-transform hover:-translate-y-2 cursor-pointer">
-              <svg className="w-14 h-18 drop-shadow-md" viewBox="0 0 64 64" fill="none">
-                <line x1="32" y1="12" x2="32" y2="18" stroke="#0f172a" strokeWidth="2" />
-                <circle cx="32" cy="10" r="3" fill="#ef4444" stroke="#0f172a" strokeWidth="1.5" />
-                <rect x="22" y="18" width="20" height="16" rx="2" fill="#38bdf8" stroke="#0f172a" strokeWidth="2" />
-                <circle cx="27" cy="24" r="2" fill="#f8fafc" />
-                <circle cx="37" cy="24" r="2" fill="#f8fafc" />
-                <rect x="20" y="36" width="24" height="18" rx="2" fill="#0284c7" stroke="#0f172a" strokeWidth="2" />
-                <path d="M30 42l2 2 2-2-2-2-2 2z" fill="#f43f5e" />
-              </svg>
-            </div>
+          {/* Interactive Live Prize Pill Overlay */}
+          <div className="absolute top-4 right-4 rounded-full bg-slate-950/80 backdrop-blur-md border border-amber-400/50 px-4 py-1.5 font-mono text-xs sm:text-sm font-black text-amber-300 shadow-lg">
+            Live Pool: ${remainingPool.toLocaleString()}
           </div>
 
-          {/* Wooden Table Shelf Underneath */}
-          <div className="w-full h-7 rounded-t-lg bg-gradient-to-r from-amber-100 via-amber-200 to-amber-100 border-t-2 border-x-2 border-amber-300 shadow-md"></div>
-          <div className="w-[98%] h-4 rounded-b-lg bg-amber-300/80 border-b-2 border-amber-400"></div>
+          {/* Reward Notification Banner */}
+          {chestMessage && (
+            <div className="absolute inset-x-0 bottom-6 mx-auto max-w-md rounded-full bg-emerald-500 px-6 py-2.5 font-sans text-sm font-black text-white shadow-2xl anim-pop">
+              {chestMessage}
+            </div>
+          )}
         </div>
       </div>
 

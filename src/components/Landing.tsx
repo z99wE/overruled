@@ -5,6 +5,7 @@ import { HeroCreationStage } from './HeroCreationStage';
 import { MilestoneTrack } from './MilestoneTrack';
 import { LeaderboardPodium } from './LeaderboardPodium';
 import { ReferralRewardsHub } from './ReferralRewardsHub';
+import { CommunitySection } from './CommunitySection';
 import { RulesModal, RaffleModal, EarningsModal } from './ArcadeModals';
 
 interface LandingProps {
@@ -90,6 +91,9 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
           <button type="button" onClick={() => scrollTo('referrals')} className="hover:text-blue-600 transition-colors cursor-pointer">
             Referral Rewards
           </button>
+          <button type="button" onClick={() => scrollTo('community')} className="hover:text-blue-600 transition-colors cursor-pointer">
+            Community Hub
+          </button>
           <button type="button" onClick={onOpenDesk} className="hover:text-blue-600 transition-colors cursor-pointer">
             Legal Desk
           </button>
@@ -158,6 +162,11 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
         onOpenRules={() => setRulesOpen(true)}
         accountEmail={accountEmail}
       />
+
+      {/* ── Screenshot 5: 8-Bit Platformer Community Section ── */}
+      <div id="community">
+        <CommunitySection onOpenRules={() => setRulesOpen(true)} />
+      </div>
 
       {/* ── Legal Desk & Deep Discovery Section ── */}
       <section id="desk-section" className="mx-auto w-full max-w-6xl px-4 py-16">

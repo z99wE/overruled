@@ -12,8 +12,7 @@ interface ChestTier {
   required: number;
   colorClass: string;
   badgeBg: string;
-  textColor: string;
-  accentColor: string;
+  imageSrc?: string;
   screenIcon: string;
   chestColor: string;
   trimColor: string;
@@ -26,8 +25,7 @@ const CHEST_TIERS: ChestTier[] = [
     required: 1,
     colorClass: 'chest-card-starter',
     badgeBg: 'bg-rose-100 text-rose-700',
-    textColor: 'text-rose-950',
-    accentColor: '#f43f5e',
+    imageSrc: '/assets/starter_chest.jpg',
     screenIcon: '⛵',
     chestColor: '#ef4444',
     trimColor: '#f59e0b',
@@ -38,8 +36,6 @@ const CHEST_TIERS: ChestTier[] = [
     required: 3,
     colorClass: 'chest-card-bronze',
     badgeBg: 'bg-amber-100 text-amber-800',
-    textColor: 'text-amber-950',
-    accentColor: '#d97706',
     screenIcon: '⛏️',
     chestColor: '#b45309',
     trimColor: '#fde047',
@@ -50,8 +46,6 @@ const CHEST_TIERS: ChestTier[] = [
     required: 5,
     colorClass: 'chest-card-silver',
     badgeBg: 'bg-slate-200 text-slate-700',
-    textColor: 'text-slate-900',
-    accentColor: '#64748b',
     screenIcon: '⚙️',
     chestColor: '#94a3b8',
     trimColor: '#38bdf8',
@@ -62,8 +56,7 @@ const CHEST_TIERS: ChestTier[] = [
     required: 10,
     colorClass: 'chest-card-gold',
     badgeBg: 'bg-sky-100 text-sky-800',
-    textColor: 'text-amber-950',
-    accentColor: '#eab308',
+    imageSrc: '/assets/gold_chest.jpg',
     screenIcon: '👑',
     chestColor: '#eab308',
     trimColor: '#10b981',
@@ -74,8 +67,7 @@ const CHEST_TIERS: ChestTier[] = [
     required: 20,
     colorClass: 'chest-card-diamond',
     badgeBg: 'bg-indigo-100 text-indigo-800',
-    textColor: 'text-blue-950',
-    accentColor: '#0ea5e9',
+    imageSrc: '/assets/diamond_chest.jpg',
     screenIcon: '💎',
     chestColor: '#0284c7',
     trimColor: '#38bdf8',
@@ -86,8 +78,7 @@ const CHEST_TIERS: ChestTier[] = [
     required: 50,
     colorClass: 'chest-card-master',
     badgeBg: 'bg-purple-100 text-purple-800',
-    textColor: 'text-purple-950',
-    accentColor: '#7c3aed',
+    imageSrc: '/assets/master_chest.jpg',
     screenIcon: '⭐',
     chestColor: '#6d28d9',
     trimColor: '#facc15',
@@ -185,7 +176,7 @@ export function MilestoneTrack({
           </div>
         </div>
 
-        {/* ── 6 Chest Cards Grid ── */}
+        {/* ── 6 Chest Cards Grid with High-Res 3D Renders ── */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 pt-6">
           {CHEST_TIERS.map((tier) => {
             const isUnlocked = currentSubmissions >= tier.required;
@@ -195,49 +186,55 @@ export function MilestoneTrack({
               <div
                 key={tier.id}
                 onClick={() => handleChestClick(tier)}
-                className={`relative flex flex-col items-center rounded-2xl p-4 text-center cursor-pointer transition-all duration-200 hover:-translate-y-1.5 hover:shadow-md ${
+                className={`relative flex flex-col items-center rounded-2xl p-3 text-center cursor-pointer transition-all duration-200 hover:-translate-y-1.5 hover:shadow-md ${
                   tier.colorClass
                 } ${selectedTier === tier.id ? 'ring-2 ring-blue-500 shadow-md' : ''}`}
               >
                 {/* Top Right Locked / Unlocked Pill */}
-                <div className="absolute top-2.5 right-2.5">
+                <div className="absolute top-2.5 right-2.5 z-10">
                   <span
                     className={`rounded-full px-2 py-0.5 text-[10px] font-bold shadow-xs ${
                       isClaimed
                         ? 'bg-emerald-500 text-white'
                         : isUnlocked
                         ? 'bg-amber-400 text-slate-950'
-                        : 'bg-white text-slate-600 border border-slate-200'
+                        : 'bg-white/90 backdrop-blur-xs text-slate-600 border border-slate-200'
                     }`}
                   >
                     {isClaimed ? 'Claimed' : isUnlocked ? 'Ready' : 'Locked'}
                   </span>
                 </div>
 
-                {/* 3D Chest Visual Graphic */}
-                <div className="my-3 flex h-24 w-full items-center justify-center">
-                  <div
-                    className="relative w-22 h-20 rounded-xl p-2 border-2 border-slate-900 shadow-md flex flex-col items-center justify-between"
-                    style={{ backgroundColor: tier.chestColor }}
-                  >
-                    <div
-                      className="w-full h-2 rounded-t-sm border-b border-slate-900"
-                      style={{ backgroundColor: tier.trimColor }}
+                {/* 3D Chest Visual Render or Stylized Container */}
+                <div className="my-2 flex h-28 w-full items-center justify-center overflow-hidden rounded-xl">
+                  {tier.imageSrc ? (
+                    <img
+                      src={tier.imageSrc}
+                      alt={tier.name}
+                      className="h-full w-full object-cover rounded-xl shadow-xs transition-transform hover:scale-105"
                     />
-                    
-                    <div className="w-16 h-10 rounded-md bg-slate-900 border border-slate-700 flex items-center justify-center text-lg shadow-inner">
-                      <span>{tier.screenIcon}</span>
+                  ) : (
+                    <div
+                      className="relative w-22 h-20 rounded-xl p-2 border-2 border-slate-900 shadow-md flex flex-col items-center justify-between"
+                      style={{ backgroundColor: tier.chestColor }}
+                    >
+                      <div
+                        className="w-full h-2 rounded-t-sm border-b border-slate-900"
+                        style={{ backgroundColor: tier.trimColor }}
+                      />
+                      <div className="w-16 h-10 rounded-md bg-slate-900 border border-slate-700 flex items-center justify-center text-lg shadow-inner">
+                        <span>{tier.screenIcon}</span>
+                      </div>
+                      <div
+                        className="w-4 h-2 rounded-sm border border-slate-900 shadow-xs"
+                        style={{ backgroundColor: tier.trimColor }}
+                      />
                     </div>
-
-                    <div
-                      className="w-4 h-2 rounded-sm border border-slate-900 shadow-xs"
-                      style={{ backgroundColor: tier.trimColor }}
-                    />
-                  </div>
+                  )}
                 </div>
 
                 {/* Chest Title */}
-                <h4 className="font-sans text-sm font-extrabold text-slate-900 mb-2">
+                <h4 className="font-sans text-sm font-extrabold text-slate-900 mb-1.5">
                   {tier.name}
                 </h4>
 
