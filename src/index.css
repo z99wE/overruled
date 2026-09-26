@@ -94,23 +94,26 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Apple Liquid Glassmorphism & Surface Shaders ─────────────────── */
+/* ── Apple & Liqui-Design Liquid Glassmorphism & Surface Shaders ──── */
 
 .liquid-glass,
-.apple-glass {
+.apple-glass,
+.liqui-glass {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);
   backdrop-filter: blur(32px) saturate(190%);
   -webkit-backdrop-filter: blur(32px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow:
     0 20px 50px -10px rgba(0, 0, 0, 0.55),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25);
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 1.5px 0 rgba(0, 0, 0, 0.3);
   border-radius: 1.5rem;
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .liquid-glass-elevated,
-.apple-glass-elevated {
+.apple-glass-elevated,
+.liqui-glass-elevated {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(20, 30, 52, 0.8) 100%);
   backdrop-filter: blur(40px) saturate(200%);
   -webkit-backdrop-filter: blur(40px) saturate(200%);
@@ -118,19 +121,21 @@ body {
   box-shadow:
     0 30px 60px -12px rgba(0, 0, 0, 0.7),
     0 0 0 1px rgba(255, 255, 255, 0.08),
-    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.3);
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.35);
   border-radius: 1.75rem;
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.apple-glass-pill {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
+.apple-glass-pill,
+.liqui-glass-pill {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.05) 100%);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow:
     0 8px 24px -4px rgba(0, 0, 0, 0.4),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45);
   border-radius: 9999px;
 }
 
@@ -148,6 +153,14 @@ body {
   color: transparent;
 }
 
+/* ── Stripe.com Ambient Iridescent Glowing Mesh ──────────────────── */
+
+@keyframes stripeMeshDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(25px, -20px) scale(1.05); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
 .ambient-mesh-glow {
   position: relative;
   overflow: hidden;
@@ -156,21 +169,26 @@ body {
 .ambient-mesh-glow::before {
   content: '';
   position: absolute;
-  top: -20%;
-  left: -10%;
-  width: 140%;
-  height: 140%;
-  background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.12) 0%, transparent 40%),
-              radial-gradient(circle at 80% 80%, rgba(251, 191, 36, 0.1) 0%, transparent 40%),
-              radial-gradient(circle at 50% 50%, rgba(196, 181, 253, 0.08) 0%, transparent 50%);
+  top: -25%;
+  left: -15%;
+  width: 150%;
+  height: 150%;
+  background:
+    radial-gradient(circle at 18% 25%, rgba(99, 91, 255, 0.18) 0%, transparent 45%),
+    radial-gradient(circle at 82% 75%, rgba(251, 191, 36, 0.14) 0%, transparent 45%),
+    radial-gradient(circle at 45% 45%, rgba(14, 165, 233, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 70% 20%, rgba(167, 243, 208, 0.12) 0%, transparent 40%);
+  filter: blur(40px);
+  animation: stripeMeshDrift 20s ease-in-out infinite alternate;
   pointer-events: none;
   z-index: 0;
 }
 
-/* ── Buttons (Liquid Glass & M3 Tonal Pills) ────────────────────── */
+/* ── Liqui-Design 4-Layer Glass & Accent Buttons ─────────────────── */
 
 .m3-btn,
-.neo-btn {
+.neo-btn,
+.liqui-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -181,62 +199,85 @@ body {
   font-weight: 600;
   border-radius: 9999px;
   padding: 0.625rem 1.35rem;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   cursor: pointer;
   letter-spacing: 0.01em;
+  outline: none;
+}
+
+.m3-btn:active,
+.neo-btn:active,
+.liqui-btn:active {
+  transform: scale(0.97);
 }
 
 .m3-btn:disabled,
-.neo-btn:disabled {
+.neo-btn:disabled,
+.liqui-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-.m3-btn-primary,
-.neo-btn-primary {
-  background: linear-gradient(135deg, #fef08a 0%, #fbbf24 100%);
-  color: #0f172a;
-  border: 1px solid rgba(254, 240, 138, 0.6);
-  box-shadow: 0 4px 14px 0 rgba(251, 191, 36, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-.m3-btn-primary:hover,
-.neo-btn-primary:hover {
-  background: linear-gradient(135deg, #fef3c7 0%, #f59e0b 100%);
-  box-shadow: 0 6px 22px 0 rgba(251, 191, 36, 0.45);
-  transform: translateY(-1.5px);
-}
-.m3-btn-primary:active,
-.neo-btn-primary:active {
-  transform: translateY(0);
-}
-
+/* Liqui-Design Glass Button: Specular highlights, refraction, backdrop */
+.liqui-glass-btn,
 .m3-btn-tonal,
 .neo-btn-chrome {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.04) 100%), rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   color: #f8fafc;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 4px 16px -2px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25);
 }
+.liqui-glass-btn:hover,
 .m3-btn-tonal:hover,
 .neo-btn-chrome:hover {
-  background: rgba(51, 65, 85, 0.85);
-  border-color: rgba(255, 255, 255, 0.22);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.08) 100%), rgba(30, 41, 59, 0.85);
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow:
+    0 8px 24px -4px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.55);
+  transform: translateY(-1.5px);
+}
+
+/* Liqui-Design Accent Button: Solid vibrant fill with specular bevel */
+.m3-btn-primary,
+.neo-btn-primary,
+.liqui-accent-btn {
+  background: linear-gradient(135deg, #fef08a 0%, #fbbf24 100%);
+  color: #0f172a;
+  border: 1px solid rgba(254, 240, 138, 0.7);
+  box-shadow:
+    0 6px 20px -2px rgba(251, 191, 36, 0.35),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+.m3-btn-primary:hover,
+.neo-btn-primary:hover,
+.liqui-accent-btn:hover {
+  background: linear-gradient(135deg, #fef3c7 0%, #f59e0b 100%);
+  box-shadow:
+    0 10px 28px -4px rgba(251, 191, 36, 0.5),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.7);
   transform: translateY(-1.5px);
 }
 
 .m3-btn-outlined,
 .neo-btn-dark {
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, 0.55);
   color: #f8fafc;
   border: 1px solid rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 .m3-btn-outlined:hover,
 .neo-btn-dark:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.35);
   transform: translateY(-1px);
 }
@@ -245,13 +286,17 @@ body {
 .neo-btn-emerald {
   background: linear-gradient(135deg, #a7f3d0 0%, #34d399 100%);
   color: #064e3b;
-  border: 1px solid rgba(167, 243, 208, 0.6);
-  box-shadow: 0 4px 16px 0 rgba(52, 211, 153, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(167, 243, 208, 0.7);
+  box-shadow:
+    0 6px 20px -2px rgba(52, 211, 153, 0.35),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.6);
 }
 .m3-btn-emerald:hover,
 .neo-btn-emerald:hover {
   background: linear-gradient(135deg, #bbf7d0 0%, #10b981 100%);
-  box-shadow: 0 6px 22px 0 rgba(52, 211, 153, 0.45);
+  box-shadow:
+    0 10px 28px -4px rgba(52, 211, 153, 0.5),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.7);
   transform: translateY(-1.5px);
 }
 
@@ -259,13 +304,17 @@ body {
 .neo-btn-crimson {
   background: linear-gradient(135deg, #fecdd3 0%, #fb7185 100%);
   color: #881337;
-  border: 1px solid rgba(254, 205, 211, 0.6);
-  box-shadow: 0 4px 14px 0 rgba(251, 113, 133, 0.3);
+  border: 1px solid rgba(254, 205, 211, 0.7);
+  box-shadow:
+    0 6px 18px -2px rgba(251, 113, 133, 0.35),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.5);
 }
 .m3-btn-destructive:hover,
 .neo-btn-crimson:hover {
   background: linear-gradient(135deg, #ffe4e6 0%, #f43f5e 100%);
-  box-shadow: 0 6px 20px 0 rgba(251, 113, 133, 0.4);
+  box-shadow:
+    0 10px 24px -4px rgba(251, 113, 133, 0.5),
+    inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.6);
   transform: translateY(-1.5px);
 }
 

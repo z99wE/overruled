@@ -179,7 +179,7 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
   }, [cases]);
 
   return (
-    <div className="felt-bg min-h-full selection:bg-amber-400 selection:text-slate-950">
+    <div className="felt-bg ambient-mesh-glow min-h-full selection:bg-amber-400 selection:text-slate-950">
       {/* ── Top Navigation Bar ────────────────────────────────────────── */}
       <nav className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-white/10 bg-slate-950/80 px-6 py-3.5 shadow-lg backdrop-blur-xl lg:px-12">
         <button
