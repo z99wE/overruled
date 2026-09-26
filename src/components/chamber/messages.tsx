@@ -52,7 +52,7 @@ export function JudgeMessage({ text, meta }: { text: string; meta?: string }) {
 export function OpponentMessage({ from, text, style, attack }: { from: string; text: string; style: string; attack?: string }) {
   return (
     <div className="flex flex-col items-end gap-1">
-      <p className="text-right font-display text-[10px] uppercase tracking-widest text-poker-red">{from}</p>
+      <p className="max-w-full truncate text-right font-display text-[10px] uppercase tracking-widest text-poker-red">{from}</p>
       <div className="max-w-[88%] rounded-xl rounded-tr-sm border-2 border-ink bg-poker-red-deep/40 p-3 shadow-[0_3px_0_0_var(--color-ink)]">
         {from.includes('AI bench') && (
           <p className="mb-1 inline-flex items-center gap-1 rounded bg-ink/60 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-widest text-poker-red">⚡ AI bench</p>
@@ -60,11 +60,13 @@ export function OpponentMessage({ from, text, style, attack }: { from: string; t
         <p className="text-[13px] leading-relaxed text-cream/90">{text}</p>
       </div>
       {attack && (
-        <p className="max-w-[88%] rounded-lg border border-ink bg-ink/50 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wide text-cream/50">
-          Hitting at: {attack}
+        <p className="max-w-[88%] rounded-lg border border-ink bg-ink/50 px-3 py-1.5 text-[11px] leading-snug text-cream/65">
+          Hitting at: <span className="text-cream/85">{attack}</span>
         </p>
       )}
-      <span className="pr-1 font-mono text-[9px] uppercase tracking-widest text-cream/35">Style · {style.replace(/_/g, ' ')}</span>
+      <span className="max-w-full pr-1 text-right text-[10px] leading-snug text-cream/40">
+        Style · {style.replace(/_/g, ' ')}
+      </span>
     </div>
   );
 }
@@ -73,7 +75,7 @@ export function PlayerMessage({ text, verified, tag }: { text: string; verified:
   return (
     <div className="flex justify-end">
       <div className="max-w-[88%]">
-        <p className="mb-1 text-right font-display text-[10px] uppercase tracking-widest text-felt-200">Counsel for {tag ?? 'your client'}</p>
+        <p className="mb-1 truncate text-right font-display text-[10px] uppercase tracking-widest text-felt-200">Counsel for {tag ?? 'your client'}</p>
         <div className="rounded-xl rounded-tr-sm border-2 border-ink bg-poker-blue-deep/50 p-3 shadow-[0_3px_0_0_var(--color-ink)]">
           <p className="text-[13px] leading-relaxed text-cream/95">{text}</p>
           {verified && (

@@ -32,17 +32,37 @@ export function HandFan({ cards, playedIds, selectedId, active, onSelect, pot, s
   };
 
   return (
-    <div className="shrink-0 border-t-2 border-ink/60 bg-felt-950/80 px-3 pb-2 pt-3">
-      <div className="relative mx-auto h-36 max-w-2xl">
-        {/* Seat markers behind each slot */}
+    <div className="shrink-0 border-t-2 border-ink/60 bg-felt-950/80 px-3 pb-2 pt-2">
+      {/* One flex row, not three absolute labels: the old layout let the Clerk
+          line run under the deck counter and rotated cards reach the title. */}
+      <div className="mx-auto flex max-w-2xl items-center gap-3 pb-1.5">
+        <p className="min-w-0 flex-1 truncate font-mono text-[9px] uppercase tracking-widest text-cream/50">
+          Your hand · <span className="text-felt-200">{clientName}</span>
+        </p>
+        <p className="hidden min-w-0 flex-1 truncate text-center font-mono text-[9px] uppercase tracking-widest text-cream/45 sm:block">
+          <span className="text-chip-gold">Clerk</span>
+          {streak > 0 ? ` · ${streak} sustained in a row` : ''}
+          {pot > 0 ? ` · pot ${pot}` : ' · record open'}
+        </p>
+        <span className="flex shrink-0 items-center gap-1 rounded-md border-2 border-ink bg-ink/50 px-1.5 py-1 font-mono text-[9px] uppercase tracking-widest text-cream/70">
+          <Layers className="h-3 w-3" /> {cards.length - playedIds.size} in hand
+        </span>
+      </div>
+
+      <div className="relative mx-auto h-40 max-w-2xl">
+        {/* Seat outlines, sized to the real card (72x101) so they read as empty
+            slots instead of a sliver peeking out from behind each card. */}
         {cards.map((c, i) => {
           const p = pos(i);
+          const spent = playedIds.has(c.id);
           return (
             <span
               key={`seat-${c.id}`}
               aria-hidden
-              className="absolute bottom-1 left-1/2 h-14 w-[78px] rounded-lg border border-dashed border-cream/15 bg-ink/30"
-              style={{ opacity: 0.35, transform: `translateX(calc(-50% + ${p.x}px)) rotate(${p.rot}deg)` }}
+              className={`absolute bottom-1 left-1/2 aspect-[5/7] w-[72px] rounded-lg border-2 ${
+                spent ? 'border-cream/10 bg-ink/20' : 'border-dashed border-chip-gold/25 bg-ink/10'
+              }`}
+              style={{ transform: `translateX(calc(-50% + ${p.x}px)) rotate(${p.rot}deg)` }}
             />
           );
         })}
@@ -55,8 +75,10 @@ export function HandFan({ cards, playedIds, selectedId, active, onSelect, pot, s
           const base = `translateX(calc(-50% + ${p.x}px))`;
           const rot = `rotate(${p.rot}deg)`;
           const slot = `${base} translateY(0px) ${rot}`;
-          const transform = selected ? `${base} translateY(-38px) rotate(0deg) scale(1.12)` : slot;
-          const opacity = !active && !selected && !burned ? 0.55 : 1;
+          const transform = selected ? `${base} translateY(-30px) rotate(0deg) scale(1.1)` : slot;
+          // Dimming the whole hand to 55% whenever another mode was active made
+          // the cards effectively unreadable. Only spent cards recede now.
+          const opacity = burned ? 0.6 : 1;
           const cardStyle = {
             '--hand-slot': slot,
             '--hand-op': opacity,
@@ -88,21 +110,6 @@ export function HandFan({ cards, playedIds, selectedId, active, onSelect, pot, s
             </div>
           );
         })}
-
-        {/* Deck pile marker */}
-        <span className="absolute bottom-1 right-2 flex items-center gap-1 rounded-md border-2 border-ink bg-ink/50 px-1.5 py-1 font-mono text-[9px] uppercase tracking-widest text-cream/55">
-          <Layers className="h-3 w-3" /> {cards.length - playedIds.size} in hand
-        </span>
-        <p className="absolute right-2 top-1 text-right font-mono text-[9px] uppercase tracking-widest text-cream/35">
-          Your hand · <span className="text-felt-200">{clientName}</span>
-        </p>
-
-        {/* Clerk reads the pot */}
-        <p className="absolute bottom-0 left-2 font-mono text-[9px] uppercase tracking-widest text-cream/40">
-          <span className="text-chip-gold">Clerk</span>
-          {streak > 0 ? ` · ${streak} sustained in a row` : ''}
-          {pot > 0 ? ` · the pot stands at ${pot}` : ' · the record is open'}
-        </p>
       </div>
     </div>
   );

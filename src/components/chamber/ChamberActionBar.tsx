@@ -63,7 +63,7 @@ export function ChamberActionBar({
             </div>
 
             {mode === 'cards' ? (
-              <p className="text-center font-mono text-[10px] text-cream/45">
+              <p className="text-center text-[11px] leading-snug text-cream/60">
                 Tap a card from your hand — the Bench reads the record, opposing counsel answers with a counter-card.
               </p>
             ) : (
@@ -78,7 +78,7 @@ export function ChamberActionBar({
             )}
 
             <div className="flex items-center justify-between gap-3">
-              <p className="font-mono text-[10px] text-cream/45">
+              <p className="min-w-0 text-[11px] leading-snug text-cream/55">
                 {mode === 'freeform'
                   ? `${motion.trim().length} chars · cite an authority precisely`
                   : 'One verified card per turn'}
@@ -101,7 +101,7 @@ export function ChamberActionBar({
           </>
         ) : state.phase === 'verdict' && state.last ? (
           <div className="flex items-center justify-between gap-3">
-            <p className="font-mono text-[11px] text-cream/60">
+            <p className="min-w-0 text-[11px] leading-snug text-cream/70">
               {state.turn >= state.maxTurns ? 'Final turn recorded. The Clerk will read the verdict.' : 'The Bench has ruled on the record.'}
             </p>
             <button
@@ -114,7 +114,7 @@ export function ChamberActionBar({
             </button>
           </div>
         ) : state.phase === 'resolving' ? (
-          <div className="flex items-center justify-center gap-2 py-2 font-display text-xs uppercase tracking-wider text-cream/60">
+          <div className="flex items-center justify-center gap-2 py-2 text-center text-xs leading-snug text-cream/70">
             <Loader2 className="h-4 w-4 animate-spin text-chip-gold" /> Opposing counsel answers · the Bench deliberates…
           </div>
         ) : (

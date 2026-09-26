@@ -191,9 +191,13 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
 
       {boss && (
         <div className="border-b-2 border-ink bg-ink/30 px-4 py-1.5">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-poker-red">
-            {boss.name} · target {boss.target} chips
-            <span className="text-cream/50"> — {boss.special}</span>
+          {/* The special rule is a sentence. Setting it in uppercase mono with
+              wide tracking made it unreadable and pushed it off the edge. */}
+          <p className="text-[11px] leading-snug">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-poker-red">
+              {boss.name} · target {boss.target} chips
+            </span>
+            <span className="text-cream/60"> — {boss.special}</span>
           </p>
         </div>
       )}
@@ -210,7 +214,7 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
                 <p className="truncate font-display text-[11px] uppercase tracking-wider text-poker-red">
                   {scenario.opposingCounselPersona.name}
                 </p>
-                <p className="truncate font-mono text-[9px] uppercase tracking-widest text-cream/45">
+                <p className="truncate text-[10px] leading-snug text-cream/50">
                   Style · {scenario.opposingCounselPersona.style.replace(/_/g, ' ')}
                   {scenario.opposingCounselPersona.interlocutoryAttackTheme
                     ? ` · hits at ${scenario.opposingCounselPersona.interlocutoryAttackTheme}`
@@ -218,7 +222,7 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
                 </p>
               </div>
             </div>
-            <span className="rounded border border-cream/20 bg-ink/40 px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-cream/55">
+            <span className="min-w-0 max-w-[42%] shrink-0 truncate rounded border border-cream/20 bg-ink/40 px-2 py-1 text-right font-mono text-[9px] uppercase tracking-wider text-cream/60">
               {scenario.bench}
             </span>
           </div>
@@ -261,7 +265,9 @@ export function CourtroomChamber({ scenario, index, gameScenarioId, onExit, onOp
           </button>
         </div>
 
-        <div ref={transcriptRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-4 lg:px-6">
+        {/* Capped: the record was taking every spare pixel, squeezing the table
+            and the hand. It stays scrollable, but the table and hand now win. */}
+        <div ref={transcriptRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-4 lg:max-h-[34vh] lg:px-6">
           <OpponentMessage
             from={scenario.opposingCounselPersona.name ?? 'Opposing Senior Advocate'}
             text={scenario.opposingCounselPersona.initialOpeningStatement}
