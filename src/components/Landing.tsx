@@ -230,12 +230,6 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
         <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
           {/* Left Column: Headlines & Actions */}
           <div className="lg:col-span-7 text-left space-y-6">
-            <div className="inline-block rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-1.5 shadow-sm">
-              <span className="font-mono text-xs font-semibold text-amber-200">
-                Adversarial Legal Intelligence &amp; Discovery
-              </span>
-            </div>
-
             <h1 className="font-display text-4xl sm:text-6xl font-bold tracking-tight text-white leading-[1.08]">
               Read the contract.
               <br />
