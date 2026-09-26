@@ -18,6 +18,7 @@ describe('postRaw', () => {
     vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ ok: true })));
   });
   afterEach(() => {
+    vi.useRealTimers();
     vi.unstubAllGlobals();
   });
 
@@ -32,6 +33,84 @@ describe('postRaw', () => {
       provider: 'security',
     });
     expect(PROVIDER_ORIGINS.has('https://evil.example.com')).toBe(false);
+  });
+
+  it('retries a transient 503 and succeeds', async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi.fn(async () =>
+      fetchMock.mock.calls.length < 3
+        ? jsonResponse({ error: { message: 'high demand' } }, 503)
+        : jsonResponse({ ok: true }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const promise = postRaw('https://api.openai.com/v1/chat/completions', {}, {}, 'openai');
+    await vi.runAllTimersAsync();
+    await expect(promise).resolves.toEqual({ ok: true });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('gives up after the retry budget and surfaces the status', async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi.fn(async () => jsonResponse({ error: { message: 'still overloaded' } }, 503));
+    vi.stubGlobal('fetch', fetchMock);
+    const pending = expect(
+      postRaw('https://api.openai.com/v1/chat/completions', {}, {}, 'openai'),
+    ).rejects.toMatchObject({ status: 503 });
+    await vi.runAllTimersAsync();
+    await pending;
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not retry a non-retryable status', async () => {
+    const fetchMock = vi.fn(async () => jsonResponse({ error: { message: 'bad request' } }, 400));
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(postRaw('https://api.openai.com/v1/chat/completions', {}, {}, 'openai')).rejects.toMatchObject({
+      status: 400,
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('surfaces a long provider message that would break a truncate-then-parse', async () => {
+    vi.useFakeTimers();
+    const long = `You exceeded your current quota. ${'padding '.repeat(60)}Please retry in 9.7s.`;
+    expect(long.length).toBeGreaterThan(300);
+    const fetchMock = vi.fn(async () => jsonResponse({ error: { message: long } }, 429));
+    vi.stubGlobal('fetch', fetchMock);
+    const pending = expect(
+      postRaw('https://generativelanguage.googleapis.com/v1beta/models/m:generateContent', {}, {}, 'gemini'),
+    ).rejects.toThrow(/exceeded your current quota/);
+    await vi.runAllTimersAsync();
+    await pending;
+  });
+
+  it('honours a "please retry in Ns" hint embedded in the error body', async () => {
+    vi.useFakeTimers();
+    const spy = vi.spyOn(globalThis, 'setTimeout');
+    const fetchMock = vi.fn(async () =>
+      fetchMock.mock.calls.length === 1
+        ? jsonResponse({ error: { message: 'Quota exceeded. Please retry in 9s.' } }, 429)
+        : jsonResponse({ ok: true }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const promise = postRaw('https://generativelanguage.googleapis.com/v1beta/models/m:generateContent', {}, {}, 'gemini');
+    await vi.runAllTimersAsync();
+    await expect(promise).resolves.toEqual({ ok: true });
+    expect(spy).toHaveBeenCalledWith(expect.any(Function), 9000);
+  });
+
+  it('honours a Retry-After header instead of escalating', async () => {
+    vi.useFakeTimers();
+    const spy = vi.spyOn(globalThis, 'setTimeout');
+    const fetchMock = vi.fn(async () =>
+      fetchMock.mock.calls.length === 1
+        ? new Response(JSON.stringify({ error: { message: 'slow down' } }), { status: 429, headers: { 'Retry-After': '1' } })
+        : jsonResponse({ ok: true }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const promise = postRaw('https://api.openai.com/v1/chat/completions', {}, {}, 'openai');
+    await vi.runAllTimersAsync();
+    await expect(promise).resolves.toEqual({ ok: true });
+    expect(spy).toHaveBeenCalledWith(expect.any(Function), 1000);
   });
 
   it('surfaces the provider status and friendly error body', async () => {

@@ -176,3 +176,20 @@ describe('identity-scoped BYOK isolation', () => {
     expect(await kmErin.loadConfig()).toBeNull();
   });
 });
+describe('provider model defaults', () => {
+  // Both of these were silently dead: gemini-2.5-flash 404s for new Google keys
+  // ("no longer available to new users") and llama-3.3-70b-versatile 404s on
+  // every current Groq account. A retired default fails on a user's FIRST click,
+  // so treat any change here as requiring a live re-check:
+  //   LIVE_PROVIDER=groq npm run live:check
+  it('pins currently-servable defaults for the providers we have keys for', () => {
+    expect(defaultModel('gemini')).toBe('gemini-3.8-flash');
+    expect(defaultModel('groq')).toBe('openai/gpt-oss-120b');
+  });
+
+  it('never ships an empty model id', () => {
+    for (const p of PROVIDERS) {
+      expect(defaultModel(p.id).trim().length).toBeGreaterThan(0);
+    }
+  });
+});

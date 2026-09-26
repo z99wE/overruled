@@ -108,7 +108,9 @@ export function trialReducer(state: TrialState, action: TrialAction): TrialState
   }
 }
 
-const initialState: TrialState = {
+/** Exported so tests and the smoke harness can drive the reducer from the real
+ *  initial state instead of a hand-rolled copy that could drift. */
+export const INITIAL_TRIAL_STATE: TrialState = {
   phase: 'awaiting',
   favor: 50,
   turn: 1,
@@ -132,7 +134,7 @@ export interface TrialController {
 }
 
 export function useTrial(scenario: ScenarioBundle, index: CitationIndex): TrialController {
-  const [state, dispatch] = useReducer(trialReducer, initialState);
+  const [state, dispatch] = useReducer(trialReducer, INITIAL_TRIAL_STATE);
   const [error, setError] = useState<string | null>(null);
   const scenarioRef = useRef(scenario);
   scenarioRef.current = scenario;

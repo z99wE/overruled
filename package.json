@@ -22,7 +22,8 @@
     "cap:sync": "npx cap sync",
     "tauri": "tauri",
     "smoke": "node scripts/smoke-demo.mjs",
-    "render:sprites": "node scripts/render-docketling.mjs"
+    "render:sprites": "node scripts/render-docketling.mjs",
+    "live:check": "node scripts/live-provider-check.mjs"
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "8.0.0",

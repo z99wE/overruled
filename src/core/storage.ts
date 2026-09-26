@@ -232,10 +232,13 @@ async function readLegacy(): Promise<string | null> {
 }
 
 const MODEL_DEFAULTS: Record<LLMProvider, string> = {
-  gemini: 'gemini-2.5-flash',
+  // gemini-2.5-flash is retired for new Google AI Studio keys ("no longer
+  // available to new users"), which would fail every first-time user on their
+  // very first click. Verified working against a live key.
+  gemini: 'gemini-3.8-flash',
   openai: 'gpt-4o-mini',
   anthropic: 'claude-3-5-haiku-latest',
-  groq: 'llama-3.3-70b-versatile',
+  groq: 'openai/gpt-oss-120b',
   hosted: '@cf/meta/llama-3.1-8b-instruct',
 };
 

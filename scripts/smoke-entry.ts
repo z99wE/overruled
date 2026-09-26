@@ -12,6 +12,9 @@ import { localDeskAnalysis } from '../src/core/docEngine';
 import { DESK_SAMPLES } from '../src/core/deskSamples';
 import { loadAllScenarios } from '../src/core/dataLoader';
 import { buildSessionSummary, fallbackConsultationQuestions, serializeDocketMarkdown } from '../src/core/docket';
+import { trialReducer, INITIAL_TRIAL_STATE } from '../src/core/useTrial';
+import { resolveTurnSparring } from '../src/game/localJudge';
+import type { PlayerAction } from '../src/types/legal';
 
 let pass = 0;
 let fail = 0;
@@ -89,47 +92,78 @@ check(lawyer.questions.length > 0, 'lawyer -> questions for counsel', `${lawyer.
 check(lawyer.questions.every((q) => q.question.length > 0 && q.why.length > 0), 'lawyer -> every question explains why it matters');
 check(lawyer.bringDocuments.length > 0, 'lawyer -> what to bring', `${lawyer.bringDocuments.length} items`);
 
-/* ── 4. Keyless trial (Local Judge) ───────────────────────────── */
-section('4. Courtroom — keyless trial resolves end to end');
+/* ── 4. A REAL keyless trial, driven through the actual reducer ─ */
+section('4. Courtroom — full keyless trial through trialReducer');
 const scenarios = await loadAllScenarios();
 check(scenarios.length > 0, 'scenarios load', `${scenarios.length} matters`);
 const bundle = scenarios[0];
 check(bundle.availablePrecedents.length > 0, 'precedent cards dealt', `${bundle.availablePrecedents.length} cards`);
 
-const played = bundle.availablePrecedents[0]!;
-const record = {
-  turnNumber: 1,
-  playerAction: {
-    kind: 'precedent_card' as const,
-    precedentCardId: played.id,
-    rawText: `${played.caseName} ${played.citation}`,
-  },
-  citedPrecedent: played,
-  resolution: {
-    citation_valid: true,
-    bench_verdict_tag: 'SUSTAINED' as const,
-    judicial_favor_delta: 6,
-    judge_dialogue: 'The cited authority is on the record and directly supports the submission.',
-    opposing_advocate_strike: 'Objection noted and overruled.',
-    co_counsel_tactical_hint: 'Press the ratio on the next turn.',
-    trial_terminated: false,
-  },
-  rawModelOutput: '{}',
-};
-const summary = buildSessionSummary({ scenario: bundle, turnRecords: [record], finalFavor: 56 });
-check(summary.finalFavor === 56, 'favor carries into the docket', `${summary.finalFavor}/100`);
-const admitted = summary.admittedPrecedents as unknown as Array<{ caseName?: string; citation?: string } | string>;
-check(
-  admitted.length > 0 && admitted.some((a) => typeof a === 'string' ? a.length > 0 : Boolean(a?.caseName || a?.citation)),
-  'admitted precedents recorded',
-  admitted.length > 0
-    ? admitted.map((a) => (typeof a === 'string' ? a : `${a.caseName ?? '?'} ${a.citation ?? ''}`)).join(' | ').slice(0, 54)
-    : 'none',
-);
-const questions = fallbackConsultationQuestions(summary);
-check(questions.length > 0, 'consultation questions generated', `${questions.length} questions`);
-const md = serializeDocketMarkdown(summary);
-check(md.includes('# Advocate Consultation Docket') && md.length > 400, 'docket exports as markdown', `${md.length} chars`);
+let state = trialReducer(INITIAL_TRIAL_STATE, { type: 'START', scenario: bundle });
+check(state.phase === 'awaiting' && state.turn === 1, 'START -> awaiting on turn 1', `phase=${state.phase} turn=${state.turn}`);
+
+// Play every card in the hand, one per turn, exactly as the controller does:
+// validate the citation, resolve with the Local Judge, then VERDICT + NEXT_TURN.
+let localJudgeRulings = 0;
+const hand = bundle.availablePrecedents.slice(0, Math.min(3, bundle.availablePrecedents.length));
+for (let i = 0; i < hand.length; i += 1) {
+  const card = hand[i]!;
+  const validation = index.validateCitation(`${card.caseName} ${card.citation}`);
+  const action: PlayerAction = {
+    kind: 'precedent_card',
+    precedentCardId: card.id,
+    rawText: `${card.caseName} ${card.citation}`,
+  };
+
+  state = trialReducer(state, { type: 'RESOLVING' });
+  check(state.phase === 'resolving', `turn ${i + 1}: RESOLVING`, state.phase);
+
+  // The keyless bench: no LLM, deterministic Local Judge.
+  const { resolution } = await resolveTurnSparring({
+    scenario: bundle,
+    action,
+    validation,
+    turnNumber: state.turn,
+    maxTurns: state.maxTurns,
+    history: state.history,
+    streak: state.streak,
+  });
+  localJudgeRulings += 1;
+
+  state = trialReducer(state, { type: 'VERDICT', scenario: bundle, record: { turnNumber: state.turn, playerAction: action, citedPrecedent: card, resolution, rawModelOutput: 'local' } });
+  check(state.phase === 'verdict' && state.last !== null, `turn ${i + 1}: VERDICT recorded`, `${resolution.bench_verdict_tag} favor ${state.favor}`);
+  check(resolution.judge_dialogue.length > 0 && resolution.opposing_advocate_strike.length > 0, `turn ${i + 1}: Local Judge spoke`, `"${resolution.judge_dialogue.slice(0, 40)}…"`);
+
+  state = trialReducer(state, { type: 'NEXT_TURN', scenario: bundle });
+}
+
+check(localJudgeRulings === hand.length, 'every turn resolved keylessly', `${localJudgeRulings} rulings, no LLM`);
+check(state.history.length === hand.length, 'history accumulated one record per turn', `${state.history.length} records`);
+check(new Set(state.playedCardIds).size === state.playedCardIds.length, 'no card replayed across turns', state.playedCardIds.join(', '));
+check(state.favor > 0 && state.favor !== 50, 'favor moved off the neutral start', `${state.favor}/100`);
+check(state.pot > 0, 'pot accumulated', String(state.pot));
+check(state.streak >= 1, 'streak tracked', String(state.streak));
+
+const summary4 = state.summary ?? buildSessionSummary({ scenario: bundle, turnRecords: state.history, finalFavor: state.favor });
+check(summary4.turnRecords.length === state.history.length, 'summary built from real history', `${summary4.turnRecords.length} turns`);
+check(summary4.admittedPrecedents.length > 0, 'admitted precedents recorded', summary4.admittedPrecedents.map((a) => `${a.caseName ?? '?'}`).join(' | ').slice(0, 54));
+const questions4 = fallbackConsultationQuestions(summary4);
+check(questions4.length > 0, 'consultation questions generated', `${questions4.length} questions`);
+const md4 = serializeDocketMarkdown(summary4);
+check(md4.includes('# Advocate Consultation Docket') && md4.length > 400, 'docket exports as markdown', `${md4.length} chars`);
+check(md4.includes(bundle.clientName), 'docket names the client', bundle.clientName);
+
+// A spent card must stay spent: REVERT rewinds the phase only, so a card
+// already on the record can never be replayed. (REVERT returning to 'awaiting'
+// without clearing playedCardIds is the whole point.)
+const spentId = state.playedCardIds[0]!;
+state = trialReducer(state, { type: 'REVERT' });
+check(state.phase === 'awaiting', 'REVERT returns to awaiting', state.phase);
+check(state.playedCardIds.includes(spentId), 'REVERT cannot resurrect a spent card', `${spentId} still spent`);
+check(state.history.length === hand.length, 'REVERT does not erase the record', `${state.history.length} turns still on the record`);
+
+state = trialReducer(state, { type: 'END_TRIAL', scenario: bundle });
+check(state.phase === 'docket' && state.summary !== null, 'END_TRIAL -> docket with summary flushed', `phase=${state.phase}`);
 
 /* ── 5. Live surfaces ─────────────────────────────────────────── */
 section('5. Live deployment');

@@ -34,6 +34,31 @@ interface ChatOptions {
   jsonSchema?: unknown;
 }
 
+/** Statuses worth retrying: rate limits and transient capacity hiccups. Gemini in
+ *  particular returns 503 "high demand" under load, and a single unretryed 503
+ *  reads to the user as a broken app. */
+const RETRYABLE_STATUS = new Set([408, 425, 429, 500, 502, 503, 504]);
+const MAX_ATTEMPTS = 3;
+
+/** A server that says "retry in 30s" and is asked again after 8s just earns a
+ *  second 429, so honour the ask up to a sane ceiling. */
+const BACKOFF_CAP_MS = 30_000;
+
+function backoffMs(res: Response): number {
+  const retryAfter = Number(res.headers.get('retry-after'));
+  if (Number.isFinite(retryAfter) && retryAfter > 0) return Math.min(retryAfter * 1000, BACKOFF_CAP_MS);
+  return 0;
+}
+
+/** Gemini advertises no Retry-After header but embeds "Please retry in 9.79s" in
+ *  the error body. Honour it so we back off exactly as long as the API asked. */
+function parseRetryHint(message: string): number {
+  const m = /please retry in\s+([\d.]+)\s*s/i.exec(message);
+  if (!m) return 0;
+  const seconds = Number(m[1]);
+  return Number.isFinite(seconds) && seconds > 0 ? Math.min(seconds * 1000, BACKOFF_CAP_MS) : 0;
+}
+
 export async function postRaw(url: string, headers: Record<string, string>, body: unknown, provider: string): Promise<unknown> {
   let origin: string;
   try {
@@ -44,38 +69,52 @@ export async function postRaw(url: string, headers: Record<string, string>, body
   if (!PROVIDER_ORIGINS.has(origin)) {
     throw new LLMOrchestratorError(`Blocked non-provider origin: ${origin}`, 'security');
   }
-  let res: Response;
-  try {
-    const { signal, clear } = timeoutSignal(REQUEST_TIMEOUT_MS);
-    res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...headers },
-      body: JSON.stringify(body),
-      signal,
-    });
-    clear();
-  } catch (err) {
-    if (err instanceof DOMException && err.name === 'AbortError') {
-      throw new LLMOrchestratorError(`Provider timed out after ${REQUEST_TIMEOUT_MS / 1000}s.`, provider);
+
+  const payload = JSON.stringify(body);
+  let lastFailure = '';
+  let retryAfterMs = 0;
+
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
+    if (attempt > 0) {
+      await new Promise((r) => setTimeout(r, retryAfterMs || Math.min(600 * 2 ** (attempt - 1), 6000)));
     }
-    throw new LLMOrchestratorError(`Network failure reaching ${provider}: ${err instanceof Error ? err.message : String(err)}`, provider);
-  }
-  if (!res.ok) {
-    const detail = await res.text().catch(() => '');
+    let res: Response;
+    try {
+      const { signal, clear } = timeoutSignal(REQUEST_TIMEOUT_MS);
+      try {
+        res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: payload, signal });
+      } finally {
+        clear();
+      }
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        throw new LLMOrchestratorError(`Provider timed out after ${REQUEST_TIMEOUT_MS / 1000}s.`, provider);
+      }
+      lastFailure = `Network failure reaching ${provider}: ${err instanceof Error ? err.message : String(err)}`;
+      continue;
+    }
+
+    if (res.ok) return await res.json();
+
+    const raw = await res.text().catch(() => '');
+    // Parse the FULL body: providers put the actionable text in JSON, and a long
+    // message (e.g. Gemini's quota notice) must not be truncated before parsing
+    // or the user sees a bare "provider error 429" instead of the real reason.
     let friendly = `${provider} error ${res.status}`;
     try {
-      const j = JSON.parse(detail) as { error?: { message?: string }; message?: string };
+      const j = JSON.parse(raw) as { error?: { message?: string; status?: string }; message?: string };
       friendly = j?.error?.message ?? j?.message ?? friendly;
     } catch {
-      /* keep status friendly string */
+      if (raw.trim()) friendly = raw.trim();
     }
-    throw new LLMOrchestratorError(`Provider rejected the request: ${friendly}`, provider, res.status);
+    lastFailure = `Provider rejected the request: ${friendly}`;
+    retryAfterMs = backoffMs(res) || parseRetryHint(friendly);
+    if (!RETRYABLE_STATUS.has(res.status) || attempt === MAX_ATTEMPTS - 1) {
+      throw new LLMOrchestratorError(lastFailure, provider, res.status);
+    }
   }
-  try {
-    return await res.json();
-  } catch {
-    throw new LLMOrchestratorError('Provider returned non-JSON output.', provider);
-  }
+
+  throw new LLMOrchestratorError(lastFailure || `Provider request failed after ${MAX_ATTEMPTS} attempts.`, provider);
 }
 
 function compactRecord<T extends object>(obj: T): Record<string, unknown> {
