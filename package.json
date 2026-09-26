@@ -20,7 +20,9 @@
     "d1:create": "wrangler d1 create overrool",
     "d1:migrate": "wrangler d1 execute overrool --remote --file=d1/schema.sql",
     "cap:sync": "npx cap sync",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "smoke": "node scripts/smoke-demo.mjs",
+    "render:sprites": "node scripts/render-docketling.mjs"
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "8.0.0",
