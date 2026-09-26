@@ -24,11 +24,17 @@ flowchart TD
 
     subgraph core["Deterministic core — pure TypeScript, no model required"]
         direction TB
+        Ingest["documentIngest.ts<br/>PDF · DOCX · TXT → text (lazy parsers)"]
+        Library[("library.ts<br/>case files in IndexedDB")]
         Engine["docEngine.ts<br/>simplify · risks · compare · ask · lawyer"]
         Orch["llmOrchestrator.ts<br/>multi-role resolution loop"]
         Index["searchIndex.ts<br/>buildIndex · validateCitation"]
         Guard["guardrails.ts<br/>sandboxUntrusted · injection defence"]
         Docket["docket.ts<br/>TurnRecord → consultation pack"]
+    end
+
+    subgraph assets["pdfjs static assets — self-hosted, emitted at build"]
+        Fonts["standard_fonts/ · cmaps/"]
     end
 
     subgraph ground["Grounding corpus — static, cache-first"]
@@ -51,6 +57,9 @@ flowchart TD
 
     App --> Desk
     App --> Chamber
+    Desk --> Ingest
+    Ingest --> Fonts
+    Desk --> Library
     Desk --> Engine
     Chamber --> Orch
     Desk --> KeyVault
@@ -122,6 +131,22 @@ Every answer is constrained to the supplied text. The desk refuses to reason "fr
 
 With no API key, `docEngine` runs a **deterministic Local Rules Analyst** and the bench runs a **deterministic Local Judge**: clause extraction, sentence scoring, and citation matching with no model in the loop. It is labelled as local everywhere it appears. A user with no key and no card can still complete every interaction, and the interface never implies a local heuristic is a model.
 
+### 2.4 Getting a document in, and keeping it
+
+A legal tool that requires the user to retype a 40-page contract is not a tool, so the desk accepts **PDF, `.docx`, and plain text** by drag-and-drop or file picker.
+
+| Stage | Behaviour |
+|---|---|
+| Detection | Extension and MIME type; a legacy `.doc` is rejected with instructions rather than failing obscurely |
+| PDF | `pdfjs-dist`, lazy-loaded on first upload, reading pages in order |
+| DOCX | `mammoth`, lazy-loaded; both `arrayBuffer` and `buffer` inputs are supplied so it works under either build resolution |
+| Text | Read directly; CRLF, soft hyphens, zero-width joiners and BOM are normalised without touching real spaces |
+| Limits | 20 MB and 2 M characters, refused explicitly instead of silently truncating |
+| Honesty | A scanned, image-only PDF yields *no* text and is reported as needing OCR — never silently analysed as empty |
+| Assets | Standard-14 font metrics and CJK maps are copied out of `node_modules` at build time and self-hosted, so no third-party CDN ever receives a document |
+
+Saved documents are grouped into **case files** and persisted in **IndexedDB** (`library.ts`). IndexedDB rather than `localStorage` because a single contract exceeds the ~5 MB web-storage ceiling. The persisted payload is validated on read and tolerant of corruption: malformed entries are dropped, and a case file can never reference a document that failed validation. Everything stays on the device — see [PRIVACY.md](PRIVACY.md).
+
 ---
 
 ## 3. Trust boundaries
@@ -129,6 +154,7 @@ With no API key, `docEngine` runs a **deterministic Local Rules Analyst** and th
 | Boundary | Mechanism | File |
 |---|---|---|
 | User document → model | Untrusted input is wrapped in explicit `<untrusted-data>` fences; a directive-injection defence sits in front of it | `core/guardrails.ts` |
+| File → text | Parse happens in-browser; size, type and empty-text are validated before any text reaches the model | `core/documentIngest.ts` |
 | Model → outbound request | Provider origin allowlist; any non-provider origin raises a `security` error before a byte leaves | `core/providerCall.ts` |
 | Model → displayed citation | Corpus re-verification; local result overrides the model's self-report | `core/searchIndex.ts` |
 | Browser → our API | Bearer-first session resolution, hashed session tokens, `__Host-` cookies, 30-day TTL | `functions/lib/guard.ts`, `functions/lib/auth.ts` |

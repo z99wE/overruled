@@ -10,10 +10,11 @@ is a visible failure rather than a hidden one.
 
 Two surfaces run on one pipeline:
 
-- **Legal Desk (assistance).** Paste a document to simplify it, compare two
-  versions, audit it for obligations / risks / inconsistencies, ask questions
-  answered strictly from the text, and generate a pre-consultation pack of
-  questions for a real lawyer.
+- **Legal Desk (assistance).** Upload a PDF, .docx or text file — or paste — to
+  simplify it, compare two versions, audit it for obligations / risks /
+  inconsistencies, ask questions answered strictly from the text, and generate
+  a pre-consultation pack of questions for a real lawyer. Documents you keep are
+  organised into case files in a library stored only in your browser.
 - **Courtroom (practice).** An adversarial strategy game where a multi-role LLM
   bench (Presiding Judge, Opposing Senior Advocate, Co-Counsel) rules on your
   citations in real time.

@@ -39,11 +39,16 @@ does not collect, and how you can control it.
 | Session token (SHA-256 digest only) | Cloudflare D1, `sessions` | Remembering you while signed in |
 | Game-progress JSON (chips, XP, jokers, boss progress) | Cloudflare D1, `runs` | Cross-device save sync |
 | BYOK provider config (provider + model, and the key on your device) | Your device only | Connecting you to your own LLM provider |
+| Legal Desk documents and case files (name, extracted text, grouping) | Your device only — browser IndexedDB | Your document library, so you can return to a contract and its amendments. Never uploaded, never synced to our servers; clearing site data erases it |
+| Uploaded file bytes (PDF / `.docx`) | Not retained | Parsed in-browser to text, then discarded. Only the extracted text is kept, and only if you save it to a case file |
 
 ## What we never store
 
 - Your LLM API keys (ours or yours).
 - Trial prompts, judge rulings, or case texts from BYOK trials.
+- **Your legal documents.** Uploaded files are parsed in your browser and never
+  transmitted to us. Saved documents live in your device's IndexedDB only; we
+  have no copy and no access path.
 - Browsing history, IP-derived profiles, or advertising identifiers.
 - Payment information (we hold no money).
 - Recovery codes or reset tokens in plaintext anywhere — only their SHA-256

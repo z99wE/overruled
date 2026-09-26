@@ -6,7 +6,7 @@
 
 Two surfaces, one pipeline:
 
-- **Legal Desk** — the assistance layer. Paste a document and **simplify** it, **compare** two versions, **audit** it for obligations, risks and inconsistencies, **ask questions** answered strictly from the text, and generate a **pre-consultation pack** for a real lawyer.
+- **Legal Desk** — the assistance layer. **Upload a PDF, .docx or .txt** (or paste), and **simplify** it, **compare** two versions, **audit** it for obligations, risks and inconsistencies, **ask questions** answered strictly from the text, and generate a **pre-consultation pack** for a real lawyer. Documents you keep are organised into **case files** in a local library, so a contract and its amendments stay together.
 - **Courtroom** — the practice layer. An adversarial strategy game where a **multi-role LLM bench** (Presiding Judge, Opposing Senior Advocate, Co-Counsel) rules on your citations in real time, so you learn to frame arguments, read precedent and spot fabricated authority without risking a real case.
 
 Both sit on the same foundations: an embedded corpus of **59 real, published judgments** spanning seven legal systems (United States, United Kingdom, European Union, Canada, Australia, South Africa, India) plus 10 statutes; **client-side citation verification** against that corpus; a **zero-cost BYOK (bring-your-own-key) architecture** where model calls go from the browser straight to the reader's own provider (React 19, TypeScript, Tailwind v4); and an exportable **Advocate Consultation Docket** (markdown / print / share).
@@ -270,15 +270,19 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 
 ## The Legal Desk (document understanding)
 
-The **Legal Desk** (`LegalDesk.tsx` + `docEngine.ts`) closes the brief's biggest gap — working with *your* document, not a pre-built case. Open it from the gallery header. Paste a contract, policy, lease, judgement excerpt, or terms page (or load a bundled sample), pick an operation, and analyse:
+The **Legal Desk** (`LegalDesk.tsx` + `docEngine.ts` + `documentIngest.ts` + `library.ts`) closes the brief's biggest gap — working with *your* document, not a pre-built case. Open it from the gallery header. **Upload a PDF, `.docx` or text file** (drag-and-drop or file picker), paste text directly, load a document from your library, or load a bundled sample. Then pick an operation and analyse:
 
 - **Simplify** — plain-English bottom line, what-it-means bullets, who it affects, glossary of legalese.
 - **Risks & obligations** — evidence-quoted audit with kind and severity per finding.
-- **Compare** — material differences between two versions, who each favours, which is safer.
+- **Compare** — material differences between two versions, who each favours, which is safer. Either side can be loaded from your library.
 - **Ask the text** — a grounded answer quoted from the document, with confidence and next steps.
 - **For your lawyer** — the questions that would change the decision, why each matters, and what to bring.
 
-With a key armed, each op is one structured GenAI pass (`genDeskAnalysis`) through the same BYOK pipeline as the trial (the origin-allowlist + JSON-contract discipline applies identically). Without a key the deterministic **Local Rules Analyst** runs instead and is labeled as such. Results export as `legal-desk-<op>.md` (copy / download / share). The pasted text is read only in the browser and is sent nowhere except your own provider for the single analysis pass.
+With a key armed, each op is one structured GenAI pass (`genDeskAnalysis`) through the same BYOK pipeline as the trial (the origin-allowlist + JSON-contract discipline applies identically). Without a key the deterministic **Local Rules Analyst** runs instead and is labeled as such. Results export as `legal-desk-<op>.md` (copy / download / share).
+
+**Document library.** Anything you analyse can be saved into a named **case file**, so a tenancy agreement and its amendments stay together and you can return to them later. The library lives in the browser's **IndexedDB** — never uploaded, never on our servers. Clearing site data erases it. Because a 40-page contract is well past the `localStorage` ceiling, document text is kept in IndexedDB rather than in web storage. See [PRIVACY.md](PRIVACY.md).
+
+**File handling.** PDF and `.docx` parsing runs **entirely in your browser** (`pdfjs-dist` and `mammoth`, both lazy-loaded on first use so they cost nothing if you never upload). pdfjs's standard-font metrics and CJK maps are **self-hosted** with the app, so no third-party CDN ever sees your document. A scanned, image-only PDF is detected and reported honestly rather than silently returning nothing.
 
 ---
 

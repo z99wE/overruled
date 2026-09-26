@@ -1,16 +1,29 @@
 import { useEffect, useState } from 'react';
-import { Check, Copy, Download, KeyRound, Landmark, Loader2, Share2, X } from 'lucide-react';
+import { Check, Copy, Download, KeyRound, Landmark, Loader2, Save, Share2, X } from 'lucide-react';
 import type { LLMConfig, LLMProvider } from '../types/legal';
 import { PROVIDERS, HOSTED_ENTRY, createKeyManager } from '../core/storage';
 import type { AskResult, CompareResult, DeskAnalysis, DeskOp, LawyerResult, RisksResult, SimplifyResult } from '../core/docEngine';
 import { genDeskAnalysis, localDeskAnalysis } from '../core/docEngine';
 import { DESK_SAMPLES } from '../core/deskSamples';
 import { CREDIT_COSTS, creditsToday, spendCredits } from '../core/meter';
+import type { Library, LibraryDoc } from '../core/library';
+import { addDoc, createIdbStore, emptyLibrary, findDoc, libraryStats } from '../core/library';
+import { DocumentIngest, DocChip } from './DocumentIngest';
+import { DocumentLibraryPanel } from './DocumentLibraryPanel';
 
 interface LegalDeskProps {
   onClose: () => void;
   onOpenKeys: () => void;
 }
+
+type SourceTab = 'paste' | 'upload' | 'library' | 'sample';
+
+const SOURCES: { id: SourceTab; label: string }[] = [
+  { id: 'paste', label: 'Paste' },
+  { id: 'upload', label: 'Upload' },
+  { id: 'library', label: 'My documents' },
+  { id: 'sample', label: 'Samples' },
+];
 
 const OPS: { id: DeskOp; label: string }[] = [
   { id: 'simplify', label: 'Simplify' },
@@ -68,6 +81,13 @@ export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
   const [error, setError] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<DeskAnalysis | null>(null);
   const [copied, setCopied] = useState(false);
+  const [source, setSource] = useState<SourceTab>('paste');
+  const [bSource, setBSource] = useState<SourceTab>('paste');
+  const [library, setLibrary] = useState<Library>(emptyLibrary);
+  const [docAId, setDocAId] = useState<string | null>(null);
+  const [docBId, setDocBId] = useState<string | null>(null);
+  const [saveTo, setSaveTo] = useState<string>('');
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -80,11 +100,58 @@ export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      const lib = await createIdbStore().read();
+      if (!active || !lib) return;
+      setLibrary(lib);
+      setSaveTo(lib.files[0]?.id ?? '');
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const persistLibrary = (next: Library) => {
+    setLibrary(next);
+    void createIdbStore().write(next);
+  };
+
+  const loadInto = (target: 'A' | 'B', d: LibraryDoc) => {
+    if (target === 'A') {
+      setDoc(d.text);
+      setDocAId(d.id);
+    } else {
+      setDocB(d.text);
+      setDocBId(d.id);
+    }
+    setSaved(false);
+  };
+
+  const saveIntoLibrary = () => {
+    const target = saveTo || library.files[0]?.id;
+    if (!target || !doc.trim()) return;
+    const existing = docAId ? findDoc(docAId, library) : null;
+    const name = existing?.name ?? (source === 'upload' ? 'Uploaded document' : 'Pasted document');
+    if (existing) {
+      // already in the library — just make sure it is linked to the chosen case file
+      if (!library.files.find((f) => f.id === target)?.docIds.includes(existing.id)) {
+        persistLibrary(addDoc(target, { name, kind: existing.kind, text: doc.trim(), bytes: existing.bytes }, library));
+      }
+    } else {
+      persistLibrary(addDoc(target, { name, kind: 'text', text: doc.trim(), bytes: doc.trim().length }, library));
+    }
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1800);
+  };
+
   const pickSample = (id: string) => {
     const s = DESK_SAMPLES.find((x) => x.id === id);
     if (!s) return;
     setSampleId(id);
     setDoc(s.text);
+    setDocAId(null);
   };
 
   const run = async () => {
@@ -191,35 +258,157 @@ export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
-              <label className="font-mono text-[10px] uppercase tracking-wider text-cream/50">Paste or load a sample</label>
-              <select
-                value={sampleId}
-                onChange={(e) => pickSample(e.target.value)}
-                className="rounded-lg border border-ink bg-felt-800 px-2 py-1 text-[13px] text-cream focus:border-dgold focus:outline-none"
-              >
-                {DESK_SAMPLES.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
+            <div className="flex flex-wrap gap-1">
+              {SOURCES.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setSource(s.id)}
+                  className={`rounded-md px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider transition ${
+                    source === s.id ? 'bg-dgold/20 text-dgold ring-1 ring-dgold/40' : 'text-cream/45 hover:text-cream'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+              <span className="ml-auto self-center font-mono text-[10px] text-cream/30">
+                {libraryStats(library).docs} saved
+              </span>
             </div>
 
-            <textarea
-              value={doc}
-              onChange={(e) => setDoc(e.target.value)}
-              placeholder="Paste a contract, policy, lease, judgement excerpt, or terms page here…"
-              className="min-h-[180px] flex-1 resize-none rounded-xl border border-ink bg-felt-800 p-3 text-[13px] leading-relaxed text-cream placeholder:text-cream/30 focus:border-dgold focus:outline-none"
-            />
+            {source === 'paste' && (
+              <textarea
+                value={doc}
+                onChange={(e) => {
+                  setDoc(e.target.value);
+                  setDocAId(null);
+                }}
+                placeholder="Paste a contract, policy, lease, judgement excerpt, or terms page here…"
+                className="min-h-[180px] flex-1 resize-none rounded-xl border border-ink bg-felt-800 p-3 text-[13px] leading-relaxed text-cream placeholder:text-cream/30 focus:border-dgold focus:outline-none"
+              />
+            )}
+
+            {source === 'upload' && (
+              <div className="flex-1">
+                <DocumentIngest
+                  onLoaded={(d) => {
+                    setDoc(d.text);
+                    setDocAId(null);
+                    setSource('paste');
+                  }}
+                />
+                {docAId && <p className="mt-2 text-[12px] text-cream/50">Loaded from your library.</p>}
+              </div>
+            )}
+
+            {source === 'library' && (
+              <div className="flex-1">
+                <DocumentLibraryPanel library={library} persist={persistLibrary} onPick={(d) => loadInto('A', d)} pickedId={docAId} />
+                <p className="mt-2 font-mono text-[10px] leading-relaxed text-cream/35">
+                  Stored on this device only — in your browser, never uploaded. Clearing site data removes it.
+                </p>
+              </div>
+            )}
+
+            {source === 'sample' && (
+              <div className="flex-1 space-y-2">
+                <select
+                  value={sampleId}
+                  onChange={(e) => pickSample(e.target.value)}
+                  className="w-full rounded-lg border border-ink bg-felt-800 px-2 py-1.5 text-[13px] text-cream focus:border-dgold focus:outline-none"
+                >
+                  {DESK_SAMPLES.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+                <textarea
+                  value={doc}
+                  readOnly
+                  className="min-h-[140px] w-full resize-none rounded-xl border border-ink bg-felt-800 p-3 text-[13px] leading-relaxed text-cream/80 focus:border-dgold focus:outline-none"
+                />
+              </div>
+            )}
+
+            {library.files.length > 0 && source !== 'library' && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-cream/40">Save to</span>
+                <select
+                  value={saveTo}
+                  onChange={(e) => setSaveTo(e.target.value)}
+                  className="min-w-0 flex-1 rounded-lg border border-ink bg-felt-800 px-2 py-1 text-[12px] text-cream focus:border-dgold focus:outline-none"
+                >
+                  {library.files.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={saveIntoLibrary}
+                  className="flex items-center gap-1 rounded-lg border border-ink bg-felt-800 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-cream/70 transition hover:bg-felt-700 hover:text-cream"
+                >
+                  {saved ? <Check className="h-3 w-3 text-emerald-400" /> : <Save className="h-3 w-3" />}
+                  {saved ? 'Saved' : 'Save'}
+                </button>
+              </div>
+            )}
 
             {op === 'compare' && (
-              <textarea
-                value={docB}
-                onChange={(e) => setDocB(e.target.value)}
-                placeholder="Version B — paste the second document to compare…"
-                className="min-h-[100px] resize-none rounded-xl border border-ink bg-felt-800 p-3 text-[13px] leading-relaxed text-cream placeholder:text-cream/30 focus:border-dgold focus:outline-none"
-              />
+              <div className="space-y-2 rounded-xl border border-ink/60 bg-ink/20 p-2">
+                <div className="flex items-center gap-1">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-cream/40">Version B</span>
+                  {(['paste', 'upload', 'library'] as const).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setBSource(t)}
+                      className={`rounded px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider transition ${
+                        bSource === t ? 'bg-dgold/20 text-dgold' : 'text-cream/40 hover:text-cream'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                  {docBId && (
+                    <button onClick={() => setBSource('library')} className="ml-auto">
+                      <DocChip name={findDoc(docBId, library)?.name ?? 'document'} kind={findDoc(docBId, library)?.kind ?? 'text'} />
+                    </button>
+                  )}
+                </div>
+                {bSource === 'paste' && (
+                  <textarea
+                    value={docB}
+                    onChange={(e) => {
+                      setDocB(e.target.value);
+                      setDocBId(null);
+                    }}
+                    placeholder="Paste the second document to compare…"
+                    className="min-h-[100px] w-full resize-none rounded-xl border border-ink bg-felt-800 p-3 text-[13px] leading-relaxed text-cream placeholder:text-cream/30 focus:border-dgold focus:outline-none"
+                  />
+                )}
+                {bSource === 'upload' && (
+                  <DocumentIngest
+                    label="Upload Version B"
+                    onLoaded={(d) => {
+                      setDocB(d.text);
+                      setDocBId(null);
+                      setBSource('paste');
+                    }}
+                  />
+                )}
+                {bSource === 'library' && (
+                  <DocumentLibraryPanel
+                    library={library}
+                    persist={persistLibrary}
+                    onPick={(d) => {
+                      loadInto('B', d);
+                      setBSource('paste');
+                    }}
+                    target="B"
+                    pickedId={docBId}
+                  />
+                )}
+              </div>
             )}
 
             {op === 'ask' && (
