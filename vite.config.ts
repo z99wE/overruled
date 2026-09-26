@@ -1,4 +1,5 @@
-import { cpSync, existsSync } from 'node:fs';
+import { cpSync, existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
@@ -29,7 +30,7 @@ function pdfjsAssets(): Plugin {
       for (const [src, dest] of dirs) {
         let from: string;
         try {
-          from = dirname(require.resolve(`pdfjs-dist/package.json`));
+          from = dirname(require.resolve('pdfjs-dist/package.json'));
         } catch {
           return;
         }
@@ -41,8 +42,39 @@ function pdfjsAssets(): Plugin {
   };
 }
 
+/**
+ * Stamp the service-worker cache with a content hash of the emitted assets.
+ * A hand-maintained version string is a footgun: forget to bump it after a
+ * deploy and returning clients keep a stale shell. Deriving it removes the
+ * manual step entirely and keeps the cache honest with zero runtime cost.
+ */
+function swBuildId(): Plugin {
+  let outDir = 'dist';
+  return {
+    name: 'sw-build-id',
+    apply: 'build',
+    configResolved(config) {
+      outDir = config.build.outDir;
+    },
+    closeBundle() {
+      const swPath = join(outDir, 'sw.js');
+      if (!existsSync(swPath)) return;
+      const assetsDir = join(outDir, 'assets');
+      const parts = existsSync(assetsDir)
+        ? readdirSync(assetsDir)
+            .sort()
+            .map((f) => `${f}:${statSync(join(assetsDir, f)).size}`)
+        : ['no-assets'];
+      const id = createHash('sha256').update(parts.join('|')).digest('hex').slice(0, 12);
+      const src = readFileSync(swPath, 'utf8');
+      writeFileSync(swPath, src.replace('__BUILD_ID__', id));
+      console.log(`  sw.js cache -> overrool-${id}`);
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss(), pdfjsAssets()],
+  plugins: [react(), tailwindcss(), pdfjsAssets(), swBuildId()],
   build: {
     rollupOptions: {
       output: {

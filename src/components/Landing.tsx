@@ -199,18 +199,18 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
       </nav>
 
       <header id="top" className="mx-auto w-full max-w-5xl px-5 pb-14 pt-14 text-center sm:pt-20">
-        <div className="mb-6 flex items-center justify-center gap-2" aria-hidden>
-          {[
-            { c: 'bg-chip-gold', d: '0s' },
-            { c: 'bg-poker-red', d: '0.35s' },
-            { c: 'bg-poker-blue', d: '0.7s' },
-          ].map((chip, i) => (
+        <div className="mb-6 flex flex-wrap items-center justify-center gap-2" aria-hidden>
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-cream/40">Drop in</span>
+          {['PDF', 'DOCX', 'TXT'].map((fmt, i) => (
             <span
-              key={i}
-              className={`anim-float inline-block h-9 w-9 rounded-full border-2 border-ink ${chip.c}`}
-              style={{ boxShadow: 'inset 0 0 0 2px rgba(253,246,227,0.4), 0 4px 0 0 var(--color-ink)', animationDelay: chip.d }}
-            />
+              key={fmt}
+              className="anim-float rounded-md border border-cream/20 bg-felt-900/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-cream/60"
+              style={{ animationDelay: `${i * 0.35}s` }}
+            >
+              {fmt}
+            </span>
           ))}
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-cream/40">or paste</span>
         </div>
         <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-chip-gold">
           AI for legal assistance &amp; access
@@ -219,38 +219,37 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
           className="mt-3 font-display text-5xl leading-[0.95] text-cream sm:text-7xl"
           style={{ textShadow: '0 4px 0 var(--color-poker-red-deep), 0 7px 0 var(--color-ink)' }}
         >
-          REAL LAW.
+          READ THE
           <br />
-          SIMPLIFIED.
+          CONTRACT.
           <br />
-          COMPARED. ARGUED.
+          KNOW THE RISK.
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-cream/80">
-          Legal help shouldn’t start with a billable hour. Paste any contract and read it in plain language, find the
-          clauses that trap you, compare two versions, and ask questions grounded in the exact text you provided. When
-          you’re ready to stand on it — argue it at the bench with real judgments,{' '}
-          <em>Kesavananda</em> to <em>Miranda</em>, <em>Donoghue</em> to <em>Makwanyane</em>. Nothing in the deck is
-          invented.
+          Legal help shouldn’t start with a billable hour. Upload a contract, lease, policy or judgement and read it in
+          plain language — the clauses that trap you, what two versions actually differ on, and answers grounded in the
+          exact text you gave us. When you’re ready to stand on it, argue it at the bench against real published
+          judgments. Nothing in the deck is invented.
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-          <button
-            aria-label="Deal me in, it is free"
-            type="button"
-            onClick={onPlay}
-            className="btn-gold-glow rounded-xl border-2 border-ink bg-poker-red px-7 py-3.5 font-display text-base uppercase tracking-wide text-cream"
-          >
-            Deal me in — it's free
-          </button>
           <button
             aria-label="Open the Legal Desk and read a document"
             type="button"
             onClick={onOpenDesk}
-            className="rounded-xl border-2 border-cream/25 px-7 py-3.5 font-mono text-xs uppercase tracking-widest text-cream/80 transition hover:border-chip-gold/50 hover:text-chip-gold"
+            className="btn-gold-glow rounded-xl border-2 border-ink bg-poker-red px-7 py-3.5 font-display text-base uppercase tracking-wide text-cream"
           >
-            Read a document
+            Read a document — free
           </button>
           <button
-            aria-label="Your documents"
+            aria-label="Enter the courtroom and play"
+            type="button"
+            onClick={onPlay}
+            className="rounded-xl border-2 border-cream/25 px-7 py-3.5 font-mono text-xs uppercase tracking-widest text-cream/80 transition hover:border-chip-gold/50 hover:text-chip-gold"
+          >
+            Enter the courtroom
+          </button>
+          <button
+            aria-label="How the Legal Desk works"
             type="button"
             onClick={() => scrollTo('desk')}
             className="rounded-xl border-2 border-cream/25 px-7 py-3.5 font-mono text-xs uppercase tracking-widest text-cream/80 transition hover:border-cream/50 hover:text-cream"
@@ -434,27 +433,25 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
       <footer className="border-t-2 border-ink px-5 py-10 text-center">
         <p className="font-display text-lg text-cream">OVERROOL</p>
         <p className="mx-auto mt-2 max-w-xl font-mono text-[10px] uppercase tracking-widest text-cream/40">
-          AI for legal assistance &amp; access — a game that teaches, not legal advice. Verify every citation against
-          certified law reports.
+          AI for legal assistance &amp; access — read your own documents, and learn to argue them. Not legal advice.
+          Verify every citation against certified law reports.
         </p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-          <button
-            aria-label="Deal me in"
-            type="button"
-            onClick={onPlay}
-
-            className="rounded-lg border-2 border-ink bg-felt-700 px-5 py-2 font-display text-xs uppercase text-cream shadow-[0_3px_0_var(--color-ink)] active:translate-y-[2px] active:shadow-none"
-          >
-            Deal me in
-          </button>
           <button
             aria-label="Open the Legal Desk"
             type="button"
             onClick={onOpenDesk}
-
             className="rounded-lg border-2 border-ink bg-chip-gold px-5 py-2 font-display text-xs uppercase text-ink shadow-[0_3px_0_var(--color-ink)] active:translate-y-[2px] active:shadow-none"
           >
-            Legal Desk
+            Read a document
+          </button>
+          <button
+            aria-label="Enter the courtroom"
+            type="button"
+            onClick={onPlay}
+            className="rounded-lg border-2 border-ink bg-felt-700 px-5 py-2 font-display text-xs uppercase text-cream shadow-[0_3px_0_var(--color-ink)] active:translate-y-[2px] active:shadow-none"
+          >
+            Enter the courtroom
           </button>
         </div>
       </footer>

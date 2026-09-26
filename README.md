@@ -78,12 +78,15 @@ overrool/
 ├── public/
 │   ├── data/
 │   │   ├── global_cases.json             ← embedded corpus: 59 landmark cases (US/UK/EU/CA/AU/ZA/IN) + 10 statutes
-│   │   └── scenarios.json             ← 4 hand-crafted procedural fact patterns
+│   │   └── scenarios.json             ← 6 hand-crafted procedural fact patterns
 │   ├── manifest.webmanifest           ← PWA manifest (Legal Noir palette)
-│   └── sw.js                          ← cache-first service worker (hashed /assets/ + /data/)
+│   └── sw.js                          ← network-first service worker; cache name is stamped at build time from a hash of the emitted assets
 ├── src/
 │   ├── components/                    ← React UI
 │   │   ├── CaseSelect.tsx             ← scenario gallery grid (incl. Legal Desk entry)
+│   │   ├── Docketling.tsx              ← pixel-art reading companion (runs as a sprite grid, no image assets)
+│   │   ├── DocumentIngest.tsx          ← drag-and-drop + file picker + paste box, lazy parser
+│   │   ├── DocumentLibraryPanel.tsx    ← IndexedDB case files & saved documents
 │   │   ├── CourtroomChamber.tsx       ← main battle screen (hand on the table, live showdown, transcript, verdict flash)
 │   │   ├── LegalDesk.tsx              ← document-understanding workspace (simplify/risks/compare/ask/lawyer) + markdown export
 │   │   ├── DocketExportModal.tsx      ← docket modal: download/print/share
@@ -94,17 +97,21 @@ overrool/
 │   ├── core/                          ← shared logic (no UI)
 │   │   ├── dataLoader.ts              ← /data/ fetch + scenario hydration (dedup, cache)
 │   │   ├── docket.ts                  ← session summary builder + consultation questions + markdown/sharing
+│   │   ├── docketling.ts              ← companion sprite data + legal growth ladder (unfiled→petitioner→clerk→counsel→bench)
 │   │   ├── docEngine.ts               ← Legal Desk GenAI ops + JSON parser + keyless Local Rules Analyst
+│   │   ├── documentIngest.ts           ← PDF (pdfjs) / DOCX (mammoth) / text extraction, limits + honest errors
+│   │   ├── library.ts                 ← case files + saved docs over IndexedDB (device-local, no server)
 │   │   ├── deskSamples.ts             ← bundled sample documents for the Legal Desk
 │   │   ├── haptics.ts                 ← Capacitor Haptics thin wrapper (no-op on web)
 │   │   ├── llmOrchestrator.ts         ← resolveTurn: prompt build → JSON-resolution parse + verdict mapping
 │   │   ├── providerCall.ts            ← BYOK network layer: origin allowlist, timeout, per-provider shapes, Gemini key header
+│   │   ├── readership.ts               ← which distinct documents were actually read (drives the companion; local + capped)
 │   │   ├── searchIndex.ts             ← MiniSearch citation index + validateCitation (precedent/statute)
 │   │   ├── storage.ts                 ← KeyManager (BYOK): Capacitor SecureStorage (native) or localStorage/sessionStorage (web)
 │   │   └── useTrial.ts                ← reducer-based trial state machine (favor, phase, turn, log)
 │   │   ├── guardrails.ts             ← prompt-injection defence: SECURITY CONTRACT + <untrusted-data> sandbox
 │   │   ├── meter.ts                  ← identity-scoped daily credit meter (trial 10, desk op 2)
-│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (25 files, 235 tests)
+│   │   └── *.test.ts                  ← Vitest suites adjacent to their module (32 files, 304 tests)
 │   ├── game/                          ← playing-card machinery
 │   │   ├── cardMeta.ts                ← seeded hand deal, authority weight, suits, turn winner (+ cardMeta.test.ts)
 │   │   ├── GameCard.tsx               ← shared playing-card face (corner pips, backs, burnout)
@@ -112,7 +119,7 @@ overrool/
 │   │   └── CardTable.tsx              ← centre-table showdown (deal/flip/burn/glow driven by trial phase)
 │   ├── types/
 │   │   └── legal.ts                   ← all shared TS interfaces + constants (STATUTORY_NOTICE, VERDICT_TAGS, MODEL_DEFAULTS usage)
-│   ├── App.tsx                        ← screen shell (loading / home / trial) + key-vault modal + error fallbacks
+│   ├── App.tsx                        ← screen shell (loading / landing / home / desk / trial) + key-vault modal + error fallbacks
 │   ├── index.css                      ← Tailwind Legal Noir theme tokens
 │   └── main.tsx                       ← React root
 ├── src-tauri/                         ← Tauri v2 desktop shell (Rust) — identifier com.overrool.courts
@@ -122,7 +129,7 @@ overrool/
 │   └── src/                           ← main.rs, lib.rs, build.rs
 ├── capacitor.config.ts                ← Capacitor 8 mobile shell (com.overrool.courts, androidScheme https)
 ├── vitest.config.ts                   ← jsdom + v8 coverage thresholds
-├── vite.config.ts                     ← React + Tailwind plugins
+├── vite.config.ts                     ← React + Tailwind plugins + self-hosted pdfjs fonts/CMaps + sw cache stamping
 └── tsconfig.json                      ← strict, bundler, ES2022
 ```
 
@@ -270,7 +277,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 
 ## The Legal Desk (document understanding)
 
-The **Legal Desk** (`LegalDesk.tsx` + `docEngine.ts` + `documentIngest.ts` + `library.ts`) closes the brief's biggest gap — working with *your* document, not a pre-built case. Open it from the gallery header. **Upload a PDF, `.docx` or text file** (drag-and-drop or file picker), paste text directly, load a document from your library, or load a bundled sample. Then pick an operation and analyse:
+The **Legal Desk** (`LegalDesk.tsx` + `docEngine.ts` + `documentIngest.ts` + `library.ts`) closes the brief's biggest gap — working with *your* document, not a pre-built case. It is a **first-class screen**, not a dialog: "Read a document" is the primary action on the landing page and the header, and the courtroom is the practice layer you move to afterwards. **Upload a PDF, `.docx` or text file** (drag-and-drop or file picker), paste text directly, load a document from your library, or load a bundled sample. Then pick an operation and analyse:
 
 - **Simplify** — plain-English bottom line, what-it-means bullets, who it affects, glossary of legalese.
 - **Risks & obligations** — evidence-quoted audit with kind and severity per finding.
@@ -283,6 +290,8 @@ With a key armed, each op is one structured GenAI pass (`genDeskAnalysis`) throu
 **Document library.** Anything you analyse can be saved into a named **case file**, so a tenancy agreement and its amendments stay together and you can return to them later. The library lives in the browser's **IndexedDB** — never uploaded, never on our servers. Clearing site data erases it. Because a 40-page contract is well past the `localStorage` ceiling, document text is kept in IndexedDB rather than in web storage. See [PRIVACY.md](PRIVACY.md).
 
 **File handling.** PDF and `.docx` parsing runs **entirely in your browser** (`pdfjs-dist` and `mammoth`, both lazy-loaded on first use so they cost nothing if you never upload). pdfjs's standard-font metrics and CJK maps are **self-hosted** with the app, so no third-party CDN ever sees your document. A scanned, image-only PDF is detected and reported honestly rather than silently returning nothing.
+
+**Docketling, your reading companion.** A pixel-art companion sits at the top of the Desk and grows as you actually work through documents — `Unfiled → Petitioner → Clerk → Counsel → Bench`, the vocabulary of the thing itself. It advances only when an analysis *completes*, and only once per distinct document (a library id, or a content hash for pasted text), so re-reading the same contract never inflates it. Deliberately **not** a tamagotchi: it never decays, never punishes you for stopping, and never nags — the only thing it rewards is reading. The count is stored locally and capped, so it cannot grow without bound. The art is character-grid sprite data compiled into the bundle (`core/docketling.ts`), so there are no image files, no sprite sheet and no CDN request; `node scripts/render-docketling.mjs` rasterises it locally if you want to look at it.
 
 ---
 
@@ -407,13 +416,16 @@ What is automated today (`npm run test`, v8 coverage thresholds in `vitest.confi
 
 - **Core engine**: `dataLoader`, `searchIndex` (citation/statute verification incl. fabricated-authority rejection), `llmOrchestrator` (prompt, malformed-JSON handling, delta clamp), `providerCall` (origin allowlist / SSRF guard, HTTP-error handling, all four provider request shapes), `docEngine` (JSON parser, all five Local Rules Analyst operations, deterministic dispatch), `docket` (summary, exposure flags, consultation questions), `cardMeta` (seeded deal, suits, weights, turn winner), `storage` (persist/session split, contamination regression), `useTrial` (full reducer state machine), `haptics` (web + native).
 - **Pure UI helpers**: `escapeHtml`/`buildPrintHtml` (XSS neutralisation in exports), `favorColor`/`lerpColor`.
+- **Documents**: `documentIngest` (real PDF + real `.docx` fixtures, limits, scanned-PDF honesty), `library` (case files, and the **real IndexedDB path** via `fake-indexeddb` — write, read, restart, corrupt-payload revival, and no-IndexedDB fallback).
+- **Docketling**: stage ladder monotonicity and NaN safety, plus sprite invariants — square grids, known glyphs only, two symmetric 2x2 eyes, a centred beak, and a distinct sprite per stage (the collar/robe may not overwrite the beak).
 
 Known gaps — declared honestly:
 
 - **No UI component tests.** `App`, `CourtroomChamber`, `KeySettings`, `CaseSelect`, `PrecedentCard` are covered only indirectly; interactions are not automated.
 - **No live-provider E2E test.** The network layer is mock-tested; a real key is required to exercise a genuine Gemini/OpenAI/Anthropic/Groq round-trip, so that path is not in CI.
 - **Mobile/desktop shells are unbuilt scaffolds.** Capacitor `ios/`/`android/` and Tauri icons are not generated (icons: `npx tauri icon <png>`); Rust toolchain needed for Tauri.
-- The PWA service worker caches only `/assets/` and `/data/`; offline behaviour for first-time navigations is not verified automatically.
+- The PWA service worker caches only `/assets/` and `/data/`; offline behaviour for first-time navigations is not verified automatically. Its cache name is stamped at build time from a hash of the emitted assets (`swBuildId` in `vite.config.ts`), so it can no longer go stale across a deploy.
+- **The build itself is asserted in CI, not assumed.** `npm run build` followed by `node scripts/verify-build.mjs` fails the job if the entry chunk, the self-hosted pdfjs `standard_fonts/`/`cmaps/`, or any crawler surface (`llms.txt`, `robots.txt`, `sitemap.xml`, corpus JSON, `sw.js`) is missing — and if the parsers are no longer lazily split out of the entry chunk. A silent regression in a build plugin no longer ships green.
 
 ## Deployment
 

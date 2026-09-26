@@ -32,7 +32,7 @@ const STATIC_IDS = [
   'australia-lands-that-never-emptied',
 ] as const;
 
-type Screen = 'loading' | 'landing' | 'home' | 'trial';
+type Screen = 'loading' | 'landing' | 'home' | 'desk' | 'trial';
 
 export function App() {
   const { user } = useAuth();
@@ -49,7 +49,11 @@ export function App() {
   const [run, setRun] = useState<RunState>(() => loadRun());
   const [shopOpen, setShopOpen] = useState(false);
   const [duelOpen, setDuelOpen] = useState(false);
-  const [deskOpen, setDeskOpen] = useState(false);
+  const [deskReturn, setDeskReturn] = useState<Screen>('landing');
+  const openDesk = () => {
+    setDeskReturn(screen);
+    setScreen('desk');
+  };
   const libraryRef = useRef<{ payload: LibraryPayload; index: CitationIndex } | null>(null);
   const runRef = useRef(run);
   const pulledAccount = useRef<string | null>(null);
@@ -220,7 +224,7 @@ export function App() {
         <Landing
           cases={libraryRef.current?.payload.corpus.cases ?? []}
           onPlay={() => setScreen('home')}
-          onOpenDesk={() => setDeskOpen(true)}
+          onOpenDesk={openDesk}
           accountEmail={user?.email ?? null}
           onOpenAccount={() => openAccount('signup')}
         />
@@ -234,7 +238,7 @@ export function App() {
           onRunChange={updateRun}
           onOpenShop={() => setShopOpen(true)}
           onOpenDuel={() => setDuelOpen(true)}
-          onOpenDesk={() => setDeskOpen(true)}
+          onOpenDesk={openDesk}
           onSelect={(id) => void openTrial(id)}
           onOpenKeys={() => setKeysOpen(true)}
           onOpenAccount={() => openAccount(user ? 'login' : 'signup')}
@@ -288,9 +292,10 @@ export function App() {
           onClose={() => setDuelOpen(false)}
         />
       )}
-      {deskOpen && (
+      {screen === 'desk' && (
         <LegalDesk
-          onClose={() => setDeskOpen(false)}
+          page
+          onClose={() => setScreen(deskReturn)}
           onOpenKeys={() => setKeysOpen(true)}
         />
       )}

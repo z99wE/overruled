@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Check, Copy, Download, KeyRound, Landmark, Loader2, Save, Share2, X } from 'lucide-react';
+import { Check, ChevronLeft, Copy, Download, KeyRound, Landmark, Loader2, Save, Share2, X } from 'lucide-react';
 import type { LLMConfig, LLMProvider } from '../types/legal';
 import { PROVIDERS, HOSTED_ENTRY, createKeyManager } from '../core/storage';
 import type { AskResult, CompareResult, DeskAnalysis, DeskOp, LawyerResult, RisksResult, SimplifyResult } from '../core/docEngine';
@@ -10,10 +10,17 @@ import type { Library, LibraryDoc } from '../core/library';
 import { addDoc, createIdbStore, emptyLibrary, findDoc, libraryStats } from '../core/library';
 import { DocumentIngest, DocChip } from './DocumentIngest';
 import { DocumentLibraryPanel } from './DocumentLibraryPanel';
+import { Docketling } from './Docketling';
+import { docKey, loadReadingLog, recordUnderstood, saveReadingLog } from '../core/readership';
 
 interface LegalDeskProps {
   onClose: () => void;
   onOpenKeys: () => void;
+  /**
+   * `page` makes the Desk a first-class destination rather than a dialog over
+   * the game. The courtroom is the practice layer; this is the product.
+   */
+  page?: boolean;
 }
 
 type SourceTab = 'paste' | 'upload' | 'library' | 'sample';
@@ -69,7 +76,7 @@ function deskToMarkdown(a: DeskAnalysis): string {
   }
 }
 
-export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
+export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps) {
   const km = createKeyManager();
   const [cfg, setCfg] = useState<LLMConfig | null>(null);
   const [op, setOp] = useState<DeskOp>('simplify');
@@ -88,6 +95,8 @@ export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
   const [docBId, setDocBId] = useState<string | null>(null);
   const [saveTo, setSaveTo] = useState<string>('');
   const [saved, setSaved] = useState(false);
+  const [reading, setReading] = useState<string[]>(() => loadReadingLog());
+  const readCount = reading.length;
 
   useEffect(() => {
     let active = true;
@@ -181,6 +190,13 @@ export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
       } else {
         setAnalysis({ op, origin: 'local', result: localDeskAnalysis(op, doc.trim(), op === 'compare' ? { docB: docB.trim() } : op === 'ask' ? { question: question.trim() } : undefined) });
       }
+      // Count the document only once an analysis actually completed, and only
+      // once per distinct document.
+      const next = recordUnderstood(reading, docKey(doc, docAId));
+      if (next !== reading) {
+        setReading(next);
+        saveReadingLog(next);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -218,8 +234,8 @@ export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
   const met = creditsToday();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm">
-      <div className="flex h-[min(88vh,860px)] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-ink bg-felt-900 shadow-2xl">
+    <div className={page ? 'min-h-full w-full overflow-y-auto bg-ink/95 p-4 sm:p-6' : 'fixed inset-0 z-50 flex items-center justify-center bg-ink/80 p-4 backdrop-blur-sm'}>
+      <div className={page ? 'mx-auto flex min-h-full w-full max-w-6xl flex-col overflow-hidden bg-felt-900' : 'flex h-[min(88vh,860px)] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-ink bg-felt-900 shadow-2xl'}>
         <header className="flex items-center justify-between border-b border-ink bg-felt-800 px-5 py-3">
           <div className="flex items-center gap-2">
             <Landmark className="h-5 w-5 text-dgold" />
@@ -236,14 +252,15 @@ export function LegalDesk({ onClose, onOpenKeys }: LegalDeskProps) {
               <KeyRound className="h-3.5 w-3.5 text-dgold" />
               {cfg ? providerLabel(cfg.provider) : 'No key'}
             </button>
-            <button onClick={onClose} className="rounded-lg p-1.5 text-cream/60 transition hover:bg-felt-700 hover:text-cream" aria-label="Close legal desk">
-              <X className="h-5 w-5" />
+            <button onClick={onClose} className="rounded-lg p-1.5 text-cream/60 transition hover:bg-felt-700 hover:text-cream" aria-label={page ? 'Back' : 'Close legal desk'}>
+              {page ? <ChevronLeft className="h-5 w-5" /> : <X className="h-5 w-5" />}
             </button>
           </div>
         </header>
 
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto p-5 lg:grid-cols-[minmax(0,42fr)_minmax(0,58fr)]">
           <div className="flex min-h-0 flex-col gap-3">
+            <Docketling documentsUnderstood={readCount} />
             <div className="flex flex-wrap gap-1.5">
               {OPS.map((o) => (
                 <button

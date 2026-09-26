@@ -1,5 +1,7 @@
 /* Overrool — service worker: app shell + corpus precaching, network-first with cache fallback. */
-const CACHE = 'overrool-v10';
+// Rewritten at build time by the build-id Vite plugin to a content hash of the
+// emitted assets, so the cache can never go stale across a deploy.
+const CACHE = 'overrool-__BUILD_ID__';
 const PRECACHE = ['/', '/index.html', '/manifest.webmanifest', '/data/global_cases.json', '/data/scenarios.json'];
 
 self.addEventListener('install', (event) => {
