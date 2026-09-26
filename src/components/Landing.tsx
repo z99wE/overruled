@@ -188,13 +188,12 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
           {accountEmail ? accountEmail : 'Sign up · free'}
         </button>
         <button
-          aria-label="Deal me in and start playing"
+          aria-label="Open the Legal Desk and read a document"
           type="button"
-          onClick={onPlay}
-
-          className="rounded-lg border-2 border-ink bg-poker-red px-4 py-2 font-display text-xs uppercase tracking-wide text-cream shadow-[0_3px_0_var(--color-ink)] transition active:translate-y-[2px] active:shadow-none"
+          onClick={onOpenDesk}
+          className="rounded-lg border-2 border-ink bg-chip-gold px-4 py-2 font-display text-xs uppercase tracking-wide text-ink shadow-[0_3px_0_var(--color-ink)] transition active:translate-y-[2px] active:shadow-none"
         >
-          Deal me in
+          Read a document
         </button>
       </nav>
 
