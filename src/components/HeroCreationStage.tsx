@@ -58,36 +58,74 @@ export function HeroCreationStage({
         </button>
       </div>
 
-      {/* ── 3D Isometric Hero Asset Showcase ── */}
+      {/* ── 3D Isometric Legal Jurisprudence Showcase Stage ── */}
       <div className="relative z-10 mx-auto max-w-4xl px-4">
         <div
           onClick={handleChestClick}
-          className={`relative rounded-3xl overflow-hidden border border-slate-200 shadow-xl cursor-pointer transition-all duration-300 ${
-            chestOpened ? 'scale-102 ring-4 ring-amber-400' : 'hover:scale-101'
+          className={`group relative rounded-3xl overflow-hidden border border-slate-200 bg-white/80 shadow-2xl backdrop-blur-xl cursor-pointer transition-all duration-300 ${
+            chestOpened ? 'scale-102 ring-4 ring-blue-500' : 'hover:scale-101 hover:shadow-3xl'
           }`}
         >
-          <img
-            src="/assets/hero_chest_stage.jpg"
-            alt="3D Legal Intelligence Tabletop Showcase"
-            className="w-full h-auto object-cover"
-          />
+          {/* Tabletop Room Canvas with Courtroom Ambient Imagery */}
+          <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100">
+            <img
+              src="/assets/courtroom-chamber.jpg"
+              alt="3D Legal Jurisprudence Courtroom Showcase"
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-900/20 to-transparent" />
 
-          {/* Interactive Precedent Vault Pill Overlay */}
-          <div className="absolute top-4 right-4 rounded-full bg-slate-950/85 backdrop-blur-md border border-amber-400/40 px-4 py-1.5 font-mono text-xs sm:text-sm font-bold text-amber-300 shadow-lg">
-            Active Precedent Vault: {activePrecedents} Certified Rulings
-          </div>
+            {/* Floating 3D Jurisprudence Modules */}
+            <div className="absolute inset-0 p-6 flex flex-col justify-between">
+              {/* Top Badge Rail */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="rounded-full bg-white/90 backdrop-blur-md border border-slate-200 px-4 py-1.5 font-mono text-xs font-bold text-slate-800 shadow-sm">
+                  Active Precedent Vault: {activePrecedents} Certified Rulings
+                </div>
+                <div className="hidden sm:inline-flex rounded-full bg-blue-600/90 backdrop-blur-md px-4 py-1.5 font-sans text-xs font-bold text-white shadow-sm">
+                  7 Global Jurisdictions
+                </div>
+              </div>
 
-          {/* Privacy Badge Overlay */}
-          <div className="absolute bottom-4 left-4 rounded-full bg-blue-950/85 backdrop-blur-md border border-sky-400/30 px-4 py-1.5 font-sans text-xs font-bold text-sky-200 shadow-md">
-            100% In-Browser Privacy · Zero Third-Party Model Training
-          </div>
+              {/* Center Jurisprudence Podium Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-auto">
+                <div className="rounded-2xl bg-white/90 backdrop-blur-md p-3.5 border border-slate-200/80 shadow-lg text-left transform -translate-y-1">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-blue-700">Forensic Audit</span>
+                  <p className="font-display text-xs font-extrabold text-slate-900 mt-0.5">Contract Risk Engine</p>
+                  <p className="text-[11px] text-slate-600 mt-1">Indemnity &amp; liability clause scans</p>
+                </div>
 
-          {/* Notification Banner */}
-          {chestMessage && (
-            <div className="absolute inset-x-0 bottom-6 mx-auto max-w-md rounded-full bg-emerald-500 px-6 py-2.5 font-sans text-sm font-black text-white shadow-2xl anim-pop">
-              {chestMessage}
+                <div className="rounded-2xl bg-white/95 backdrop-blur-md p-3.5 border border-amber-300 shadow-xl text-left transform -translate-y-3 ring-2 ring-amber-400/50">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-amber-700">Common Law</span>
+                  <p className="font-display text-xs font-extrabold text-slate-900 mt-0.5">59 Precedent Deck</p>
+                  <p className="text-[11px] text-slate-600 mt-1">Certified ratios &amp; citations</p>
+                </div>
+
+                <div className="rounded-2xl bg-white/90 backdrop-blur-md p-3.5 border border-slate-200/80 shadow-lg text-left transform -translate-y-1">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-700">Adversarial Bench</span>
+                  <p className="font-display text-xs font-extrabold text-slate-900 mt-0.5">Simulated Trial Sparring</p>
+                  <p className="text-[11px] text-slate-600 mt-1">Interlocutory motion defense</p>
+                </div>
+              </div>
+
+              {/* Bottom Privacy & Ingest Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="rounded-full bg-white/90 backdrop-blur-md border border-slate-200 px-4 py-1.5 font-sans text-xs font-bold text-slate-800 shadow-sm">
+                  100% In-Browser Privacy · Zero Third-Party Model Training
+                </div>
+                <span className="rounded-full bg-emerald-500 px-4 py-1.5 font-sans text-xs font-bold text-white shadow-sm">
+                  Click to Launch Forensic Desk
+                </span>
+              </div>
             </div>
-          )}
+
+            {/* Notification Banner */}
+            {chestMessage && (
+              <div className="absolute inset-x-0 bottom-8 mx-auto max-w-md rounded-full bg-emerald-600 px-6 py-2.5 font-sans text-sm font-bold text-white shadow-2xl anim-pop text-center">
+                {chestMessage}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
