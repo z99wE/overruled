@@ -16,7 +16,7 @@ Overrool addresses four concrete gaps:
 
 1. **Open by default — unlimited accounts.** No per-seat cost. The platform runs on Cloudflare's free tiers (Pages, D1, Workers AI); signups are unlimited and the only server-side AI path (Workers AI) is reserved for the single administrator's own trials. Everyone else plays on BYOK, which for most players means Google's free Gemini tier at zero cost forever.
 2. **Zero-cost practice.** No ecosystem token budget, no server-side API keys, no third-party proxy (Google Fonts are likewise self-hosted). Every LLM call runs directly from the player's browser to the player's own provider account using the key they supply under their own quota (Gemini, OpenAI, Anthropic, or Groq). Google's **Gemini API free tier** (key from Google AI Studio) is a natural no-card starting point, and the account administrator can host serverside inference on Cloudflare's free Workers AI tier for their own trials.
-3. **Factual grounding.** The engine refuses to reward fabricated law. Writer-side citations are checked against an embedded 43-case / 10-statute global corpus; unverifiable authority is flagged as exposure in the docket and the bench responds accordingly.
+3. **Factual grounding.** The engine refuses to reward fabricated law. Writer-side citations are checked against an embedded 59-case / 10-statute global corpus; unverifiable authority is flagged as exposure in the docket and the bench responds accordingly.
 4. **Accountable, exportable outcomes.** Each turn is resolved in a single structured LLM pass and captured as a typed `TurnRecord`, and the session is rendered into an Advocate Consultation Docket — admitted precedents, identified exposure points, and actionable consultation questions — that is downloadable, printable, and shareable.
 
 **Constraint.** Overrool is an educational legal-literacy and strategic-simulation tool under the Information Technology Act, 2000. It does not provide legal advice and cannot replace a certified advocate registered under the Advocates Act, 1961. Users must verify all citations against certified law reports.
@@ -47,7 +47,20 @@ This project is built against the **"AI for Legal Assistance & Access"** problem
 | **Cloudflare Workers AI** (hosted; `functions/api/llm` + `AI` binding) | Admin-only hosted inference path proxying the same turn-resolution request server-side (free tier, quota guarded). |
 | **Local Rules Analyst / Local Judge** (keyless, deterministic) | No model. Clearly-labeled rule-based fallbacks (`docEngine.localDeskAnalysis`, `useTrial` keyless verdicts) so the product is demonstrable with zero credentials — never represented as a model. |
 
-All calls share one disciplined path: `requestChat(providerCall.ts)` → origin allowlist → structured-JSON contract (`response_format: json_object` / schema directive) → typed parse → application state. The engine's **anti-hallucination layer** (`searchIndex.validateCitation` + embedded 43-case corpus) is what lets regulation loading and cite-and-reply work *correctly*, and what makes the bench refuse fabricated authority outright.
+All calls share one disciplined path: `requestChat(providerCall.ts)` → origin allowlist → structured-JSON contract (`response_format: json_object` / schema directive) → typed parse → application state. The engine's **anti-hallucination layer** (`searchIndex.validateCitation` + embedded 59-case corpus) is what lets regulation loading and cite-and-reply work *correctly*, and what makes the bench refuse fabricated authority outright.
+
+### The agentic layer — and the leash on it
+
+The model is never the final authority on a legal claim. Two agentic subsystems run, both **multi-role and single-pass**, both overridden by local verification:
+
+- **Trial resolution (`llmOrchestrator.ts`).** One structured request resolves an entire turn with three distinct voices — a **Presiding Judge** (ruling + legal basis + favor delta), an **Opposing Senior Advocate** (live counter-brief), and **Co-Counsel** (adversarial pressure-test) — emitted as a single validated JSON object. The opponent runs as a genuine **counter-agent**: its reply is fence-parsed, and any card it plays is re-verified against the corpus before it is admitted to the table.
+- **Legal Desk (`docEngine.ts`).** Five operations (`simplify` · `risks` · `compare` · `ask` · `lawyer`), each constrained to the user's own text. The desk is told it may not answer "from a vague memory of the law at large," and when the document genuinely does not answer the question, it says so and tells the user what to raise with a lawyer.
+
+**The leash is the important part.** `citation_valid` is not taken on the model's word — the prompt asks it to reflect local verification, and then `searchIndex.validateCitation` re-derives the answer from the 59-case corpus. When they disagree, the corpus wins. A fabricated citation is not a cosmetic error: it is scored as **exposure**, logged into the docket, and used by the opposing agent against the player. Untrusted user text is fenced in `<untrusted-data>` markers behind an injection defence, and any outbound call to a non-provider origin is refused with a `security` error before a byte leaves the browser.
+
+**Keyless is a real product, not a stub.** With no API key at all, a deterministic **Local Rules Analyst** and **Local Judge** run clause extraction, severity scoring, and citation matching with no model in the loop — labelled as local everywhere they appear, never dressed up as a model. A user with no key and no payment card can still complete every interaction end to end.
+
+Full system, trust-boundary and data diagrams: **[ARCHITECTURE.md](ARCHITECTURE.md)**.
 
 ---
 
@@ -57,7 +70,7 @@ All calls share one disciplined path: `requestChat(providerCall.ts)` → origin 
 overrool/
 ├── public/
 │   ├── data/
-│   │   ├── global_cases.json             ← embedded corpus: 43 landmark cases (US/UK/EU/CA/AU/ZA/IN) + 10 statutes
+│   │   ├── global_cases.json             ← embedded corpus: 59 landmark cases (US/UK/EU/CA/AU/ZA/IN) + 10 statutes
 │   │   └── scenarios.json             ← 4 hand-crafted procedural fact patterns
 │   ├── manifest.webmanifest           ← PWA manifest (Legal Noir palette)
 │   └── sw.js                          ← cache-first service worker (hashed /assets/ + /data/)
@@ -121,7 +134,7 @@ flowchart TD
     end
 
     subgraph data["Static data (served from /data/, cache-first via sw.js)"]
-        Corpus[("global_cases.json<br/>43 cases across 7 jurisdictions + 10 statutes")]
+        Corpus[("global_cases.json<br/>59 cases across 7 jurisdictions + 10 statutes")]
         Scenarios[("scenarios.json<br/>4 procedural fact patterns")]
     end
 
@@ -293,7 +306,7 @@ Every model-facing prompt is hardened against prompt hijacking, LLM-jacking, and
 
 ## Embedded corpus
 
-`public/data/global_cases.json` ships **43 case entries** spanning the Supreme Court of the United States, the UK House of Lords and Court of Appeal, the Court of Justice of the European Union, the Supreme Court of Canada, the High Court of Australia, the Constitutional Court of South Africa, and the Supreme Court of India — plus **10 statutory references** (GDPR, the U.S. First and Fourth Amendments, the Canadian Charter, the Human Rights Act 1998, the Native Title Act 1993, the South African Constitution, the Constitution of India, FRA 2006, UCC Article 2). Every entry uses its real case name, citation, court, and ratio decidendi, with aliases, key tags, and jurisdiction tags. This is a fixed snapshot; modify the JSON to update the corpus. The corpus is served as a static asset, so subsequent loads are cache-first via `sw.js`.
+`public/data/global_cases.json` ships **59 case entries** spanning the Supreme Court of the United States, the UK House of Lords and Court of Appeal, the Court of Justice of the European Union, the Supreme Court of Canada, the High Court of Australia, the Constitutional Court of South Africa, and the Supreme Court of India — plus **10 statutory references** (GDPR, the U.S. First and Fourth Amendments, the Canadian Charter, the Human Rights Act 1998, the Native Title Act 1993, the South African Constitution, the Constitution of India, FRA 2006, UCC Article 2). Every entry uses its real case name, citation, court, and ratio decidendi, with aliases, key tags, and jurisdiction tags. This is a fixed snapshot; modify the JSON to update the corpus. The corpus is served as a static asset, so subsequent loads are cache-first via `sw.js`.
 
 ### Adding a new case
 
@@ -475,6 +488,7 @@ The Tauri window CSP is locked to the four BYOK provider origins (`generativelan
 ## See also
 
 - [**PRIVACY.md**](PRIVACY.md) — what the app stores and never stores (keys, cookies, hosted-inference path).
+- [**ARCHITECTURE.md**](ARCHITECTURE.md) — system layers, the agentic loop and its verification leash, trust boundaries, data model, deployment shape.
 - [**DISCLAIMER.md**](DISCLAIMER.md) — educational simulation; not legal advice.
 - [**SECURITY.md**](SECURITY.md) — security model and vulnerability reporting.
 - [**AUTH.md**](AUTH.md) — Cloudflare deployment runbook incl. the hosted-inference role grant.

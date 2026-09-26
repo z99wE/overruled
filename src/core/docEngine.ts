@@ -9,7 +9,7 @@ import { INJECTION_DEFENCE, sandboxUntrusted } from './guardrails';
  * enforced). A deterministic Local Rules Analyst stands in for keyless play and
  * is never dressed up as a model.
  *
- * Ops: simplify · risks · compare · ask · lawyer — mapped 1:1 to the hackathon
+ * Ops: simplify · risks · compare · ask · lawyer — mapped 1:1 to the brief: simplify · compare · risks · ask · prepare-for-professional
  * brief's "GenAI-powered legal assistance" use cases.
  */
 
