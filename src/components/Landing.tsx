@@ -1,8 +1,11 @@
-import { useMemo } from 'react';
-import type { ReactNode } from 'react';
-import type { Jurisdiction, PrecedentCard } from '../types/legal';
-import { MoltenMetal } from './MoltenMetal';
-import { Lightfall } from './Lightfall';
+import { useState } from 'react';
+import type { PrecedentCard } from '../types/legal';
+import { FloatingNavRail } from './FloatingNavRail';
+import { HeroCreationStage } from './HeroCreationStage';
+import { MilestoneTrack } from './MilestoneTrack';
+import { LeaderboardPodium } from './LeaderboardPodium';
+import { ReferralRewardsHub } from './ReferralRewardsHub';
+import { RulesModal, RaffleModal, EarningsModal } from './ArcadeModals';
 
 interface LandingProps {
   cases: PrecedentCard[];
@@ -21,13 +24,13 @@ const TICKER_CASES = [
 
 function Ticker() {
   return (
-    <div className="overflow-hidden border-y border-white/10 bg-slate-950/80 py-3 backdrop-blur-md" aria-label="Selected Legal Precedents">
-      <div className="flex whitespace-nowrap font-mono text-[11px] text-slate-300 animate-[ticker_35s_linear_infinite]">
+    <div className="overflow-hidden border-y border-slate-200 bg-white py-2.5 shadow-xs" aria-label="Selected Legal Precedents">
+      <div className="flex whitespace-nowrap font-mono text-[11px] text-slate-600 animate-[ticker_35s_linear_infinite]">
         {TICKER_CASES.concat(TICKER_CASES).map((c, i) => (
           <div key={i} className="mx-6 inline-flex items-center gap-3">
-            <span className="m3-chip m3-chip-primary text-[9px]">{c.tag}</span>
-            <span className="text-white">{c.hold}</span>
-            <span className="text-amber-300 font-medium">— {c.cite}</span>
+            <span className="rounded-full bg-blue-100 text-blue-700 px-2 py-0.5 font-bold text-[9px]">{c.tag}</span>
+            <span className="text-slate-900 font-medium">{c.hold}</span>
+            <span className="text-amber-600 font-bold">— {c.cite}</span>
           </div>
         ))}
       </div>
@@ -39,171 +42,57 @@ function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function NavLink({ label, target }: { label: string; target: string }) {
-  return (
-    <button
-      aria-label={`Scroll to ${label}`}
-      type="button"
-      onClick={() => scrollTo(target)}
-      className="font-sans text-xs font-medium text-slate-300 transition-colors hover:text-amber-300"
-    >
-      {label}
-    </button>
-  );
-}
+export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpenAccount }: LandingProps) {
+  const [rulesOpen, setRulesOpen] = useState(false);
+  const [raffleOpen, setRaffleOpen] = useState(false);
+  const [earningsOpen, setEarningsOpen] = useState(false);
+  const [submissionsCount, setSubmissionsCount] = useState(3);
 
-function Section({
-  id,
-  title,
-  subtitle,
-  children,
-}: {
-  id: string;
-  title: string;
-  subtitle?: string;
-  children: ReactNode;
-}) {
-  return (
-    <section id={id} className="mx-auto w-full max-w-6xl scroll-mt-20 px-5 py-20 lg:px-8 border-t border-white/10">
-      <div className="mb-10 max-w-3xl">
-        <h2 className="font-display text-3xl sm:text-4xl text-white tracking-tight font-bold">
-          {title}
-        </h2>
-        {subtitle && (
-          <p className="mt-3 text-base text-slate-300 leading-relaxed font-sans">
-            {subtitle}
-          </p>
-        )}
-      </div>
-      <div>{children}</div>
-    </section>
-  );
-}
-
-const PAINS = [
-  {
-    head: 'Fine print wins by default',
-    body: 'A lease, an NDA, a policy — drafted to protect the other party in dense terminology. When you cannot decipher every clause, you sign away your leverage.',
-  },
-  {
-    head: 'Paywalled consultations',
-    body: 'Legal consultations bill by the hour, while database subscriptions cost thousands. Fundamental legal understanding should be accessible instantly.',
-  },
-  {
-    head: 'Inaccessible judgments',
-    body: 'Decades of supreme rulings sit in dense archives. We surface real binding precedents so you can test any legal position on firm ground.',
-  },
-];
-
-const DESK_PILLARS = [
-  {
-    head: 'Translate Any Agreement',
-    body: 'Upload any contract, NDA, lease, or terms. Receive a clear, structured translation in plain language, section by section.',
-  },
-  {
-    head: 'Audit Hidden Liabilities',
-    body: 'Unilateral amendments, indemnities, penalties, and termination traps flagged with precise severity ratings.',
-  },
-  {
-    head: 'Redline Version Comparison',
-    body: 'Compare two versions of an agreement side by side with clear explanations of who benefits from each modification.',
-  },
-  {
-    head: 'Document-Grounded Q&A',
-    body: 'Ask complex legal questions answered strictly from your uploaded document — never from hallucinated or assumed text.',
-  },
-  {
-    head: 'Pre-Counsel Brief Pack',
-    body: 'Generate a structured preparation dossier for your attorney: tactical questions, key vulnerabilities, and critical evidence checklist.',
-  },
-];
-
-const STEPS = [
-  {
-    n: '01',
-    head: 'Select or Generate a Matter',
-    body: 'Explore high-stakes disputes across constitutional, commercial, privacy, and labor law, or input a custom dispute.',
-  },
-  {
-    n: '02',
-    head: 'Submit Grounded Precedents',
-    body: 'Deploy real landmark cards from your hand. Every citation is verified against real law reports — fabricated citations are rejected.',
-  },
-  {
-    n: '03',
-    head: 'Bench Resolution & Scoring',
-    body: 'Face adversarial opposition and bench rulings. Build streaks, earn judicial favor, and challenge specialized bench rules.',
-  },
-];
-
-const AI_ROWS = [
-  {
-    where: 'Direct Bring Your Own Key (Gemini, OpenAI, Claude, Groq)',
-    what: 'Legal Desk and multi-turn adversarial courtroom queries make direct HTTPS calls to your chosen provider with zero intermediary proxy.',
-  },
-  {
-    where: 'Private Native Neural Engine',
-    what: 'Instant document analysis without requiring any API key — client-side clause parsing and deep risk pattern extraction with zero cloud footprint.',
-  },
-  {
-    where: 'Private Sparring Bench Intelligence',
-    what: 'Instant bench rulings and scoring without an API key — on-device evaluation designed for rapid legal sparring.',
-  },
-  {
-    where: 'Cloudflare Edge Worker Fallback',
-    what: 'Optional hosted inference for rapid testing when configured on public instances.',
-  },
-];
-
-const JURISDICTION_LABEL: Record<Jurisdiction, string> = {
-  US: 'United States',
-  UK: 'United Kingdom',
-  EU: 'European Union',
-  CA: 'Canada',
-  AU: 'Australia',
-  ZA: 'South Africa',
-  IN: 'India',
-};
-
-export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount }: LandingProps) {
-  const caseCount = cases.length;
-  const { jurisdictionCounts, domainCounts } = useMemo(() => {
-    const j = new Map<string, number>();
-    const d = new Map<string, number>();
-    for (const c of cases) {
-      if (c.jurisdiction) j.set(c.jurisdiction, (j.get(c.jurisdiction) ?? 0) + 1);
-      d.set(c.domain, (d.get(c.domain) ?? 0) + 1);
-    }
-    return {
-      jurisdictionCounts: [...j.entries()].sort((a, b) => b[1] - a[1]),
-      domainCounts: [...d.entries()].sort((a, b) => b[1] - a[1]),
-    };
-  }, [cases]);
+  const handleClaimCreationChest = () => {
+    setSubmissionsCount((prev) => prev + 1);
+  };
 
   return (
-    <div className="felt-bg ambient-mesh-glow min-h-full selection:bg-amber-400 selection:text-slate-950">
-      {/* ── Top Navigation Bar ────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-white/10 bg-slate-950/80 px-6 py-3.5 shadow-lg backdrop-blur-xl lg:px-12">
+    <div className="min-h-full grid-graph-light text-slate-900 selection:bg-amber-300 selection:text-slate-950 font-sans">
+      
+      {/* ── Fixed Floating Right-Rail Navigation ── */}
+      <FloatingNavRail
+        onOpenInvite={() => scrollTo('referrals')}
+        onOpenLeaderboard={() => scrollTo('leaderboard')}
+        onOpenRaffle={() => setRaffleOpen(true)}
+        onOpenEarnings={() => setEarningsOpen(true)}
+        onOpenRules={() => setRulesOpen(true)}
+      />
+
+      {/* ── Top Navigation Bar ── */}
+      <nav className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-slate-200/90 bg-white/90 px-6 py-3.5 shadow-xs backdrop-blur-md lg:px-12">
         <button
           aria-label="Back to top"
           type="button"
-          onClick={() => scrollTo('top')}
-          className="group flex items-center gap-2.5 text-left"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="group flex items-center gap-2.5 text-left cursor-pointer"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 shadow-md font-serif text-lg font-bold transition-transform group-hover:scale-105">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 shadow-sm font-sans text-lg font-black transition-transform group-hover:scale-105">
             O
           </div>
-          <span className="font-display text-xl font-bold tracking-tight text-white">
-            Over<span className="text-amber-300">rool</span>
+          <span className="font-display text-xl font-extrabold tracking-tight text-slate-900">
+            Over<span className="text-blue-600">rool</span>
           </span>
         </button>
 
-        <div className="hidden items-center gap-8 md:flex">
-          <NavLink label="Legal Desk" target="desk" />
-          <NavLink label="Courtroom Chamber" target="how" />
-          <NavLink label="AI Architecture" target="ai" />
-          <NavLink label="Core Principles" target="why" />
-          <NavLink label="FAQ" target="faq" />
+        <div className="hidden items-center gap-7 md:flex text-xs font-bold text-slate-600">
+          <button type="button" onClick={() => scrollTo('milestones')} className="hover:text-blue-600 transition-colors cursor-pointer">
+            Milestones & Chests
+          </button>
+          <button type="button" onClick={() => scrollTo('leaderboard')} className="hover:text-blue-600 transition-colors cursor-pointer">
+            Leaderboard
+          </button>
+          <button type="button" onClick={() => scrollTo('referrals')} className="hover:text-blue-600 transition-colors cursor-pointer">
+            Referral Rewards
+          </button>
+          <button type="button" onClick={onOpenDesk} className="hover:text-blue-600 transition-colors cursor-pointer">
+            Legal Desk
+          </button>
         </div>
 
         <div className="flex items-center gap-3">
@@ -211,382 +100,151 @@ export function Landing({ cases, onPlay, onOpenDesk, accountEmail, onOpenAccount
             aria-label={accountEmail ? `Signed in as ${accountEmail}` : 'Sign in or sync account'}
             type="button"
             onClick={onOpenAccount}
-            className="hidden sm:inline-flex items-center rounded-full border border-white/10 bg-slate-900/60 px-4 py-2 font-mono text-xs text-slate-300 hover:border-amber-400/40 hover:text-white transition-colors"
+            className="hidden sm:inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 font-mono text-xs text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-colors shadow-2xs cursor-pointer"
           >
             {accountEmail ? accountEmail : 'Account Sync'}
           </button>
+          
+          <button
+            aria-label="Enter the Courtroom Chamber"
+            type="button"
+            onClick={onPlay}
+            className="rounded-full bg-emerald-500 hover:bg-emerald-600 px-5 py-2 font-sans text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
+          >
+            Enter Courtroom
+          </button>
+
           <button
             aria-label="Open the Legal Desk and review a document"
             type="button"
             onClick={onOpenDesk}
-            className="m3-btn m3-btn-primary px-5 py-2 text-xs"
+            className="rounded-full bg-blue-600 hover:bg-blue-700 px-5 py-2 font-sans text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
           >
             Review Document
           </button>
         </div>
       </nav>
 
-      {/* ── Hero Section with Molten Metal Shader & Impressionist Museum Framing ──── */}
-      <header id="top" className="relative mx-auto w-full max-w-6xl px-6 pb-16 pt-12 lg:pt-16 overflow-hidden">
-        {/* Molten Metal Shader Background */}
-        <div className="absolute inset-0 pointer-events-none opacity-30 z-0">
-          <MoltenMetal
-            color1="#fbbf24"
-            color2="#635bff"
-            color3="#f8fafc"
-            speed={0.25}
-            scale={3.5}
-            detail={3}
-            glow={1.4}
-            coreSize={0.08}
-            swirl={0.8}
-            fold={-0.18}
-            blackPoint={0.05}
-            brightness={1.2}
-            colorMode="molten"
-            grain={true}
-            grainIntensity={0.04}
-            mouseInteraction={true}
-            mouseStrength={0.25}
-            opacity={0.35}
-          />
-        </div>
-
-        <div className="relative z-10 grid gap-12 lg:grid-cols-12 lg:items-center">
-          {/* Left Column: Headlines & Actions */}
-          <div className="lg:col-span-7 text-left space-y-6">
-            <h1 className="font-display text-4xl sm:text-6xl font-bold tracking-tight text-white leading-[1.08]">
-              Read the contract.
-              <br />
-              <span className="pastel-gradient-text">Master the risk.</span>
-            </h1>
-
-            <p className="max-w-2xl text-[16px] leading-relaxed text-slate-300 font-sans">
-              Legal certainty shouldn't require a billable hour. Upload contracts, leases, or judgments to read them in plain language — uncover hidden liabilities, compare drafts, and get answers grounded strictly in your text. Test your position against <strong className="text-amber-200 font-semibold">59 verified landmark judgments</strong> with zero invented law.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <button
-                aria-label="Open the Legal Desk and analyze a document"
-                type="button"
-                onClick={onOpenDesk}
-                className="m3-btn m3-btn-primary px-7 py-3.5 text-sm"
-              >
-                Launch Legal Desk — Free
-              </button>
-              <button
-                aria-label="Enter the Courtroom Chamber"
-                type="button"
-                onClick={onPlay}
-                className="m3-btn m3-btn-emerald px-7 py-3.5 text-sm"
-              >
-                Enter Courtroom Chamber
-              </button>
-              <button
-                aria-label="Explore system capabilities"
-                type="button"
-                onClick={() => scrollTo('desk')}
-                className="m3-btn m3-btn-outlined px-5 py-3.5 text-sm"
-              >
-                Explore System ↓
-              </button>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-white/10 text-xs font-mono text-slate-400">
-              <span className="font-semibold text-slate-300">Supported Formats:</span>
-              {['PDF', 'DOCX', 'TXT', 'Raw Paste'].map((fmt) => (
-                <span key={fmt} className="m3-chip text-[9px]">
-                  {fmt}
-                </span>
-              ))}
-              <span className="text-emerald-300 ml-2">
-                100% Client-Side Private
-              </span>
-            </div>
-          </div>
-
-          {/* Right Column: Impressionist Fine Art Gallery Showcase */}
-          <div className="lg:col-span-5 flex justify-center">
-            <div className="relative w-full max-w-md rounded-3xl border border-amber-300/30 bg-gradient-to-b from-amber-200/10 via-slate-900/60 to-slate-950 p-3 shadow-2xl backdrop-blur-2xl">
-              <div className="overflow-hidden rounded-2xl border border-white/10 aspect-square relative shadow-inner">
-                <img
-                  src="/assets/lady-justice.jpg"
-                  alt="Fine art oil painting of Lady Justice Themis in Claude Monet impressionist style"
-                  className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl border border-white/15 bg-slate-900/80 backdrop-blur-md">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-display text-sm font-bold text-white">Themis · Pillar of Authority</p>
-                      <p className="font-mono text-[10px] text-amber-300">59 Verified Supreme Precedents</p>
-                    </div>
-                    <span className="m3-chip m3-chip-emerald text-[9px]">Grounded Law</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Real Judgment Counter Strip */}
-        <div className="mt-14 liquid-glass-elevated p-6 max-w-5xl mx-auto rounded-3xl">
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <span className="m3-chip m3-chip-primary text-[11px]">
-              {caseCount} Landmark Judgments
-            </span>
-            <span className="m3-chip m3-chip-emerald text-[11px]">
-              7 Legal Jurisdictions
-            </span>
-            <span className="m3-chip m3-chip-cyan text-[11px]">
-              Zero Fabricated Law
-            </span>
-          </div>
-
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-            {jurisdictionCounts.map(([jurisdiction, count]) => (
-              <span
-                key={jurisdiction}
-                className="rounded-full border border-white/10 bg-slate-900/80 px-3.5 py-1 font-mono text-[11px] text-slate-300"
-              >
-                {JURISDICTION_LABEL[jurisdiction as Jurisdiction] ?? jurisdiction} · <span className="text-amber-300 font-semibold">{count}</span>
-              </span>
-            ))}
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-            {domainCounts.map(([domain, count]) => (
-              <span
-                key={domain}
-                className="rounded-full border border-white/5 bg-slate-950/50 px-3 py-0.5 font-mono text-[10px] text-slate-400"
-              >
-                {domain.replace('_', ' ')} · {count}
-              </span>
-            ))}
-          </div>
-        </div>
-      </header>
-
-      {/* ── Live Ticker ────────────────────────────────────────────── */}
+      {/* ── Ticker Bar ── */}
       <Ticker />
 
-      {/* ── Legal Desk Feature Section ──────────────────────────────── */}
-      <Section
-        id="desk"
-        title="Understand Your Documents in Plain Language."
-        subtitle="Five instant analytical operations to deconstruct, audit, and compare legal documents without leaking private text."
-      >
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {DESK_PILLARS.map((p, i) => (
-            <div key={p.head} className="m3-card-elevated p-6 flex flex-col justify-between group">
-              <div>
-                <h3 className="font-display text-lg font-bold text-white group-hover:text-amber-300 transition-colors">
-                  {p.head}
-                </h3>
-                <p className="mt-2.5 text-[13px] leading-relaxed text-slate-300">
-                  {p.body}
-                </p>
-              </div>
-              <div className="mt-6 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-500">
-                <span>Capability 0{i + 1}</span>
-                <span className="text-amber-300 font-medium">Ready ▸</span>
-              </div>
-            </div>
-          ))}
+      {/* ── Screenshot 1: Hero & Creator Fund Banner ($1,000,000 + 3D Table Stage) ── */}
+      <HeroCreationStage
+        onClaimChest={handleClaimCreationChest}
+        onOpenRules={() => setRulesOpen(true)}
+      />
 
-          {/* CTA Box */}
-          <div className="m3-card-elevated border-amber-400/40 bg-gradient-to-br from-amber-950/40 via-slate-900 to-slate-950 p-6 flex flex-col justify-between">
-            <div>
-              <h3 className="font-display text-2xl font-bold text-amber-200">
-                Private. Grounded. Instant.
-              </h3>
-              <p className="mt-2.5 text-[13px] leading-relaxed text-slate-300 font-sans">
-                Analyze consulting agreements, NDAs, leases, or terms of service instantly using our private on-device neural engine, or connect your personal BYOK for full multi-turn GenAI depth.
-              </p>
-            </div>
-            <button
-              aria-label="Open the Legal Desk"
-              type="button"
-              onClick={onOpenDesk}
-              className="m3-btn m3-btn-primary mt-6 w-full py-3"
-            >
-              Open Workbench Now
-            </button>
-          </div>
-        </div>
-      </Section>
+      {/* ── Screenshot 2: Monthly Milestone Progress & 6 Chest Tiers ── */}
+      <section id="milestones">
+        <MilestoneTrack
+          currentSubmissions={submissionsCount}
+          onOpenRules={() => setRulesOpen(true)}
+          onClaimChestTier={(tier) => {
+            alert(`🎉 Congratulations! You unlocked the ${tier}!`);
+          }}
+        />
+      </section>
 
-      {/* ── Courtroom Sparring Chamber with Impressionist Colosseum ──── */}
-      <Section
-        id="how"
-        title="The Bench: Spar Against Real Landmark Law."
-        subtitle="Multi-turn adversarial simulation where opposing counsel challenges your arguments and the bench rules strictly on primary precedent."
-      >
-        <div className="mb-8 rounded-3xl border border-white/15 overflow-hidden relative shadow-2xl">
-          <img
-            src="/assets/courtroom-chamber.jpg"
-            alt="Impressionist oil painting of classical Roman amphitheater courtroom in Claude Monet and Edouard Manet style"
-            className="w-full h-72 sm:h-96 object-cover"
-          />
-          <div className="absolute inset-0 pointer-events-none opacity-40 mix-blend-screen">
-            <Lightfall
-              colors={['#fde68a', '#fbbf24', '#38bdf8']}
-              backgroundColor="#070a12"
-              speed={0.4}
-              streakCount={3}
-              streakWidth={1.2}
-              streakLength={1.5}
-              glow={1.2}
-              density={0.5}
-              twinkle={0.8}
-              zoom={2.2}
-              backgroundGlow={0.2}
-              opacity={0.6}
-            />
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-          <div className="absolute bottom-6 left-6 right-6 p-6 rounded-2xl border border-white/15 bg-slate-900/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h3 className="font-display text-xl font-bold text-white">The Roman Courtroom Chamber</h3>
-              <p className="font-sans text-xs text-slate-300 mt-1">Multi-turn oral argument testing against primary jurisprudence.</p>
-            </div>
-            <button
-              type="button"
-              onClick={onPlay}
-              className="m3-btn m3-btn-emerald px-6 py-2.5 text-xs"
-            >
-              Launch Chamber Session ▸
-            </button>
-          </div>
-        </div>
+      {/* ── Screenshot 3: Leaderboard Top 1 / Top 2 / Top 3 Podium ── */}
+      <LeaderboardPodium
+        onOpenRules={() => setRulesOpen(true)}
+        onInspectEntry={(_rank) => {
+          onPlay();
+        }}
+      />
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {STEPS.map((s) => (
-            <div key={s.n} className="m3-card-elevated p-6">
-              <span className="font-mono text-2xl font-bold text-amber-300 block mb-2">
-                {s.n}
+      {/* ── Screenshot 4: Referral Rewards & Milestone Hub ── */}
+      <ReferralRewardsHub
+        onOpenRules={() => setRulesOpen(true)}
+        accountEmail={accountEmail}
+      />
+
+      {/* ── Legal Desk & Deep Discovery Section ── */}
+      <section id="desk-section" className="mx-auto w-full max-w-6xl px-4 py-16">
+        <div className="rounded-3xl bg-white border border-slate-200 p-8 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            <div className="md:col-span-7 space-y-4">
+              <span className="rounded-full bg-blue-50 border border-blue-200 px-3 py-1 font-mono text-[11px] font-bold text-blue-600">
+                Ground-Truth Legal Document Engine
               </span>
-              <h3 className="font-display text-lg font-bold text-white">
-                {s.head}
-              </h3>
-              <p className="mt-2.5 text-[13px] leading-relaxed text-slate-300">
-                {s.body}
+              <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Read any contract. Audit hidden risks in plain language.
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Upload contracts, leases, NDAs, or court transcripts. Our zero-cloud private analysis engine translates clauses, audits indemnities and termination traps, and answers questions grounded strictly in your document.
               </p>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* ── Architecture & AI Transparency ───────────────────────────── */}
-      <Section
-        id="ai"
-        title="Where the AI Actually Runs."
-        subtitle="Complete architectural transparency with zero cloud leaks and client-side execution options."
-      >
-        <div className="m3-card overflow-hidden">
-          {AI_ROWS.map((row, i) => (
-            <div
-              key={row.where}
-              className={`p-6 ${
-                i > 0 ? 'border-t border-white/10' : ''
-              } hover:bg-slate-800/40 transition-colors`}
-            >
-              <p className="font-display text-sm font-semibold text-white mb-1">{row.where}</p>
-              <p className="text-[13px] leading-relaxed text-slate-300">{row.what}</p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-4 text-[13px] leading-relaxed text-slate-400">
-          Every model output is validated against strict JSON contracts. All API keys remain strictly in local browser memory (or encrypted device storage) and are never logged or stored on any central server.
-        </p>
-      </Section>
-
-      {/* ── Why Access Matters ───────────────────────────────────────── */}
-      <Section
-        id="why"
-        title="Legal Knowledge Should Not Be Locked Away."
-        subtitle="The fundamental principles guiding why Overrool is open, grounded, and accessible to everyone."
-      >
-        <div className="grid gap-6 md:grid-cols-3">
-          {PAINS.map((p) => (
-            <div key={p.head} className="m3-card-elevated p-6">
-              <h3 className="font-display text-lg font-bold text-white mb-2">{p.head}</h3>
-              <p className="text-[13px] leading-relaxed text-slate-300">{p.body}</p>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* ── FAQ with Schema.org AEO / GEO Markup ─────────────────────── */}
-      <Section
-        id="faq"
-        title="Frequently Asked Questions."
-        subtitle="Everything you need to know about grounding, citation verification, privacy, and models."
-      >
-        <div className="grid gap-4 md:grid-cols-2" itemScope itemType="https://schema.org/FAQPage">
-          {[
-            {
-              q: 'How does the AI operate?',
-              a: 'The bench and Legal Desk run live model turns — opposing counsel arguments and rulings are generated dynamically. With no key, our private on-device neural engines take over with instant zero-cost analysis.',
-            },
-            {
-              q: 'Are the cases real?',
-              a: 'Every single one. Each precedent card directly links to official law reports (Indian Kanoon, SafLII, CanLII, AustLII, BAILII, EUR-Lex, Justia). The fact patterns are fiction; the law never is.',
-            },
-            {
-              q: 'Can the AI invent citations?',
-              a: 'It cannot. Any citation generated is checked against the verified corpus before being admitted to the record. Fabricated citations trigger an immediate bench rejection.',
-            },
-            {
-              q: 'Does document analysis use only my text?',
-              a: 'Yes. The desk answers strictly from the document you provide with an anchored glossary. It never fabricates clauses or facts outside the submitted text.',
-            },
-            {
-              q: 'Do I need an API key?',
-              a: 'No. The sparring bench and legal desk operate immediately and for free. Bring your own Gemini, OpenAI, Claude, or Groq key only if you want full GenAI multi-turn depth.',
-            },
-            {
-              q: 'Is this legal advice?',
-              a: 'No. Overrool is an educational legal intelligence and analysis engine. Always verify with certified law reports and consult qualified legal counsel.',
-            },
-          ].map((f) => (
-            <div key={f.q} className="m3-card p-6" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
-              <p className="font-display text-base font-semibold text-amber-200" itemProp="name">{f.q}</p>
-              <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
-                <p className="mt-2 text-[13px] leading-relaxed text-slate-300" itemProp="text">{f.a}</p>
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={onOpenDesk}
+                  className="rounded-full bg-blue-600 hover:bg-blue-700 px-6 py-3 font-sans text-xs font-bold text-white shadow-md transition-all cursor-pointer"
+                >
+                  Launch Legal Desk — Free
+                </button>
+                <button
+                  type="button"
+                  onClick={onPlay}
+                  className="rounded-full bg-emerald-500 hover:bg-emerald-600 px-6 py-3 font-sans text-xs font-bold text-white shadow-md transition-all cursor-pointer"
+                >
+                  Play Precedent Trial
+                </button>
               </div>
             </div>
-          ))}
-        </div>
-      </Section>
 
-      {/* ── Footer ──────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/10 bg-slate-950/90 px-6 py-12 text-center backdrop-blur-md">
-        <div className="flex items-center justify-center gap-2">
-          <span className="font-display text-2xl font-bold text-white">Over<span className="text-amber-300">rool</span></span>
+            <div className="md:col-span-5 rounded-2xl bg-slate-900 p-6 text-white border-2 border-slate-800 shadow-inner space-y-3">
+              <div className="font-mono text-xs font-bold text-amber-300">
+                ⚡ Real-time Audit Capabilities
+              </div>
+              <ul className="space-y-2 text-xs text-slate-300">
+                <li className="flex items-center gap-2">
+                  <span className="text-emerald-400">✓</span>
+                  <span>Unilateral amendment trap detection</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-emerald-400">✓</span>
+                  <span>Penalty clause vs liquidated damages audit</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-emerald-400">✓</span>
+                  <span>Multi-version redline comparison</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-emerald-400">✓</span>
+                  <span>59 verified common law precedents</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <p className="mx-auto mt-3 max-w-xl font-sans text-xs text-slate-400">
-          Grounded Legal Understanding &amp; Precedent Intelligence. Educational simulation; not legal advice.
-        </p>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-          <button
-            aria-label="Open the Legal Desk"
-            type="button"
-            onClick={onOpenDesk}
-            className="m3-btn m3-btn-primary px-6 py-2.5 text-xs"
-          >
-            Review Document
-          </button>
-          <button
-            aria-label="Enter the Room"
-            type="button"
-            onClick={onPlay}
-            className="m3-btn m3-btn-emerald px-6 py-2.5 text-xs"
-          >
-            Enter Courtroom
-          </button>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="border-t border-slate-200 bg-white py-12 px-6 text-center text-xs text-slate-500">
+        <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-amber-400 font-bold text-slate-950 text-xs">
+              O
+            </div>
+            <span className="font-bold text-slate-800">Overrool Jurisprudence & Creator Fund</span>
+          </div>
+          <div className="flex items-center gap-6 font-medium">
+            <button type="button" onClick={() => setRulesOpen(true)} className="hover:text-blue-600 cursor-pointer">
+              Event Rules
+            </button>
+            <button type="button" onClick={() => setEarningsOpen(true)} className="hover:text-blue-600 cursor-pointer">
+              My Wallet
+            </button>
+            <button type="button" onClick={onOpenDesk} className="hover:text-blue-600 cursor-pointer">
+              Legal Desk
+            </button>
+          </div>
         </div>
       </footer>
+
+      {/* ── Interactive Modals ── */}
+      {rulesOpen && <RulesModal onClose={() => setRulesOpen(false)} />}
+      {raffleOpen && <RaffleModal onClose={() => setRaffleOpen(false)} />}
+      {earningsOpen && <EarningsModal onClose={() => setEarningsOpen(false)} />}
     </div>
   );
 }
