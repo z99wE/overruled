@@ -738,3 +738,124 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .score-popup, .chip-piece, .screen-shake { animation: none !important; }
 }
+
+/* ── Card 3D Flip System ─────────────────────────────────────────── */
+
+.card3d {
+  perspective: 900px;
+}
+
+.card3d-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: rotateY(180deg);
+}
+
+.card3d-inner.faceUp {
+  transform: rotateY(0deg);
+}
+
+.card3d-deal .card3d-inner {
+  transition-delay: var(--flip-delay, 0ms);
+}
+
+.card3d-side {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.card3d-front {
+  transform: rotateY(0deg);
+}
+
+.card3d-back {
+  transform: rotateY(180deg);
+}
+
+/* ── Hand Deal Animation ─────────────────────────────────────────── */
+
+@keyframes handDeal {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+}
+
+/* ── Table choreography: card slide-in from top/bottom ───────────── */
+
+@keyframes dealFromTop {
+  from { opacity: 0; transform: translate(-50%, -56px) scale(0.9); }
+  to   { opacity: 1; transform: translate(-50%, 0)    scale(1);   }
+}
+
+@keyframes dealFromBottom {
+  from { opacity: 0; transform: translate(-50%, 56px) scale(0.9); }
+  to   { opacity: 1; transform: translate(-50%, 0)    scale(1);   }
+}
+
+.tbl-deal-opp {
+  animation: dealFromTop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.tbl-deal-self {
+  animation: dealFromBottom 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s both;
+}
+
+/* Win / lose table card flash */
+@keyframes winPulse {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(52,211,153,0)); }
+  50%       { filter: drop-shadow(0 0 16px rgba(52,211,153,0.7)); }
+}
+
+@keyframes loseFade {
+  to { opacity: 0.4; filter: grayscale(80%); }
+}
+
+.tbl-player-win {
+  animation: winPulse 0.7s ease-in-out 0.2s 2 both;
+}
+
+.tbl-player-lose {
+  animation: loseFade 0.45s ease-out 0.3s both;
+}
+
+.tbl-opp-win {
+  animation: winPulse 0.7s ease-in-out 0.2s 2 both;
+}
+
+.tbl-opp-lose {
+  animation: loseFade 0.45s ease-out 0.3s both;
+}
+
+/* ── Verdict & resolution animations ─────────────────────────────── */
+
+@keyframes slamIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  60%  { transform: translate(-50%, -50%) scale(1.08); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.anim-slam {
+  animation: slamIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes dealIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.anim-deal {
+  animation: dealIn 0.35s ease-out both;
+}
+

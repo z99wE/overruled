@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type KeyboardEvent, useState } from 'react';
 import { Shuffle } from './Shuffle';
 
 interface HeroCreationStageProps {
@@ -25,6 +25,13 @@ export function HeroCreationStage({
         onClaimChest();
       }
     }, 900);
+  };
+
+  const handleChestKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleChestClick();
+    }
   };
 
   return (
@@ -75,19 +82,24 @@ export function HeroCreationStage({
       {/* ── 3D Isometric Legal Tabletop Showcase Stage ── */}
       <div className="relative z-10 mx-auto max-w-4xl px-4">
         <div
+          role="button"
+          tabIndex={0}
+          aria-label="Open the Precedent Vault to start your contract audit"
+          aria-pressed={chestOpened}
           onClick={handleChestClick}
-          className={`group relative rounded-3xl overflow-hidden border border-white/60 bg-gradient-to-br from-violet-200/50 via-sky-100/60 to-amber-100/50 p-4 sm:p-8 shadow-2xl backdrop-blur-2xl cursor-pointer transition-all duration-300 ring-1 ring-slate-900/5 ${
+          onKeyDown={handleChestKeyDown}
+          className={`group relative rounded-3xl overflow-hidden border border-white/60 bg-gradient-to-br from-violet-200/50 via-sky-100/60 to-amber-100/50 p-4 sm:p-8 shadow-2xl backdrop-blur-2xl cursor-pointer transition-all duration-300 ring-1 ring-slate-900/5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
             chestOpened ? 'scale-102 ring-4 ring-purple-500' : 'hover:scale-101 hover:shadow-3xl'
           }`}
         >
           {/* Ambient Glows Inside the Stage Card */}
-          <div className="absolute -top-16 -left-16 h-64 w-64 rounded-full bg-purple-400/35 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-16 -right-16 h-64 w-64 rounded-full bg-sky-400/35 blur-3xl pointer-events-none" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-300/25 blur-3xl pointer-events-none" />
+          <div className="absolute -top-16 -left-16 h-64 w-64 rounded-full bg-purple-400/35 blur-3xl pointer-events-none" aria-hidden="true" />
+          <div className="absolute -bottom-16 -right-16 h-64 w-64 rounded-full bg-sky-400/35 blur-3xl pointer-events-none" aria-hidden="true" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-80 w-80 rounded-full bg-amber-300/25 blur-3xl pointer-events-none" aria-hidden="true" />
 
           {/* Table Grid Mat */}
           <div className="relative rounded-2xl border border-white/80 bg-white/85 p-6 sm:p-12 shadow-sm overflow-hidden min-h-[380px] flex items-center justify-center">
-            <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:20px_20px] opacity-40" />
+            <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:20px_20px] opacity-40" aria-hidden="true" />
 
             {/* Central Tabletop Arena with ONLY the 3D Purple Precedent Vault Chest */}
             <div className="relative z-10 flex items-center justify-center py-6 my-auto w-full">
@@ -95,20 +107,26 @@ export function HeroCreationStage({
                 <div className="relative h-52 w-52 sm:h-72 sm:w-72 rounded-3xl overflow-hidden border-2 border-purple-300/80 shadow-2xl bg-purple-950/10 group-hover:scale-105 transition-transform duration-500">
                   <img
                     src="/assets/master_chest.jpg"
-                    alt="3D Purple Precedent Vault Chest"
+                    alt="A 3D purple precedent vault chest containing 59 verified legal precedents"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-purple-950/25 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-purple-950/25 via-transparent to-transparent pointer-events-none" aria-hidden="true" />
                 </div>
               </div>
             </div>
 
-            {/* Notification Banner */}
-            {chestMessage && (
-              <div className="absolute inset-x-0 bottom-6 mx-auto max-w-md rounded-full bg-emerald-600 px-6 py-2.5 font-sans text-sm font-bold text-white shadow-2xl anim-pop text-center">
-                {chestMessage}
-              </div>
-            )}
+            {/* Notification Banner — announced to screen readers via aria-live */}
+            <div
+              role="status"
+              aria-live="polite"
+              className="absolute inset-x-0 bottom-6 flex justify-center pointer-events-none"
+            >
+              {chestMessage && (
+                <div className="max-w-md rounded-full bg-emerald-600 px-6 py-2.5 font-sans text-sm font-bold text-white shadow-2xl anim-pop text-center">
+                  {chestMessage}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

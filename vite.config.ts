@@ -81,6 +81,12 @@ export default defineConfig({
         manualChunks: {
           react: ['react', 'react-dom'],
           icons: ['lucide-react'],
+          // Lazily-loaded document ingestion — split so the initial bundle
+          // stays lean. pdfjs-dist is ~4 MB; mammoth is ~1 MB.
+          pdfjs: ['pdfjs-dist'],
+          mammoth: ['mammoth'],
+          // GSAP animation engine — only needed for animated text in hero view.
+          gsap: ['gsap', '@gsap/react'],
         },
       },
     },

@@ -6,9 +6,11 @@ interface ChamberHeaderProps {
   scenario: ScenarioBundle;
   state: TrialState;
   onExit: () => void;
+  fileOpen?: boolean;
+  onToggleFile?: () => void;
 }
 
-export function ChamberHeader({ scenario, state, onExit }: ChamberHeaderProps) {
+export function ChamberHeader({ scenario, state, onExit, fileOpen, onToggleFile }: ChamberHeaderProps) {
   return (
     <header className="sticky top-0 z-20 border-b border-white/60 bg-white/80 px-4 py-3 shadow-xs backdrop-blur-xl lg:px-8 font-sans">
       <div className="flex items-center justify-between gap-4">
@@ -34,6 +36,19 @@ export function ChamberHeader({ scenario, state, onExit }: ChamberHeaderProps) {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          {onToggleFile && (
+            <button
+              type="button"
+              onClick={onToggleFile}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-bold transition-all cursor-pointer shrink-0 border ${
+                fileOpen
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <span>{fileOpen ? '✕ Close Archive' : '📁 Case File'}</span>
+            </button>
+          )}
           {(state.streak > 0 || state.pot > 0) && (
             <div className="hidden items-center gap-2 sm:flex">
               {state.streak > 0 && (

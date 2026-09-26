@@ -1,5 +1,7 @@
 # Overrool
 
+> **Live demo:** https://overrool.pages.dev &nbsp;·&nbsp; **Repo:** https://github.com/z99wE/overruled
+
 > Understand the contract before you sign it. Know the law before you argue it.
 
 **Overrool is a GenAI assistant for legal assistance and access.** It helps people who cannot afford a lawyer understand the legal documents in front of them — a tenancy agreement, an employment contract, a policy, a court judgment, a notice — and know what to do next. It is free to use, it runs on the reader's own AI provider key, and it is built so that a fabricated citation is a *visible failure*, not a hidden one.
@@ -250,7 +252,7 @@ Open the app, arm the Key Vault with a provider key, pick a matter, and play. Al
 | `npm run preview` | Serve production build locally |
 | `npm run typecheck` | `tsc --noEmit` (app) + `tsc -p tsconfig.workers.json` (Pages Functions) |
 | `npm run lint` | ESLint over `src`, `functions`, `scripts` |
-| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 235 tests) |
+| `npm run test` | Vitest run (all `src/**` + `functions/**` suites, 368 tests) |
 | `npm run test:coverage` | Vitest with v8 coverage report + thresholds |
 | `npm run icons` | Regenerate `public/icons/*.png` from `public/icon.svg` (needs `sharp`) |
 | `npm run cf:dev` | `wrangler pages dev` — static shell + Functions + local D1 |

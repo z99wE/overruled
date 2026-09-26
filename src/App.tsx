@@ -17,7 +17,6 @@ import { AuthModal } from './components/AuthModal';
 import { ResetPasswordModal } from './components/ResetPasswordModal';
 import { ensureCaseOfDay, loadRun, normalizeRun, saveRun, type RunState } from './game/runStore';
 import { ShopModal } from './game/ShopModal';
-import { DuelMode } from './game/DuelMode';
 import type { JokerId } from './game/jokers';
 
 // The six shipped matters are the boss benches of the run; generated
@@ -48,7 +47,6 @@ export function App() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [run, setRun] = useState<RunState>(() => loadRun());
   const [shopOpen, setShopOpen] = useState(false);
-  const [duelOpen, setDuelOpen] = useState(false);
   const [deskReturn, setDeskReturn] = useState<Screen>('landing');
   const openDesk = () => {
     setDeskReturn(screen);
@@ -243,7 +241,6 @@ export function App() {
           caseOfDayId={caseOfDayId}
           onRunChange={updateRun}
           onOpenShop={() => setShopOpen(true)}
-          onOpenDuel={() => setDuelOpen(true)}
           onOpenDesk={openDesk}
           onSelect={(id) => void openTrial(id)}
           onOpenKeys={() => setKeysOpen(true)}
@@ -290,12 +287,6 @@ export function App() {
             updateRun({ ...run, chips: run.chips - cost, jokers: [...run.jokers, id as JokerId] });
           }}
           onClose={() => setShopOpen(false)}
-        />
-      )}
-      {duelOpen && libraryRef.current && (
-        <DuelMode
-          deck={libraryRef.current.payload.corpus.cases.slice(0, 12)}
-          onClose={() => setDuelOpen(false)}
         />
       )}
       {screen === 'desk' && (

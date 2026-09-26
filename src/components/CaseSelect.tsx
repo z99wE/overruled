@@ -12,7 +12,6 @@ interface CaseSelectProps {
   caseOfDayId: string;
   onRunChange: (next: RunState) => void;
   onOpenShop: () => void;
-  onOpenDuel: () => void;
   onOpenDesk: () => void;
   onSelect: (id: string) => void;
   onOpenKeys: () => void;
@@ -39,7 +38,6 @@ export function CaseSelect({
   caseOfDayId,
   onRunChange,
   onOpenShop,
-  onOpenDuel,
   onOpenDesk,
   onSelect,
   onOpenKeys,
@@ -141,13 +139,6 @@ export function CaseSelect({
             </p>
           </div>
           <div className="flex items-center gap-2.5 shrink-0">
-            <button
-              type="button"
-              onClick={onOpenDuel}
-              className="rounded-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-xs font-bold shadow-sm transition-all cursor-pointer"
-            >
-              Pass &amp; Play Duel
-            </button>
             {onGenerate && (
               <button
                 type="button"

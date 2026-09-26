@@ -20,3 +20,9 @@ src-tauri/icons/
 .freebuff/
 .soloknuckle/
 .wrangler/
+
+# Local presentation and pitch artifacts
+*.docx
+generate_word_doc.py
+*DEMO*
+*SCRIPT*
