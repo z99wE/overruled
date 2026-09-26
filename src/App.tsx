@@ -219,7 +219,13 @@ export function App() {
   }
 
   return (
-    <div className="min-h-full grid-graph-light bg-slate-50 text-slate-900 selection:bg-amber-300 selection:text-slate-950 font-sans">
+    <div className="relative min-h-full bg-mesh-colorful grid-graph-light text-slate-900 selection:bg-amber-300 selection:text-slate-950 font-sans overflow-x-hidden">
+      {/* ── Global Ambient Colourful Mesh Glows ── */}
+      <div className="fixed -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-purple-400/20 blur-3xl pointer-events-none -z-10" />
+      <div className="fixed top-1/3 -right-40 h-[600px] w-[600px] rounded-full bg-sky-400/20 blur-3xl pointer-events-none -z-10" />
+      <div className="fixed -bottom-40 left-1/3 h-[500px] w-[500px] rounded-full bg-amber-300/20 blur-3xl pointer-events-none -z-10" />
+      <div className="fixed bottom-20 right-20 h-[400px] w-[400px] rounded-full bg-rose-300/15 blur-3xl pointer-events-none -z-10" />
+
       {screen === 'landing' && (
         <Landing
           cases={libraryRef.current?.payload.corpus.cases ?? []}

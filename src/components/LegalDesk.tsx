@@ -243,8 +243,20 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
   const r = analysis?.result;
 
   return (
-    <div className={`fixed inset-0 z-50 flex flex-col bg-slate-950/60 p-3 sm:p-5 backdrop-blur-md selection:bg-blue-200 selection:text-slate-950 font-sans ${page ? 'relative p-0' : ''}`}>
-      <div className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-2xl">
+    <div
+      className={`fixed inset-0 z-50 flex flex-col p-3 sm:p-5 backdrop-blur-xl selection:bg-blue-200 selection:text-slate-950 font-sans ${
+        page
+          ? 'relative min-h-screen p-4 sm:p-8 bg-mesh-colorful grid-graph-light overflow-hidden'
+          : 'bg-slate-900/45 backdrop-blur-xl'
+      }`}
+    >
+      {/* ── Ambient Colourful Light Glows ── */}
+      <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-purple-400/30 blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 -right-24 h-96 w-96 rounded-full bg-sky-400/30 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 left-1/4 h-96 w-96 rounded-full bg-amber-300/30 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-10 right-10 h-80 w-80 rounded-full bg-rose-300/25 blur-3xl pointer-events-none" />
+
+      <div className="relative z-10 mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/95 shadow-2xl backdrop-blur-2xl ring-1 ring-slate-900/5">
         {/* ── Top Header Strip ────────────────────────────────────── */}
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 bg-slate-50/90 px-6 py-4">
           <div className="flex items-center gap-3">
