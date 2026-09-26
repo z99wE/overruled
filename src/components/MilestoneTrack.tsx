@@ -4,11 +4,15 @@ interface MilestoneTrackProps {
   currentSubmissions?: number;
   onOpenRules: () => void;
   onClaimChestTier?: (tier: string) => void;
+  onOpenDesk?: () => void;
 }
 
-interface ChestTier {
+interface AuditTier {
   id: number;
   name: string;
+  category: string;
+  painPoint: string;
+  benefit: string;
   required: number;
   colorClass: string;
   badgeBg: string;
@@ -18,41 +22,53 @@ interface ChestTier {
   trimColor: string;
 }
 
-const CHEST_TIERS: ChestTier[] = [
+const AUDIT_TIERS: AuditTier[] = [
   {
     id: 1,
-    name: 'Starter Chest',
+    name: 'NDA & IP Secrecy',
+    category: 'Confidentiality',
+    painPoint: 'Broad disclosures & no remedy caps',
+    benefit: 'Strict trade-secret carve-outs',
     required: 1,
     colorClass: 'chest-card-starter',
     badgeBg: 'bg-rose-100 text-rose-700',
     imageSrc: '/assets/starter_chest.jpg',
-    screenIcon: '⛵',
+    screenIcon: '📜',
     chestColor: '#ef4444',
     trimColor: '#f59e0b',
   },
   {
     id: 2,
-    name: 'Bronze Chest',
+    name: 'MSA & Liability Caps',
+    category: 'Commercial',
+    painPoint: 'Uncapped consequential damages',
+    benefit: '12-mo fee cap & mutual indemnity',
     required: 3,
     colorClass: 'chest-card-bronze',
     badgeBg: 'bg-amber-100 text-amber-800',
-    screenIcon: '⛏️',
+    screenIcon: '⚖️',
     chestColor: '#b45309',
     trimColor: '#fde047',
   },
   {
     id: 3,
-    name: 'Silver Chest',
+    name: 'SaaS & Data Privacy',
+    category: 'Compliance',
+    painPoint: 'Cross-border data liability & leaks',
+    benefit: 'GDPR / Schrems II safe harbors',
     required: 5,
     colorClass: 'chest-card-silver',
     badgeBg: 'bg-slate-200 text-slate-700',
-    screenIcon: '⚙️',
+    screenIcon: '🛡️',
     chestColor: '#94a3b8',
     trimColor: '#38bdf8',
   },
   {
     id: 4,
-    name: 'Gold Chest',
+    name: 'M&A Asset Protection',
+    category: 'Corporate',
+    painPoint: 'Hidden reps & warranties traps',
+    benefit: 'Forensic disclosure schedule audit',
     required: 10,
     colorClass: 'chest-card-gold',
     badgeBg: 'bg-sky-100 text-sky-800',
@@ -63,7 +79,10 @@ const CHEST_TIERS: ChestTier[] = [
   },
   {
     id: 5,
-    name: 'Diamond Chest',
+    name: 'Employment Restraints',
+    category: 'Labor & IP',
+    painPoint: 'Unenforceable non-compete overreach',
+    benefit: 'Blue-pencil severability audit',
     required: 20,
     colorClass: 'chest-card-diamond',
     badgeBg: 'bg-indigo-100 text-indigo-800',
@@ -74,7 +93,10 @@ const CHEST_TIERS: ChestTier[] = [
   },
   {
     id: 6,
-    name: 'Master Chest',
+    name: 'High Court Precedents',
+    category: 'Appellate',
+    painPoint: 'Hallucinated citations & weak ratios',
+    benefit: '59+ Certified common law authorities',
     required: 50,
     colorClass: 'chest-card-master',
     badgeBg: 'bg-purple-100 text-purple-800',
@@ -89,17 +111,20 @@ export function MilestoneTrack({
   currentSubmissions = 1,
   onOpenRules,
   onClaimChestTier,
+  onOpenDesk,
 }: MilestoneTrackProps) {
   const [selectedTier, setSelectedTier] = useState<number | null>(null);
   const [claimedTiers, setClaimedTiers] = useState<number[]>([]);
 
-  const handleChestClick = (tier: ChestTier) => {
+  const handleTierClick = (tier: AuditTier) => {
     setSelectedTier(tier.id);
     if (currentSubmissions >= tier.required) {
       if (!claimedTiers.includes(tier.id)) {
         setClaimedTiers((prev) => [...prev, tier.id]);
         onClaimChestTier?.(tier.name);
       }
+    } else if (onOpenDesk) {
+      onOpenDesk();
     }
   };
 
@@ -107,16 +132,21 @@ export function MilestoneTrack({
     <div className="mx-auto w-full max-w-6xl px-4 py-8">
       <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm">
         {/* Top Header */}
-        <div className="flex items-center justify-between pb-6">
-          <h3 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">
-            Monthly Milestone Progress
-          </h3>
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-6">
+          <div>
+            <h3 className="font-display text-xl sm:text-2xl font-extrabold text-slate-900">
+              Contract Risk & Defense Mastery Track
+            </h3>
+            <p className="text-xs text-slate-500 font-sans mt-0.5">
+              Solve critical contract pain points and unlock verified precedent defense levels.
+            </p>
+          </div>
           <button
             type="button"
             onClick={onOpenRules}
             className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
           >
-            <span>Rules</span>
+            <span>Audit Standards</span>
             <span>&gt;</span>
           </button>
         </div>
@@ -155,7 +185,7 @@ export function MilestoneTrack({
 
             {/* 6 Step Nodes */}
             <div className="absolute inset-0 flex items-center justify-between px-2 sm:px-6 pointer-events-none">
-              {CHEST_TIERS.map((tier) => {
+              {AUDIT_TIERS.map((tier) => {
                 const isUnlocked = currentSubmissions >= tier.required;
                 return (
                   <div
@@ -176,21 +206,21 @@ export function MilestoneTrack({
           </div>
         </div>
 
-        {/* ── 6 Chest Cards Grid with High-Res 3D Renders ── */}
+        {/* ── 6 Audit Tier Cards Grid ── */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 pt-6">
-          {CHEST_TIERS.map((tier) => {
+          {AUDIT_TIERS.map((tier) => {
             const isUnlocked = currentSubmissions >= tier.required;
             const isClaimed = claimedTiers.includes(tier.id);
 
             return (
               <div
                 key={tier.id}
-                onClick={() => handleChestClick(tier)}
+                onClick={() => handleTierClick(tier)}
                 className={`relative flex flex-col items-center rounded-2xl p-3 text-center cursor-pointer transition-all duration-200 hover:-translate-y-1.5 hover:shadow-md ${
                   tier.colorClass
                 } ${selectedTier === tier.id ? 'ring-2 ring-blue-500 shadow-md' : ''}`}
               >
-                {/* Top Right Locked / Unlocked Pill */}
+                {/* Top Right Status Pill */}
                 <div className="absolute top-2.5 right-2.5 z-10">
                   <span
                     className={`rounded-full px-2 py-0.5 text-[10px] font-bold shadow-xs ${
@@ -201,11 +231,11 @@ export function MilestoneTrack({
                         : 'bg-white/90 backdrop-blur-xs text-slate-600 border border-slate-200'
                     }`}
                   >
-                    {isClaimed ? 'Claimed' : isUnlocked ? 'Ready' : 'Locked'}
+                    {isClaimed ? 'Active' : isUnlocked ? 'Ready' : 'Level ' + tier.id}
                   </span>
                 </div>
 
-                {/* 3D Chest Visual Render or Stylized Container */}
+                {/* 3D Visual Render */}
                 <div className="my-2 flex h-28 w-full items-center justify-center overflow-hidden rounded-xl">
                   {tier.imageSrc ? (
                     <img
@@ -233,14 +263,27 @@ export function MilestoneTrack({
                   )}
                 </div>
 
-                {/* Chest Title */}
-                <h4 className="font-sans text-sm font-extrabold text-slate-900 mb-1.5">
+                {/* Tier Title & Category */}
+                <h4 className="font-sans text-xs sm:text-sm font-extrabold text-slate-900 mb-0.5 leading-snug">
                   {tier.name}
                 </h4>
+                <div className="text-[10px] font-bold text-blue-600 uppercase tracking-tight mb-1.5">
+                  {tier.category}
+                </div>
+
+                {/* Pain Point Solved & Benefit */}
+                <div className="w-full text-left bg-white/70 rounded-lg p-2 border border-slate-200/60 mb-2 space-y-1">
+                  <div className="text-[10px] text-slate-600 leading-tight">
+                    <span className="font-bold text-slate-800">Pain:</span> {tier.painPoint}
+                  </div>
+                  <div className="text-[10px] text-emerald-700 font-medium leading-tight">
+                    <span className="font-bold">Benefit:</span> {tier.benefit}
+                  </div>
+                </div>
 
                 {/* Requirement Tag */}
-                <div className={`mt-auto w-full rounded-xl px-2 py-1.5 text-[11px] font-medium leading-tight ${tier.badgeBg}`}>
-                  Complete {tier.required} eligible {tier.required === 1 ? 'submission' : 'submissions'} this month to unlock
+                <div className={`mt-auto w-full rounded-xl px-2 py-1 text-[10px] font-semibold leading-tight ${tier.badgeBg}`}>
+                  {tier.required} {tier.required === 1 ? 'Audit' : 'Audits'} required
                 </div>
               </div>
             );

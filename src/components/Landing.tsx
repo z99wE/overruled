@@ -21,6 +21,7 @@ const TICKER_CASES = [
   { hold: "Landlord cannot evict pavement dwellers without procedural fairness and alternative shelter considerations.", cite: "Olga Tellis v. BMC (1985) 3 SCC 545", tag: "India" },
   { hold: "A manufacturer owes a duty of care to the consumer when there is no reasonable possibility of intermediate examination.", cite: "Donoghue v. Stevenson [1932] AC 562", tag: "United Kingdom" },
   { hold: "Personal data transfers across borders must ensure an essentially equivalent level of fundamental rights protection.", cite: "Schrems II (Case C-311/18)", tag: "European Union" },
+  { hold: "Remoteness of damage in contract is governed by contemplation of the parties at time of contract formation.", cite: "Hadley v. Baxendale (1854) 9 Exch 341", tag: "United Kingdom" },
 ];
 
 function Ticker() {
@@ -83,16 +84,16 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
 
         <div className="hidden items-center gap-7 md:flex text-xs font-bold text-slate-600">
           <button type="button" onClick={() => scrollTo('milestones')} className="hover:text-blue-600 transition-colors cursor-pointer">
-            Milestones & Chests
+            Audit Track
           </button>
           <button type="button" onClick={() => scrollTo('leaderboard')} className="hover:text-blue-600 transition-colors cursor-pointer">
-            Leaderboard
+            Precedent Bench
           </button>
           <button type="button" onClick={() => scrollTo('referrals')} className="hover:text-blue-600 transition-colors cursor-pointer">
-            Referral Rewards
+            Team Workspace
           </button>
           <button type="button" onClick={() => scrollTo('community')} className="hover:text-blue-600 transition-colors cursor-pointer">
-            Community Hub
+            Counsel Exchange
           </button>
           <button type="button" onClick={onOpenDesk} className="hover:text-blue-600 transition-colors cursor-pointer">
             Legal Desk
@@ -132,38 +133,42 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
       {/* ── Ticker Bar ── */}
       <Ticker />
 
-      {/* ── Screenshot 1: Hero & Creator Fund Banner ($1,000,000 + 3D Table Stage) ── */}
+      {/* ── Hero & Zero-Leak Contract Risk Audit Stage ── */}
       <HeroCreationStage
         onClaimChest={handleClaimCreationChest}
         onOpenRules={() => setRulesOpen(true)}
+        onOpenDesk={onOpenDesk}
       />
 
-      {/* ── Screenshot 2: Monthly Milestone Progress & 6 Chest Tiers ── */}
+      {/* ── Contract Defense & Risk Audit Framework (6 Tiers) ── */}
       <section id="milestones">
         <MilestoneTrack
           currentSubmissions={submissionsCount}
           onOpenRules={() => setRulesOpen(true)}
           onClaimChestTier={(tier) => {
-            alert(`🎉 Congratulations! You unlocked the ${tier}!`);
+            alert(`🛡️ Activated ${tier} Defense Module!`);
           }}
+          onOpenDesk={onOpenDesk}
         />
       </section>
 
-      {/* ── Screenshot 3: Leaderboard Top 1 / Top 2 / Top 3 Podium ── */}
+      {/* ── Landmark Precedent Bench & Top Rulings ── */}
       <LeaderboardPodium
         onOpenRules={() => setRulesOpen(true)}
         onInspectEntry={(_rank) => {
           onPlay();
         }}
+        onOpenDesk={onOpenDesk}
       />
 
-      {/* ── Screenshot 4: Referral Rewards & Milestone Hub ── */}
+      {/* ── Legal Team Collaboration & Zero-Leak Multi-Seat Hub ── */}
       <ReferralRewardsHub
         onOpenRules={() => setRulesOpen(true)}
         accountEmail={accountEmail}
+        onOpenDesk={onOpenDesk}
       />
 
-      {/* ── Screenshot 5: 8-Bit Platformer Community Section ── */}
+      {/* ── 8-Bit Platformer Community Section ── */}
       <div id="community">
         <CommunitySection onOpenRules={() => setRulesOpen(true)} />
       </div>
@@ -234,14 +239,14 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
             <div className="flex h-6 w-6 items-center justify-center rounded bg-amber-400 font-bold text-slate-950 text-xs">
               O
             </div>
-            <span className="font-bold text-slate-800">Overrool Jurisprudence & Creator Fund</span>
+            <span className="font-bold text-slate-800">Overrool Jurisprudence & Contract Intelligence</span>
           </div>
           <div className="flex items-center gap-6 font-medium">
             <button type="button" onClick={() => setRulesOpen(true)} className="hover:text-blue-600 cursor-pointer">
-              Event Rules
+              Audit Standards
             </button>
             <button type="button" onClick={() => setEarningsOpen(true)} className="hover:text-blue-600 cursor-pointer">
-              My Wallet
+              Counsel Dockets
             </button>
             <button type="button" onClick={onOpenDesk} className="hover:text-blue-600 cursor-pointer">
               Legal Desk
@@ -250,7 +255,7 @@ export function Landing({ cases: _cases, onPlay, onOpenDesk, accountEmail, onOpe
         </div>
       </footer>
 
-      {/* ── Interactive Modals ── */}
+      {/* ── Pop-Up Modals ── */}
       {rulesOpen && <RulesModal onClose={() => setRulesOpen(false)} />}
       {raffleOpen && <RaffleModal onClose={() => setRaffleOpen(false)} />}
       {earningsOpen && <EarningsModal onClose={() => setEarningsOpen(false)} />}

@@ -1,11 +1,13 @@
 interface LeaderboardPodiumProps {
   onOpenRules: () => void;
   onInspectEntry?: (rank: number) => void;
+  onOpenDesk?: () => void;
 }
 
 export function LeaderboardPodium({
   onOpenRules,
   onInspectEntry,
+  onOpenDesk,
 }: LeaderboardPodiumProps) {
   return (
     <section className="relative w-full grid-graph-dark py-16 px-4 text-white overflow-hidden" id="leaderboard">
@@ -21,7 +23,7 @@ export function LeaderboardPodium({
         {/* Japanese text / Arcade badge (Mid Left) */}
         <div className="arcade-sticker absolute top-48 left-[4%]">
           <div className="rounded-lg bg-pink-500/20 border-2 border-pink-400 p-2 font-mono text-xs font-black text-pink-300">
-            解吃
+            判例
           </div>
         </div>
 
@@ -46,7 +48,7 @@ export function LeaderboardPodium({
           </svg>
         </div>
 
-        {/* Cute Anime Boy Face Sticker (Mid Right) */}
+        {/* Anime Judge Face Sticker (Mid Right) */}
         <div className="arcade-sticker absolute top-60 right-[4%]">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 border-2 border-slate-900 shadow-md">
             <span className="text-xl">🧑‍⚖️</span>
@@ -65,10 +67,9 @@ export function LeaderboardPodium({
         {/* ── Top Gavel / Trophy Emblem Hanging Center ── */}
         <div className="flex justify-center -mt-8 mb-4">
           <div className="flex flex-col items-center">
-            {/* Pixel Extruder / Gavel Trophy */}
-            <div className="flex h-12 w-32 items-center justify-center rounded-b-xl bg-gradient-to-b from-amber-300 to-amber-500 border-x-2 border-b-2 border-slate-900 shadow-lg">
-              <div className="flex items-center gap-1 font-mono text-xs font-black text-slate-950 uppercase tracking-widest">
-                🏆 Top Rankings
+            <div className="flex h-12 w-52 items-center justify-center rounded-b-xl bg-gradient-to-b from-amber-300 to-amber-500 border-x-2 border-b-2 border-slate-900 shadow-lg">
+              <div className="flex items-center gap-1.5 font-mono text-xs font-black text-slate-950 uppercase tracking-widest">
+                ⚖️ Landmark Precedent Bench
               </div>
             </div>
             <div className="w-4 h-3 bg-amber-600 border-x border-b border-slate-900"></div>
@@ -76,235 +77,217 @@ export function LeaderboardPodium({
         </div>
 
         {/* ── Period Info & Rules Button ── */}
-        <div className="flex items-center justify-between pb-8">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-8">
           <div className="flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-1.5 font-sans text-xs sm:text-sm font-bold text-amber-300">
-            <span>📅 September 2026 | 4 days left in this ranking period</span>
+            <span>🏛️ 59 Certified Authorities Across 7 Common Law Jurisdictions</span>
           </div>
           <button
             type="button"
             onClick={onOpenRules}
             className="rounded-full border border-amber-400/40 bg-slate-900/80 px-4 py-1.5 font-sans text-xs font-bold text-amber-300 hover:border-amber-300 hover:text-white transition-colors cursor-pointer"
           >
-            Rules &gt;
+            Court Standards &gt;
           </button>
         </div>
 
         {/* ── 3-Column Podium Cards Grid ── */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3 items-end pt-4">
           
-          {/* ── TOP 2 (Left, Coral Red Card) ── */}
+          {/* ── TOP 2 (Left, Coral Card) ── */}
           <div
-            onClick={() => onInspectEntry?.(2)}
-            className="podium-card-top2 rounded-3xl p-4.5 text-slate-950 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-2 cursor-pointer md:h-[430px]"
+            onClick={() => onInspectEntry ? onInspectEntry(2) : onOpenDesk?.()}
+            className="podium-card-top2 rounded-3xl p-4.5 text-slate-950 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-2 cursor-pointer md:h-[460px]"
           >
             <div>
               {/* Card Header */}
               <div className="flex items-center justify-between font-sans font-black text-lg sm:text-xl text-white mb-3">
-                <div className="flex items-center gap-1.5">
-                  <span>🔥</span>
-                  <span>502.239</span>
+                <div className="flex items-center gap-1.5 text-sm font-mono">
+                  <span>UK House of Lords</span>
                 </div>
-                <div className="font-extrabold text-2xl tracking-tight">TOP 2</div>
+                <div className="font-extrabold text-2xl tracking-tight">RANK 2</div>
               </div>
 
               {/* Inset Thumbnail Frame */}
-              <div className="w-full h-44 rounded-2xl bg-slate-900 border-2 border-red-900 overflow-hidden relative flex items-center justify-center shadow-inner">
-                <div className="flex items-center justify-center gap-2 scale-110">
-                  <div className="w-14 h-14 rounded-full bg-orange-500 border-4 border-slate-950 flex items-center justify-center shadow-md">
-                    <div className="w-6 h-6 rounded-full bg-purple-600 border-2 border-slate-950"></div>
-                  </div>
-                  <div className="w-14 h-14 rounded-full bg-orange-500 border-4 border-slate-950 flex items-center justify-center shadow-md">
-                    <div className="w-6 h-6 rounded-full bg-purple-600 border-2 border-slate-950"></div>
-                  </div>
-                </div>
+              <div className="w-full h-44 rounded-2xl bg-slate-900 border-2 border-red-900 overflow-hidden relative flex flex-col items-center justify-center p-4 text-center shadow-inner">
+                <div className="text-3xl mb-2">📜</div>
+                <div className="font-serif text-sm font-bold text-amber-200">Donoghue v. Stevenson</div>
+                <div className="text-[11px] text-slate-300 mt-1">[1932] AC 562 · Duty of Care</div>
               </div>
 
-              {/* Title & Author */}
-              <h3 className="mt-3.5 text-center font-sans text-lg font-black text-white truncate">
-                3 gear fidget ROLLER
+              {/* Title & Doctrinal Ratio */}
+              <h3 className="mt-3.5 text-center font-sans text-base font-black text-white truncate">
+                Consumer Duty of Care Doctrine
               </h3>
-              <div className="text-center font-mono text-[11px] text-white/80 my-1">
-                ·············· BondFire ··············
+              <div className="text-center font-sans text-xs text-white/90 my-1 bg-red-950/40 rounded-lg p-1.5 border border-red-800/40">
+                <span className="font-bold">Pain Solved:</span> Limits indefinite tort exposure via the Neighbor Principle.
               </div>
             </div>
 
-            {/* Bottom Reward Button */}
-            <div className="mt-4">
+            {/* Bottom Action Button */}
+            <div className="mt-3">
               <button
                 type="button"
                 className="w-full rounded-full bg-amber-300 hover:bg-amber-200 border-2 border-slate-900 py-2.5 px-3 font-sans text-xs font-black text-slate-900 flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
               >
-                <span>Rewards will be issued after...</span>
-                <span>🎁</span>
+                <span>Audit Duty of Care Clause</span>
+                <span>⚖️</span>
               </button>
             </div>
           </div>
 
           {/* ── TOP 1 (Center, Elevated Tall Gold Card) ── */}
           <div
-            onClick={() => onInspectEntry?.(1)}
-            className="podium-card-top1 rounded-3xl p-5 text-slate-950 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-2 cursor-pointer md:h-[480px] z-20"
+            onClick={() => onInspectEntry ? onInspectEntry(1) : onOpenDesk?.()}
+            className="podium-card-top1 rounded-3xl p-5 text-slate-950 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-2 cursor-pointer md:h-[500px] z-20"
           >
             <div>
               {/* Card Header */}
               <div className="flex items-center justify-between font-sans font-black text-xl sm:text-2xl text-slate-950 mb-3">
-                <div className="flex items-center gap-1.5">
-                  <span>🔥</span>
-                  <span>686.415</span>
+                <div className="flex items-center gap-1.5 text-sm font-mono text-slate-900">
+                  <span>AU High Court</span>
                 </div>
-                <div className="font-extrabold text-3xl tracking-tight text-slate-950">TOP 1</div>
+                <div className="font-extrabold text-3xl tracking-tight text-slate-950">RANK 1</div>
               </div>
 
               {/* Inset Thumbnail Frame */}
-              <div className="w-full h-52 rounded-2xl bg-amber-950/20 border-2 border-amber-600 overflow-hidden relative flex items-center justify-center shadow-inner">
-                <div className="w-36 h-36 rounded-xl bg-gradient-to-b from-amber-700 to-amber-900 border-3 border-slate-900 p-2 shadow-lg flex flex-col justify-between">
-                  <div className="w-full h-8 rounded bg-amber-100/90 border border-slate-900 flex items-center justify-center font-mono text-[10px] font-bold text-slate-900">
-                    LATTICE 01
-                  </div>
-                  <div className="w-full h-8 rounded bg-amber-100/90 border border-slate-900 flex items-center justify-center font-mono text-[10px] font-bold text-slate-900">
-                    LATTICE 02
-                  </div>
-                  <div className="w-full h-8 rounded bg-amber-100/90 border border-slate-900 flex items-center justify-center font-mono text-[10px] font-bold text-slate-900">
-                    LATTICE 03
-                  </div>
-                </div>
+              <div className="w-full h-52 rounded-2xl bg-amber-950/20 border-2 border-amber-600 overflow-hidden relative flex flex-col items-center justify-center p-4 text-center shadow-inner">
+                <div className="text-4xl mb-2">🏛️</div>
+                <div className="font-serif text-base font-extrabold text-amber-950">Mabo v. Queensland (No 2)</div>
+                <div className="text-xs text-slate-800 font-semibold mt-1">(1992) 175 CLR 1 · Native Title</div>
               </div>
 
-              {/* Title & Author */}
-              <h3 className="mt-4 text-center font-sans text-xl font-black text-slate-950 truncate">
-                镂空抽屉收纳盒
+              {/* Title & Doctrinal Ratio */}
+              <h3 className="mt-3.5 text-center font-sans text-lg font-black text-slate-950 truncate">
+                Native Title & Terra Nullius Doctrine
               </h3>
-              <div className="text-center font-mono text-xs text-slate-800 font-bold my-1">
-                ·············· U0006850... ··············
+              <div className="text-center font-sans text-xs text-slate-900 font-semibold my-1 bg-amber-400/40 rounded-lg p-2 border border-amber-600/40">
+                <span className="font-bold">Pain Solved:</span> Defends proprietary title against unlawful expropriation without plain legislative intent.
               </div>
             </div>
 
-            {/* Bottom Reward Button */}
-            <div className="mt-4">
+            {/* Bottom Action Button */}
+            <div className="mt-3">
               <button
                 type="button"
                 className="w-full rounded-full bg-emerald-500 hover:bg-emerald-400 border-2 border-slate-900 py-3 px-3 font-sans text-xs sm:text-sm font-black text-white flex items-center justify-center gap-1.5 shadow-md transition-colors cursor-pointer"
               >
-                <span>Rewards will be issued after...</span>
-                <span>🎁</span>
+                <span>Audit Property & Title Clauses</span>
+                <span>🏛️</span>
               </button>
             </div>
           </div>
 
           {/* ── TOP 3 (Right, Electric Blue Card) ── */}
           <div
-            onClick={() => onInspectEntry?.(3)}
-            className="podium-card-top3 rounded-3xl p-4.5 text-slate-950 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-2 cursor-pointer md:h-[430px]"
+            onClick={() => onInspectEntry ? onInspectEntry(3) : onOpenDesk?.()}
+            className="podium-card-top3 rounded-3xl p-4.5 text-slate-950 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-2 cursor-pointer md:h-[460px]"
           >
             <div>
               {/* Card Header */}
               <div className="flex items-center justify-between font-sans font-black text-lg sm:text-xl text-white mb-3">
-                <div className="flex items-center gap-1.5">
-                  <span>🔥</span>
-                  <span>353.865</span>
+                <div className="flex items-center gap-1.5 text-sm font-mono">
+                  <span>US Supreme Court</span>
                 </div>
-                <div className="font-extrabold text-2xl tracking-tight">TOP 3</div>
+                <div className="font-extrabold text-2xl tracking-tight">RANK 3</div>
               </div>
 
               {/* Inset Thumbnail Frame */}
-              <div className="w-full h-44 rounded-2xl bg-slate-900 border-2 border-sky-900 overflow-hidden relative flex items-center justify-center shadow-inner">
-                <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 rounded-2xl bg-red-600 border-3 border-slate-950 flex items-center justify-center shadow-md relative">
-                    <div className="w-3 h-5 bg-white rounded-full rotate-12 -translate-x-2"></div>
-                    <div className="w-3 h-5 bg-white rounded-full -rotate-12 translate-x-2"></div>
-                  </div>
-                  <div className="w-10 h-8 rounded-b-lg bg-blue-700 border-2 border-slate-950"></div>
-                </div>
+              <div className="w-full h-44 rounded-2xl bg-slate-900 border-2 border-sky-900 overflow-hidden relative flex flex-col items-center justify-center p-4 text-center shadow-inner">
+                <div className="text-3xl mb-2">⚖️</div>
+                <div className="font-serif text-sm font-bold text-sky-200">Miranda v. Arizona</div>
+                <div className="text-[11px] text-slate-300 mt-1">384 U.S. 436 · 5th Amendment</div>
               </div>
 
-              {/* Title & Author */}
-              <h3 className="mt-3.5 text-center font-sans text-base sm:text-lg font-black text-white truncate">
-                Q 版蜘蛛侠 (Spider-Man)
+              {/* Title & Doctrinal Ratio */}
+              <h3 className="mt-3.5 text-center font-sans text-base font-black text-white truncate">
+                Custodial Procedural Safeguards
               </h3>
-              <div className="text-center font-mono text-[11px] text-white/80 my-1">
-                ·············· renke233 ··············
+              <div className="text-center font-sans text-xs text-white/90 my-1 bg-sky-950/40 rounded-lg p-1.5 border border-sky-800/40">
+                <span className="font-bold">Pain Solved:</span> Prevents involuntary waivers and unadvised custodial acknowledgments.
               </div>
             </div>
 
-            {/* Bottom Reward Button */}
-            <div className="mt-4">
+            {/* Bottom Action Button */}
+            <div className="mt-3">
               <button
                 type="button"
                 className="w-full rounded-full bg-sky-200 hover:bg-sky-100 border-2 border-slate-900 py-2.5 px-3 font-sans text-xs font-black text-slate-900 flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
               >
-                <span>Rewards will be issued after...</span>
-                <span>🎁</span>
+                <span>Audit Procedural Safeguards</span>
+                <span>🛡️</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* ── Leaderboard Chest Reward Breakdown Row ── */}
+        {/* ── Precedent Doctrine Breakdown Row ── */}
         <div className="mt-12 rounded-2xl border border-slate-800 bg-slate-900/90 p-5 shadow-lg">
           <div className="text-center font-sans text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
-            Leaderboard Chest
+            Certified Jurisprudential Modules
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {/* Top 1 Tier */}
-            <div className="flex items-center justify-between rounded-xl border border-amber-400/40 bg-slate-950/80 p-3">
-              <div className="font-display font-black text-amber-400 text-base">
-                TOP 1
+            {/* Constitutional / Property */}
+            <div className="flex flex-col justify-between rounded-xl border border-amber-400/40 bg-slate-950/80 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="font-display font-black text-amber-400 text-sm">
+                  Title & Sovereignty
+                </div>
+                <span className="text-xs">🏛️</span>
               </div>
-              <div className="flex flex-col gap-1">
-                <div className="rounded-md bg-indigo-900/60 px-2 py-0.5 text-[10px] font-bold text-amber-300">
-                  🔥 "Trending" Badge
-                </div>
-                <div className="rounded-md bg-indigo-900/60 px-2 py-0.5 text-[10px] font-bold text-amber-300">
-                  🎁 Champion Chest
-                </div>
-              </div>
-            </div>
-
-            {/* Top 2-3 Tier */}
-            <div className="flex items-center justify-between rounded-xl border border-sky-400/40 bg-slate-950/80 p-3">
-              <div className="font-display font-black text-sky-400 text-base">
-                TOP 2-3
-              </div>
-              <div className="flex flex-col gap-1">
-                <div className="rounded-md bg-indigo-900/60 px-2 py-0.5 text-[10px] font-bold text-sky-300">
-                  🔥 "Trending" Badge
-                </div>
-                <div className="rounded-md bg-indigo-900/60 px-2 py-0.5 text-[10px] font-bold text-sky-300">
-                  🎁 Star Chest
-                </div>
+              <p className="text-[11px] text-slate-300">
+                Real property ownership, crown acquisition, and statutory extinguishment.
+              </p>
+              <div className="rounded-md bg-indigo-950/60 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                High Court of Australia
               </div>
             </div>
 
-            {/* 4th-5th Place */}
-            <div className="flex items-center justify-between rounded-xl border border-slate-700 bg-slate-950/80 p-3">
-              <div className="flex flex-col">
-                <span className="text-sm">🔥</span>
-                <span className="font-sans text-[11px] font-bold text-slate-300">4th–5th Place</span>
+            {/* Commercial Contract */}
+            <div className="flex flex-col justify-between rounded-xl border border-sky-400/40 bg-slate-950/80 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="font-display font-black text-sky-400 text-sm">
+                  Contract & Damages
+                </div>
+                <span className="text-xs">📜</span>
               </div>
-              <div className="flex flex-col gap-1">
-                <div className="rounded-md bg-indigo-900/60 px-2 py-0.5 text-[10px] font-bold text-slate-200">
-                  🔥 "Trending" Badge
-                </div>
-                <div className="rounded-md bg-indigo-900/60 px-2 py-0.5 text-[10px] font-bold text-slate-200">
-                  🎁 Trending Chest
-                </div>
+              <p className="text-[11px] text-slate-300">
+                Liquidated damages, remoteness of loss (Hadley), and mutual good faith.
+              </p>
+              <div className="rounded-md bg-indigo-950/60 px-2 py-0.5 text-[10px] font-bold text-sky-300">
+                UK & Commonwealth Bench
               </div>
             </div>
 
-            {/* 6th-20th Place */}
-            <div className="flex items-center justify-between rounded-xl border border-slate-700 bg-slate-950/80 p-3">
-              <div className="flex flex-col">
-                <span className="text-sm">🔥</span>
-                <span className="font-sans text-[11px] font-bold text-slate-300">6th–20th Place</span>
+            {/* Privacy & Data Sovereignty */}
+            <div className="flex flex-col justify-between rounded-xl border border-emerald-400/40 bg-slate-950/80 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="font-display font-black text-emerald-400 text-sm">
+                  Cross-Border Privacy
+                </div>
+                <span className="text-xs">🔒</span>
               </div>
-              <div className="flex flex-col gap-1">
-                <div className="rounded-md bg-indigo-900/60 px-2 py-0.5 text-[10px] font-bold text-slate-200">
-                  🔥 "Trending" Badge
+              <p className="text-[11px] text-slate-300">
+                Data transfers, standard contractual clauses (SCCs), and Schrems II compliance.
+              </p>
+              <div className="rounded-md bg-indigo-950/60 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                European Court of Justice
+              </div>
+            </div>
+
+            {/* Constitutional Rights */}
+            <div className="flex flex-col justify-between rounded-xl border border-purple-400/40 bg-slate-950/80 p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="font-display font-black text-purple-400 text-sm">
+                  Fundamental Rights
                 </div>
-                <div className="rounded-md bg-indigo-900/60 px-2 py-0.5 text-[10px] font-bold text-cyan-300">
-                  💎 50 Points/Person
-                </div>
+                <span className="text-xs">⚖️</span>
+              </div>
+              <p className="text-[11px] text-slate-300">
+                Due process, non-derogable civil liberties, and basic structure doctrine.
+              </p>
+              <div className="rounded-md bg-indigo-950/60 px-2 py-0.5 text-[10px] font-bold text-purple-300">
+                Supreme Court of India & US
               </div>
             </div>
           </div>

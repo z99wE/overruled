@@ -3,23 +3,28 @@ import { useState } from 'react';
 interface HeroCreationStageProps {
   onClaimChest: () => void;
   onOpenRules: () => void;
+  onOpenDesk?: () => void;
 }
 
 export function HeroCreationStage({
   onClaimChest,
   onOpenRules,
+  onOpenDesk,
 }: HeroCreationStageProps) {
-  const [remainingPool] = useState(35031);
+  const [activePrecedents] = useState(59);
   const [chestOpened, setChestOpened] = useState(false);
   const [chestMessage, setChestMessage] = useState<string | null>(null);
 
   const handleChestClick = () => {
     setChestOpened(true);
-    const reward = Math.floor(Math.random() * 25) + 10;
-    setChestMessage(`🎉 You claimed +${reward} Chips from the Landmark Chest!`);
+    setChestMessage(`🛡️ Zero-Leak Defense Active: 59 Verified Precedents Loaded!`);
     setTimeout(() => {
-      onClaimChest();
-    }, 1200);
+      if (onOpenDesk) {
+        onOpenDesk();
+      } else {
+        onClaimChest();
+      }
+    }, 1000);
   };
 
   return (
@@ -35,10 +40,10 @@ export function HeroCreationStage({
           </svg>
         </div>
 
-        {/* Double Coin Bubble (Left) */}
+        {/* Shield Bubble (Left) */}
         <div className="arcade-sticker absolute top-20 left-[18%] md:left-[22%] anim-float" style={{ animationDelay: '0.5s' }}>
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-sky-400 bg-sky-100 text-sky-600 font-mono font-black text-sm shadow-md">
-            $$
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-sky-400 bg-sky-100 text-sky-700 font-mono font-black text-xs shadow-md">
+            0-LEAK
           </div>
         </div>
 
@@ -65,42 +70,42 @@ export function HeroCreationStage({
           </svg>
         </div>
 
-        {/* Red Pixel Heart (Bottom Right) */}
+        {/* Purple Scales Sticker (Bottom Right) */}
         <div className="arcade-sticker absolute top-40 right-[8%] md:right-[10%]">
-          <svg className="w-10 h-10 text-rose-500" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#0f172a" strokeWidth="1.5" strokeLinejoin="round" />
-          </svg>
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 border-2 border-purple-400 shadow-md text-base">
+            ⚖️
+          </div>
         </div>
       </div>
 
-      {/* ── Top Fund Announcement Header ── */}
+      {/* ── Top Announcement Header ── */}
       <div className="relative z-10 flex items-center justify-center gap-2 mb-2 font-sans text-sm md:text-base font-medium text-slate-800">
-        <span>Creator Fund ·</span>
+        <span>Zero-Data-Leak Contract Analysis ·</span>
         <button
           type="button"
           onClick={onOpenRules}
           className="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors cursor-pointer"
         >
-          Earn up to $100 per Original Model!
+          Instant Clause-by-Clause Risk Audit & 59 Common Law Precedents!
         </button>
       </div>
 
-      {/* ── Massive Retro 3D Pixel Prize Pool Header ── */}
-      <h1 className="relative z-10 pixel-fund-text text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-6 tracking-tight">
-        $1,000,000
+      {/* ── Massive Retro 3D Pixel Headline ── */}
+      <h1 className="relative z-10 pixel-fund-text text-5xl sm:text-7xl md:text-8xl lg:text-9xl mb-6 tracking-tight">
+        ZERO LEAK
       </h1>
 
-      {/* ── Primary Blue Upload / Play Pill Button ── */}
+      {/* ── Primary Blue Action Button ── */}
       <div className="relative z-10 flex flex-col items-center justify-center gap-2 mb-8">
         <button
           type="button"
           onClick={handleChestClick}
-          className="flex items-center gap-2.5 rounded-full bg-blue-600 px-7 py-3 text-sm md:text-base font-bold text-white shadow-lg shadow-blue-500/30 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          className="flex items-center gap-2.5 rounded-full bg-blue-600 px-7 py-3.5 text-sm md:text-base font-bold text-white shadow-lg shadow-blue-500/30 hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all cursor-pointer"
         >
           <span className="flex h-5 w-5 items-center justify-center rounded bg-white/20 text-xs">
-            🎁
+            ⚡
           </span>
-          <span>Upload & Claim a Creation Chest</span>
+          <span>Ingest Contract for Instant Forensic Risk Audit</span>
         </button>
         {/* Blue down caret pointer */}
         <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-blue-600"></div>
@@ -116,16 +121,21 @@ export function HeroCreationStage({
         >
           <img
             src="/assets/hero_chest_stage.jpg"
-            alt="3D Creation Chest Tabletop Showcase"
+            alt="3D Legal Intelligence Tabletop Showcase"
             className="w-full h-auto object-cover"
           />
 
-          {/* Interactive Live Prize Pill Overlay */}
+          {/* Interactive Live Precedent Vault Pill Overlay */}
           <div className="absolute top-4 right-4 rounded-full bg-slate-950/80 backdrop-blur-md border border-amber-400/50 px-4 py-1.5 font-mono text-xs sm:text-sm font-black text-amber-300 shadow-lg">
-            Live Pool: ${remainingPool.toLocaleString()}
+            Active Precedent Vault: {activePrecedents} Certified Rulings
           </div>
 
-          {/* Reward Notification Banner */}
+          {/* Benefit Badge Overlay (Bottom Left) */}
+          <div className="absolute bottom-4 left-4 rounded-full bg-blue-900/80 backdrop-blur-md border border-sky-400/40 px-3.5 py-1 font-sans text-xs font-bold text-sky-200 shadow-md">
+            🔒 100% In-Browser Privacy · No Cloud Document Training
+          </div>
+
+          {/* Notification Banner */}
           {chestMessage && (
             <div className="absolute inset-x-0 bottom-6 mx-auto max-w-md rounded-full bg-emerald-500 px-6 py-2.5 font-sans text-sm font-black text-white shadow-2xl anim-pop">
               {chestMessage}
@@ -137,10 +147,10 @@ export function HeroCreationStage({
       {/* ── Section Title & Subtitle ── */}
       <div className="relative z-10 mt-14 max-w-2xl mx-auto px-4">
         <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-          Monthly Submission Milestones Rewards
+          Contract Defense & Risk Audit Framework
         </h2>
         <p className="mt-2.5 text-xs sm:text-sm text-slate-500 leading-relaxed font-sans">
-          Complete eligible submissions each month to unlock reward chests. The more you submit, the higher the chest tier—and the bigger the rewards.
+          Audit contracts and test legal arguments against certified common law authorities. Identify hidden liability traps, one-sided indemnities, and enforceability risks in seconds.
         </p>
       </div>
     </div>

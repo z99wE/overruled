@@ -3,7 +3,6 @@ import type { Jurisdiction, ScenarioBundle } from '../types/legal';
 import { StatutoryNotice } from './StatutoryNotice';
 import { NewsFeed } from './NewsFeed';
 import { RunPanel } from '../game/RunPanel';
-import { bossForJurisdiction } from '../game/bosses';
 import type { RunState } from '../game/runStore';
 
 interface CaseSelectProps {
@@ -61,29 +60,43 @@ export function CaseSelect({
   };
 
   return (
-    <div className="felt-bg min-h-full flex flex-col selection:bg-amber-400 selection:text-slate-950">
+    <div className="min-h-full grid-graph-light flex flex-col selection:bg-amber-300 selection:text-slate-950 font-sans text-slate-900">
       {/* ── Top Header ────────────────────────────────────────── */}
-      <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-slate-950/80 px-6 py-3.5 shadow-lg backdrop-blur-xl lg:px-12">
+      <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/90 bg-white/95 px-6 py-3.5 shadow-xs backdrop-blur-md lg:px-12">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 font-serif font-bold text-lg shadow-md">
+          <button
+            type="button"
+            onClick={onOpenHowItWorks}
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 font-bold text-lg shadow-sm hover:scale-105 transition-transform cursor-pointer"
+          >
             O
-          </div>
+          </button>
           <div>
-            <h1 className="font-display text-xl font-bold tracking-tight text-white">
-              Over<span className="text-amber-300">rool</span>
+            <h1 className="font-display text-xl font-extrabold tracking-tight text-slate-900">
+              Courtroom <span className="text-blue-600">Chambers</span>
             </h1>
-            <p className="font-sans text-[11px] text-slate-400">
-              Courtroom Chambers · Active Dockets
+            <p className="font-sans text-[11px] text-slate-500">
+              Active Common Law Dockets · 59 Verified Precedents
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          {onOpenHowItWorks && (
+            <button
+              type="button"
+              onClick={onOpenHowItWorks}
+              className="rounded-full border border-slate-200 bg-slate-50 px-4 py-1.5 font-sans text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            >
+              ← Overview
+            </button>
+          )}
+
           <button
             aria-label={accountEmail ? `Account for ${accountEmail}` : 'Sign up or log in to sync your progress'}
             type="button"
             onClick={onOpenAccount}
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-slate-900/60 px-3.5 py-1.5 font-mono text-xs text-slate-300 hover:border-amber-400/40 hover:text-white transition-colors"
+            className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 font-mono text-xs text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-colors shadow-2xs cursor-pointer"
           >
             {accountEmail ? accountEmail : 'Account Sync'}
           </button>
@@ -92,7 +105,7 @@ export function CaseSelect({
             aria-label="Open shop"
             type="button"
             onClick={onOpenShop}
-            className="m3-btn m3-btn-primary px-4 py-1.5 text-xs font-semibold"
+            className="rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-1.5 text-xs font-extrabold shadow-sm transition-all cursor-pointer"
           >
             🪙 {run.chips} chips
           </button>
@@ -101,7 +114,7 @@ export function CaseSelect({
             aria-label="Open the Legal Desk to understand any legal document"
             type="button"
             onClick={onOpenDesk}
-            className="m3-btn m3-btn-tonal px-4 py-1.5 text-xs text-slate-200"
+            className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 text-xs font-bold shadow-sm transition-all cursor-pointer"
           >
             Legal Desk
           </button>
@@ -110,8 +123,10 @@ export function CaseSelect({
             aria-label={hasKey ? 'Open key vault' : 'Open key vault to see key options'}
             type="button"
             onClick={onOpenKeys}
-            className={`m3-btn px-4 py-1.5 text-xs ${
-              hasKey ? 'm3-btn-emerald' : 'm3-btn-outlined text-slate-300'
+            className={`rounded-full px-4 py-1.5 text-xs font-bold shadow-xs cursor-pointer transition-all ${
+              hasKey
+                ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
             }`}
           >
             {hasKey ? 'Key Active' : 'Keyless (Local)'}
@@ -120,7 +135,41 @@ export function CaseSelect({
       </header>
 
       {/* ── Main Content Area ────────────────────────────────────── */}
-      <main className="mx-auto w-full max-w-6xl flex-1 px-6 pb-12 pt-6 lg:px-12">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-6 pb-16 pt-6 lg:px-12">
+        
+        {/* Core Value Banner */}
+        <div className="mb-6 rounded-2xl bg-white border border-slate-200 p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="space-y-1 max-w-2xl">
+            <div className="flex items-center gap-2">
+              <span className="rounded-full bg-blue-100 text-blue-800 px-2.5 py-0.5 font-bold text-[10px]">
+                Adversarial AI Courtroom
+              </span>
+              <span className="text-xs text-slate-500">Zero Hallucinations Guarantee</span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-sans">
+              Test your arguments against opposing counsel and strict judicial benches. Every citation in your hand is certified against official law reports across 7 jurisdictions.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={onOpenDuel}
+              className="rounded-full bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 text-xs font-bold shadow-sm transition-all cursor-pointer"
+            >
+              ⚔️ Pass & Play Duel
+            </button>
+            {onGenerate && (
+              <button
+                type="button"
+                onClick={handleGenerate}
+                className="rounded-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-xs font-bold shadow-sm transition-all cursor-pointer"
+              >
+                + New Matter
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Run / Score Stats Panel */}
         <div className="mb-6">
           <RunPanel run={run} onChange={onRunChange} onOpenShop={onOpenShop} />
@@ -131,87 +180,20 @@ export function CaseSelect({
           <NewsFeed onNeedAccount={onOpenAccount} />
         </div>
 
-        {/* Local Bench info banner */}
-        {!hasKey && (
-          <div className="mb-6 m3-card p-5 border-amber-400/30 flex flex-wrap items-center justify-between gap-4">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="m3-chip m3-chip-primary text-[8px]">Active Mode</span>
-                <p className="font-display text-sm font-bold text-white">
-                  Private Native Bench (Zero Key Required)
-                </p>
-              </div>
-              <p className="text-xs leading-relaxed text-slate-300">
-                100% private and on-device: turns resolve instantly with verified precedent rules. Connect your personal Gemini, OpenAI, Claude, or Groq key for full multi-turn adversarial AI briefs.
-              </p>
-            </div>
-            <button
-              aria-label="Open the key vault"
-              type="button"
-              onClick={onOpenKeys}
-              className="m3-btn m3-btn-primary shrink-0 px-4 py-2 text-xs"
-            >
-              Configure BYOK Vault
-            </button>
-          </div>
-        )}
-
-        {/* Matter Generator Panel */}
-        {onGenerate && (
-          <section className="mb-6 m3-card-elevated p-6 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-amber-950/30">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="max-w-2xl">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <h2 className="font-display text-base font-bold text-amber-200">
-                    Procedural Matter Generator
-                  </h2>
-                </div>
-                <p className="text-xs leading-relaxed text-slate-300">
-                  Generate unlimited dispute scenarios with novel fact patterns while testing against a verified deck of <strong className="text-white">real, certified precedent cards only</strong>.
-                </p>
-              </div>
-              <button
-                aria-label="Generate a new case"
-                type="button"
-                onClick={handleGenerate}
-                className="m3-btn m3-btn-primary shrink-0 px-5 py-2.5 text-xs"
-              >
-                Generate New Matter
-              </button>
-            </div>
-          </section>
-        )}
-
-        {/* Counsel Duel Section */}
-        <section className="mb-8 m3-card-elevated p-6 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-rose-950/25 border-rose-500/20">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-2 mb-1.5">
-                <h2 className="font-display text-base font-bold text-rose-200">
-                  Counsel Duel — Pass &amp; Play Arena
-                </h2>
-              </div>
-              <p className="text-xs leading-relaxed text-slate-300">
-                Two advocates, one device. Select real precedent cards in secret, pass the screen, and clash arguments in a best-of-five showdown.
-              </p>
-            </div>
-            <button
-              aria-label="Start a counsel duel"
-              type="button"
-              onClick={onOpenDuel}
-              className="m3-btn m3-btn-tonal border-rose-400/30 text-rose-200 shrink-0 px-5 py-2.5 text-xs hover:border-rose-400"
-            >
-              Launch Duel Arena
-            </button>
-          </div>
-        </section>
-
         {/* Case of the day notification */}
         {caseOfDayId && (
-          <div className="mb-6 flex items-center gap-2.5 rounded-2xl border border-amber-400/30 bg-slate-950/80 px-4 py-2.5 backdrop-blur">
-            <p className="font-sans text-xs text-amber-200">
-              Case of the Day — Overcoming today's featured Bench grants <span className="font-semibold">+100 bonus chips</span>
-            </p>
+          <div className="mb-6 flex items-center justify-between rounded-2xl border border-amber-300 bg-amber-50 px-5 py-3 shadow-xs">
+            <div className="flex items-center gap-2.5 text-xs font-bold text-amber-950">
+              <span className="text-base">⭐</span>
+              <span>Case of the Day — Overcoming today's featured Bench awards <strong className="text-amber-800">+100 bonus chips</strong></span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onSelect(caseOfDayId)}
+              className="rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold px-4 py-1 text-xs shadow-xs transition-all cursor-pointer"
+            >
+              Enter Trial →
+            </button>
           </div>
         )}
 
@@ -220,7 +202,6 @@ export function CaseSelect({
           {scenarios.map((s) => {
             const isGenerated = s.id.startsWith('generated-');
             const isBoss = !isGenerated;
-            const boss = isBoss ? bossForJurisdiction(s.jurisdiction) : null;
             const scalped = isBoss && run.bossesDefeated.includes(`static-${s.id}`);
             const isCaseOfDay = `static-${s.id}` === caseOfDayId;
 
@@ -230,132 +211,122 @@ export function CaseSelect({
                 key={s.id}
                 type="button"
                 onClick={() => onSelect(s.id)}
-                className="m3-card-elevated group relative overflow-hidden p-6 text-left transition-all focus-visible:outline-none"
+                className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 text-left shadow-xs transition-all hover:-translate-y-1 hover:border-blue-400 hover:shadow-md focus-visible:outline-none cursor-pointer"
               >
                 {/* Playing-card corner tags */}
                 <div className="pointer-events-none absolute right-4 top-4 flex items-center gap-1.5">
-                  <span className="m3-chip text-[9px]">
+                  <span className="rounded-full bg-slate-100 text-slate-700 px-2 py-0.5 font-bold text-[9px] border border-slate-200">
                     {s.jurisdiction}
                   </span>
-                  <span className="m3-chip m3-chip-primary text-[9px]">
-                    {s.bench.slice(0, 12)}
+                  <span className="rounded-full bg-blue-100 text-blue-800 px-2 py-0.5 font-bold text-[9px]">
+                    {s.bench.slice(0, 14)}
                   </span>
                 </div>
 
                 {isGenerated && (
-                  <div className="pointer-events-none absolute left-0 top-0 rounded-br-xl border-b border-r border-amber-400/30 bg-amber-400/20 px-3 py-1 font-mono text-[9px] font-semibold text-amber-200">
+                  <div className="pointer-events-none absolute left-0 top-0 rounded-br-xl bg-amber-400 px-3 py-0.5 font-sans text-[9px] font-black text-slate-950">
                     Custom Matter
                   </div>
                 )}
                 {isBoss && (
-                  <div className="pointer-events-none absolute left-0 top-0 rounded-br-xl border-b border-r border-rose-500/30 bg-rose-950/60 px-3 py-1 font-mono text-[9px] font-semibold text-rose-200">
-                    Boss Bench
+                  <div className="pointer-events-none absolute left-0 top-0 rounded-br-xl bg-indigo-600 px-3 py-0.5 font-sans text-[9px] font-black text-white">
+                    Landmark Matter
                   </div>
                 )}
 
-                <div className="space-y-3 pt-3">
-                  <div className="flex items-center gap-2">
-                    <span className="m3-chip m3-chip-emerald text-[9px]">
-                      {JURISDICTION_LABEL[s.jurisdiction] ?? 'Global'}
-                    </span>
-                    {isCaseOfDay && (
-                      <span className="m3-chip m3-chip-primary text-[9px]">Daily Special</span>
-                    )}
-                    {scalped && (
-                      <span className="m3-chip text-[9px] text-emerald-300">Victory ✓</span>
-                    )}
+                <div className="mt-4 space-y-3">
+                  <div>
+                    <h3 className="font-display text-lg font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors">
+                      {s.title}
+                    </h3>
+                    <p className="font-sans text-xs text-slate-500 font-medium">
+                      {JURISDICTION_LABEL[s.jurisdiction] ?? s.jurisdiction} · {s.bench}
+                    </p>
                   </div>
 
-                  {boss && (
-                    <p className="font-mono text-[11px] text-rose-300">
-                      Bench Justice: {boss.name} · Target {boss.target} pts · {boss.special}
-                    </p>
-                  )}
-
-                  <h3 className="font-display text-xl font-bold leading-snug text-white group-hover:text-amber-200 transition-colors">
-                    {s.title}
-                  </h3>
-
-                  <p className="line-clamp-3 text-xs leading-relaxed text-slate-300">
+                  <p className="line-clamp-2 font-sans text-xs text-slate-600 leading-relaxed">
                     {s.coreDispute}
                   </p>
 
-                  <div className="flex items-center justify-between border-t border-white/10 pt-3">
-                    <div className="flex items-center gap-3 font-mono text-[10px] text-slate-400">
-                      <span>§ {s.maxTurns} turns</span>
-                      <span>•</span>
-                      <span>{s.availablePrecedents.length} precedents</span>
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-[11px]">
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-400">Target Favor:</span>
+                      <span className="font-mono font-bold text-slate-900">70 Chips</span>
                     </div>
-                    <span className="inline-flex items-center gap-1 font-sans text-xs font-semibold text-amber-300 transition-transform group-hover:translate-x-1">
-                      Enter Chamber ▸
-                    </span>
+
+                    <div className="flex items-center gap-2">
+                      {scalped ? (
+                        <span className="rounded-full bg-emerald-100 text-emerald-800 px-2.5 py-0.5 font-bold text-[10px]">
+                          ✓ Sustained
+                        </span>
+                      ) : isCaseOfDay ? (
+                        <span className="rounded-full bg-amber-100 text-amber-900 px-2.5 py-0.5 font-bold text-[10px]">
+                          ⭐ +100 Chips
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-blue-50 text-blue-700 px-2.5 py-0.5 font-bold text-[10px]">
+                          Enter Docket →
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </button>
             );
           })}
         </div>
-
-        <StatutoryNotice />
       </main>
 
-      {/* ── Footer ──────────────────────────────────────────────── */}
-      <footer className="border-t border-white/10 bg-slate-950/80 px-6 py-8 text-center font-sans text-xs text-slate-400 backdrop-blur-md">
-        <button
-          type="button"
-          onClick={() => onOpenHowItWorks?.()}
-          aria-label="How it works"
-          className="mb-2 text-amber-300 underline decoration-dotted hover:text-white transition-colors"
-        >
-          View System Architecture ↺
-        </button>
-        <br />
-        Offline Verified Corpus · Zero-Leak Local Privacy · {scenarios.length} Live Matters on Docket
-      </footer>
-
-      {/* ── Generated Case Modal ─────────────────────────────────── */}
+      {/* Generated Matter Modal */}
       {genOpen && generated && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md">
-          <div className="anim-slam w-full max-w-lg m3-card-elevated p-6 border-amber-400/40">
-            <span className="m3-chip m3-chip-primary text-[9px]">
-              Matter Seed: {generated.id.replace('generated-', '')}
-            </span>
-            <h3 className="mt-3 font-display text-2xl font-bold text-white">
-              {generated.title}
-            </h3>
-            <p className="mt-3 text-xs leading-relaxed text-slate-300">
-              {generated.factualBackground}
-            </p>
-            <div className="mt-3 rounded-xl border border-white/10 bg-slate-950/80 p-3.5 text-xs italic text-amber-200">
-              <strong className="text-white not-italic">{generated.opposingCounselPersona.name} (Opposing Counsel):</strong> “{generated.opposingCounselPersona.initialOpeningStatement}”
-            </div>
-            <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/10 pt-4">
-              <span className="font-mono text-[10px] text-slate-400">
-                {generated.jurisdiction} · {generated.availablePrecedents.length} precedents · {generated.maxTurns} turns
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-md">
+          <div className="relative w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl text-slate-900">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <span className="rounded-full bg-amber-400 px-3 py-1 font-sans text-xs font-black text-slate-950">
+                Fresh Matter Generated
               </span>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setGenOpen(false)}
-                  className="m3-btn m3-btn-outlined px-4 py-2 text-xs"
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setGenOpen(false);
-                    onSelect(generated.id);
-                  }}
-                  className="m3-btn m3-btn-primary px-5 py-2 text-xs"
-                >
-                  Enter Chamber ▸
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setGenOpen(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="my-4 space-y-3">
+              <h3 className="font-display text-xl font-extrabold text-slate-900">{generated.title}</h3>
+              <p className="text-xs text-slate-500 font-bold">{JURISDICTION_LABEL[generated.jurisdiction]} · {generated.bench}</p>
+              <p className="text-xs text-slate-700 leading-relaxed">{generated.coreDispute}</p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setGenOpen(false)}
+                className="rounded-full border border-slate-300 px-5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setGenOpen(false);
+                  onSelect(generated.id);
+                }}
+                className="rounded-full bg-blue-600 px-6 py-2 text-xs font-bold text-white hover:bg-blue-700 shadow-sm cursor-pointer"
+              >
+                Open Docket &amp; Spar
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Statutory Notice */}
+      <footer className="border-t border-slate-200 bg-white py-6 px-6 text-center text-xs text-slate-500">
+        <StatutoryNotice />
+      </footer>
     </div>
   );
 }

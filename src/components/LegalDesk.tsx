@@ -248,28 +248,28 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
         {/* ── Top Header Strip ────────────────────────────────────── */}
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-400/30 bg-amber-400/15 text-amber-300 font-serif font-bold text-lg shadow-md">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-400 to-amber-500 text-slate-950 font-serif font-bold text-lg shadow-md">
               §
             </div>
             <div>
-              <h2 className="font-display text-base font-bold text-white">
-                Overrool Legal Workbench
+              <h2 className="font-display text-base font-extrabold text-white">
+                Overrool Legal Intelligence &amp; Contract Audit Desk
               </h2>
               <p className="font-sans text-xs text-slate-400">
-                Plain language · Risk audit · Redline diff · Grounded Q&amp;A
+                Plain language translation · Hidden risk audit · Version diff · Grounded Q&amp;A
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2.5">
             <button
               onClick={onOpenKeys}
-              className="m3-btn m3-btn-tonal px-3.5 py-1.5 text-xs text-slate-300"
+              className="rounded-full border border-slate-700 bg-slate-800/80 px-3.5 py-1.5 font-mono text-xs text-slate-300 hover:border-amber-400 hover:text-white transition-colors cursor-pointer"
             >
-              {cfg ? providerLabel(cfg.provider) : 'Keyless (Local Engine)'}
+              {cfg ? providerLabel(cfg.provider) : 'Keyless (Local Private Engine)'}
             </button>
             <button
               onClick={onClose}
-              className="m3-btn m3-btn-tonal px-3 py-1.5 text-xs text-slate-300 hover:text-white"
+              className="rounded-full bg-slate-800 hover:bg-slate-700 px-3.5 py-1.5 text-xs font-bold text-slate-200 hover:text-white transition-colors cursor-pointer"
               aria-label={page ? 'Back' : 'Close legal desk'}
             >
               {page ? '← Back' : 'Close ✕'}
@@ -283,7 +283,7 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
           <div className="flex min-h-0 flex-col gap-4">
             <Docketling documentsUnderstood={readCount} />
 
-            {/* Operation Tabs */}
+            {/* Operation Tabs with Clear Benefit Tooltips */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {OPS.map((o) => {
                 const active = op === o.id;
@@ -291,11 +291,13 @@ export function LegalDesk({ onClose, onOpenKeys, page = false }: LegalDeskProps)
                   <button
                     key={o.id}
                     onClick={() => setOp(o.id)}
-                    className={`m3-btn py-2 px-3 text-xs justify-center ${
-                      active ? 'm3-btn-primary' : 'm3-btn-tonal text-slate-300'
+                    className={`rounded-xl py-2 px-3 text-xs font-bold transition-all cursor-pointer flex items-center justify-center text-center shadow-xs ${
+                      active
+                        ? 'bg-blue-600 text-white shadow-blue-500/20'
+                        : 'bg-slate-800/90 text-slate-300 hover:bg-slate-700 hover:text-white'
                     }`}
                   >
-                    <span className="truncate font-medium">{o.label}</span>
+                    <span className="truncate">{o.label}</span>
                   </button>
                 );
               })}
