@@ -26,7 +26,7 @@
     "live:check": "node scripts/live-provider-check.mjs"
   },
   "dependencies": {
-    "@aparajita/capacitor-secure-storage": "8.0.0",
+    "@aparajita/capacitor-secure-storage": "8.0.1",
     "@capacitor/core": "8.5.2",
     "@capacitor/haptics": "8.0.2",
     "@capacitor/share": "8.0.2",
